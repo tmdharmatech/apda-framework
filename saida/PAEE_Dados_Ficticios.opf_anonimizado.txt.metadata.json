@@ -1,0 +1,36 @@
+{
+  "data": "2026-04-29T18:51:39.274436",
+  "modelo": "openai/privacy-filter",
+  "modelo_local": "/home/eu/apda-framework/modelos/openai-privacy-filter",
+  "entrada": "/home/eu/apda-framework/saida/PAEE_Dados_Ficticios.texto_extraido.txt",
+  "saida": "/home/eu/apda-framework/saida/PAEE_Dados_Ficticios.opf_anonimizado.txt",
+  "elapsed_seconds": 25.106,
+  "input_chars": 4670,
+  "output_chars": 4652,
+  "span_count": 8,
+  "propagated_private_person_replacements": 1,
+  "private_person_memory": [
+    "Mariana Alves Oliveira",
+    "Fernanda Reis Almeida",
+    "Carlos Henrique Souza",
+    "Roberta Lima Costa",
+    "Ana Paula Martins",
+    "Carlos Henrique",
+    "Fernanda Reis",
+    "Mariana Alves",
+    "Roberta Lima",
+    "Ana Paula",
+    "Fernanda",
+    "Roberta",
+    "Mariana",
+    "Carlos",
+    "Ana"
+  ],
+  "labels": {
+    "private_date": 2,
+    "private_person": 7,
+    "private_phone": 1
+  },
+  "threshold": 0.5,
+  "chunk_chars": 12000
+}

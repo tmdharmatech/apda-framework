@@ -1,4 +1,11 @@
 {
-  "data": "2026-04-29T00:07:53.589065",
-  "resultados": []
+  "data": "2026-04-29T18:48:44.097707",
+  "resultados": [
+    {
+      "arquivo": "PAEE_Dados_Ficticios.docx",
+      "status": "ok",
+      "caracteres_extraidos": 4670,
+      "saida": "/home/eu/apda-framework/saida/PAEE_Dados_Ficticios.texto_extraido.txt"
+    }
+  ]
 }

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import re
 import time
@@ -8,9 +9,6 @@ from collections import Counter
 from datetime import datetime
 from pathlib import Path
 from typing import Iterable
-
-from transformers import pipeline
-
 
 BASE = Path(__file__).resolve().parents[1]
 SAIDA = BASE / "saida"
@@ -35,6 +33,19 @@ PLACEHOLDERS = {
     "account_number": "[ACCOUNT_NUMBER]",
     "secret": "[SECRET]",
 }
+
+
+def load_token_classifier(model_dir: Path):
+    if importlib.util.find_spec("torch") is None:
+        raise SystemExit(
+            "Dependencia Python ausente: torch. "
+            "O Privacy Filter usa transformers.pipeline com backend PyTorch. "
+            "Instale com: .venv/bin/pip install -r requirements.txt"
+        )
+
+    from transformers import pipeline
+
+    return pipeline("token-classification", model=str(model_dir), device=-1)
 
 
 def iter_chunks(text: str, chunk_chars: int) -> Iterable[tuple[int, str]]:
@@ -135,6 +146,7 @@ def private_person_memory(spans: list[dict], text: str) -> list[str]:
             continue
 
         phrases.add(" ".join(tokens))
+        phrases.add(tokens[0])
         for size in range(2, len(tokens) + 1):
             phrases.add(" ".join(tokens[:size]))
 
@@ -217,7 +229,7 @@ def main() -> None:
 
     LOGS.mkdir(exist_ok=True)
     print(f"[INFO] carregando Privacy Filter: {model_dir}")
-    classifier = pipeline("token-classification", model=str(model_dir), device=-1)
+    classifier = load_token_classifier(model_dir)
 
     resultados = []
     for input_path in resolve_inputs(args):

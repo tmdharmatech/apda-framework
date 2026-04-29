@@ -1,0 +1,46 @@
+```
+{
+  "tipo_artefato": "relatorio_pedagogico",
+  "origem": {
+    "nome_arquivo": "PAEE_Dados_Ficticios.opf_anonimizado.txt",
+    "formato_original": "txt",
+    "pagina_ou_aba": null
+  },
+  "conteudo_pedagogico": {
+    "objetivo_pedagogico": null,
+    "barreiras_identificadas": [
+      "Comunicação social",
+      "Autorregulação emocional",
+      "Permanência em atividades"
+    ],
+    "estrategias_pedagogicas": [
+      "Mediação planejada",
+      "Ambiente estruturado",
+      "Reforço positivo",
+      "Intervalos planejados"
+    ],
+    "recursos_acessibilidade": [
+      "Apoio individualizado",
+      "Acessibilidade pedagógica",
+      "Estratégias de comunicação funcional"
+    ],
+    "observacoes_relevantes": null
+  },
+  "anonimizacao": {
+    "aplicada": true,
+    "itens_mascarados": ["private_person", "private_phone"],
+    "risco_reidentificacao": "nao_avaliado"
+  },
+  "metadados_processamento": {
+    "pipeline_versao": "apda-local-0.2-opf",
+    "data_processamento": "2026-04-29T18:49:13.687070",
+    "status": "pendente_revisao",
+    "confianca_extracao": "nao_calculada"
+  },
+  "validacao_humana": {
+    "necessaria": true,
+    "status": "pendente",
+    "responsavel": null
+  }
+}
+```

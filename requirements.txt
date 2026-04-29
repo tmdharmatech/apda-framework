@@ -8,4 +8,5 @@ openpyxl>=3.1.0         # leitura de arquivos .xlsx/.xls
 pandas>=2.0.0           # processamento de planilhas
 
 # scripts/04_privacy_filter_anonimizar.py e 05_gerar_artefato_3b.py
+torch>=2.3.0           # backend de tensor exigido pelo transformers pipeline
 transformers>=4.40.0    # pipeline de NLP (NER para anonimização e geração)

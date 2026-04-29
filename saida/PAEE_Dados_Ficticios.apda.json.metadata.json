@@ -1,0 +1,17 @@
+{
+  "data": "2026-04-29T18:49:25.526977",
+  "modelo": "Qwen2.5-3B-Instruct-Q4_K_M",
+  "servidor": "http://127.0.0.1:8091",
+  "entrada": "/home/eu/apda-framework/saida/PAEE_Dados_Ficticios.opf_anonimizado.txt",
+  "saida": "/home/eu/apda-framework/saida/PAEE_Dados_Ficticios.apda.json",
+  "raw_saida": "/home/eu/apda-framework/saida/PAEE_Dados_Ficticios.apda.json.raw.txt",
+  "elapsed_seconds": 11.839,
+  "usage": {
+    "completion_tokens": 384,
+    "prompt_tokens": 1874,
+    "total_tokens": 2258,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

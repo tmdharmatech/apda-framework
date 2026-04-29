@@ -12,6 +12,7 @@ const REQUIRED_MODULES = [
   { module: "docx", packageName: "python-docx" },
   { module: "fitz", packageName: "PyMuPDF" },
   { module: "pandas", packageName: "pandas" },
+  { module: "torch", packageName: "torch" },
   { module: "transformers", packageName: "transformers" },
 ];
 

@@ -23,12 +23,16 @@ async function runPython(root, python, script, args, emitter, stepId) {
     stdio: "pipe",
   });
   if (!result.ok) {
+    const details = [result.stderr, result.stdout].filter(Boolean).join("\n").trim();
+    const message = details
+      ? `Falha ao executar ${script}.\n${details}`
+      : `Falha ao executar ${script}.`;
     if (emitter && stepId)
       emitter.emit("step:error", {
         step: stepId,
-        message: `Falha ao executar ${script}.`,
+        message,
       });
-    throw new Error(`Falha ao executar ${script}.`);
+    throw new Error(message);
   }
   if (emitter && stepId) emitter.emit("step:done", stepId);
 }
@@ -128,6 +132,15 @@ export async function runWorkflow(root, workflowId, inputFile, options = {}) {
         );
       if (!python.scriptsOk)
         throw new Error("Scripts APDA obrigatorios nao encontrados.");
+      if (!options.dryRun && !python.modulesOk) {
+        const missing = python.modules
+          .filter((item) => !item.ok)
+          .map((item) => item.packageName)
+          .join(", ");
+        throw new Error(
+          `Dependencias Python ausentes: ${missing}. Instale com: .venv/bin/pip install -r requirements.txt`,
+        );
+      }
     }
 
     if (workflow.steps.includes("extract-text")) {
