@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Manifesto de Segmentos APDA",
+  "description": "Resultado da varredura semântica de um documento pedagógico. Identifica unidades independentes antes da geração de APDAs.",
+  "type": "object",
+  "required": ["documento", "segmentos"],
+  "properties": {
+    "documento": {
+      "type": "object",
+      "required": ["tipo_documento_inferido", "total_segmentos"],
+      "properties": {
+        "tipo_documento_inferido": { "type": "string" },
+        "total_segmentos": { "type": "integer", "minimum": 1 },
+        "observacoes": { "type": ["string", "null"] }
+      }
+    },
+    "segmentos": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["indice", "tipos_artefato", "confianca", "trecho_identificador"],
+        "properties": {
+          "indice": { "type": "integer", "minimum": 1 },
+          "secao_origem": { "type": ["string", "null"] },
+          "tipos_artefato": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "enum": ["diario_aee", "estudo_de_caso", "plano_atendimento", "relatorio_pedagogico", "atividade_adaptada", "outro"]
+            }
+          },
+          "confianca": { "type": "string", "enum": ["alta", "media", "baixa"] },
+          "trecho_identificador": { "type": "string" },
+          "resumo_nao_identificavel": { "type": ["string", "null"] },
+          "posicao_aproximada": {
+            "type": ["object", "null"],
+            "properties": {
+              "inicio_chars": { "type": ["integer", "null"] },
+              "fim_chars": { "type": ["integer", "null"] }
+            }
+          }
+        }
+      }
+    }
+  }
+}

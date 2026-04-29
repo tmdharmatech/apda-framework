@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0",
+  "project": "APDA",
+  "generated_at": "2026-04-27T21:45:00-03:00",
+  "hardware": {
+    "gpu": "AMD Radeon RX 580 2048SP",
+    "backend": "llama.cpp Vulkan",
+    "device": "Vulkan1",
+    "vram_total_mib": 8192,
+    "cpu_threads_reported": 2,
+    "server_parallel_slots_auto": 4
+  },
+  "models": {
+    "qwen2_5_3b_q4_k_m": {
+      "label": "Qwen2.5 3B Instruct Q4_K_M",
+      "path": "/home/eu/.lmstudio/models/local/Qwen2.5-3B-Instruct-Q4_K_M/Qwen2.5-3B-Instruct-Q4_K_M.gguf",
+      "params_b": 3.09,
+      "file_size_gib": 1.79
+    },
+    "qwen3_4b_q4_k_m": {
+      "label": "Qwen3 4B Q4_K_M",
+      "path": "/home/eu/.lmstudio/models/lmstudio-community/Qwen3-4B-GGUF/Qwen3-4B-Q4_K_M.gguf",
+      "params_b": 4.02,
+      "file_size_gib": 2.32
+    }
+  },
+  "tests": []
+}

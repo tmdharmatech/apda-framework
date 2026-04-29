@@ -1,0 +1,483 @@
+"""07_gerar_de_manifesto.py — Fase 2 do workflow de segmentação.
+
+Lê o manifesto produzido por 02_scan_segments.py e o texto anonimizado e,
+para cada segmento listado, chama o LLM para gerar um APDA JSON separado.
+
+Saída esperada (um arquivo por tipo_artefato × segmento):
+  saida/<stem>.seg<indice>.<tipo_artefato>.apda.json
+
+Ao final, salva:
+  saida/<stem>.manifesto_processado.json
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import time
+import urllib.request
+from datetime import datetime
+from pathlib import Path
+
+BASE = Path(__file__).resolve().parents[1]
+SAIDA = BASE / "saida"
+
+
+# ---------------------------------------------------------------------------
+# Prompts
+# ---------------------------------------------------------------------------
+
+SYSTEM_PROMPT = """\
+Você transforma um trecho de registro pedagógico anonimizado em um artefato JSON estruturado.
+
+REGRAS OBRIGATÓRIAS:
+- Responda SOMENTE com JSON válido, sem markdown.
+- Não invente nomes, documentos, datas, diagnósticos ou responsáveis.
+- Preserve marcadores como [PRIVATE_PERSON] apenas quando forem pedagogicamente relevantes.
+- Em anonimizacao.itens_mascarados, use somente categorias únicas.
+- Limite cada array pedagógico a no máximo 6 itens.
+- Use null quando a informação não estiver clara no trecho fornecido.
+- validacao_humana.necessaria deve ser true e status deve ser "pendente".
+- validacao_humana.responsavel deve ser null.
+- O campo tipo_artefato deve ser exatamente o tipo solicitado.\
+"""
+
+USER_TEMPLATE = """\
+Gere um artefato pedagógico digital aberto do tipo "{tipo_artefato}" a partir do trecho anonimizado abaixo.
+Este trecho corresponde ao segmento {indice} de {total} do documento "{nome_arquivo}".
+Seção de origem: {secao_origem}
+
+O JSON deve seguir esta estrutura:
+{{
+  "tipo_artefato": "{tipo_artefato}",
+  "origem": {{
+    "nome_arquivo": "{nome_arquivo}",
+    "formato_original": "{formato_original}",
+    "pagina_ou_aba": {secao_origem_json},
+    "segmento_indice": {indice},
+    "segmento_total": {total}
+  }},
+  "conteudo_pedagogico": {{
+    "objetivo_pedagogico": null,
+    "barreiras_identificadas": [],
+    "estrategias_pedagogicas": [],
+    "recursos_acessibilidade": [],
+    "observacoes_relevantes": null
+  }},
+  "anonimizacao": {{
+    "aplicada": true,
+    "itens_mascarados": ["private_person"],
+    "risco_reidentificacao": "nao_avaliado"
+  }},
+  "metadados_processamento": {{
+    "pipeline_versao": "apda-local-0.3-segmented",
+    "data_processamento": "{data_processamento}",
+    "status": "pendente_revisao",
+    "confianca_extracao": "nao_calculada"
+  }},
+  "validacao_humana": {{
+    "necessaria": true,
+    "status": "pendente",
+    "responsavel": null
+  }}
+}}
+
+Trecho anonimizado:
+\"\"\"
+{texto}
+\"\"\"\
+"""
+
+
+# ---------------------------------------------------------------------------
+# HTTP helpers
+# ---------------------------------------------------------------------------
+
+
+def post_json(url: str, payload: dict, timeout: int = 300) -> dict:
+    data = json.dumps(payload).encode("utf-8")
+    req = urllib.request.Request(
+        url,
+        data=data,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=timeout) as response:
+        return json.loads(response.read().decode("utf-8"))
+
+
+# ---------------------------------------------------------------------------
+# JSON extraction + normalisation
+# ---------------------------------------------------------------------------
+
+
+def extract_json(text: str) -> str:
+    clean = text.strip()
+    if clean.startswith("```"):
+        clean = re.sub(r"^```(?:json)?", "", clean).strip()
+        clean = re.sub(r"```$", "", clean).strip()
+    start = clean.find("{")
+    end = clean.rfind("}")
+    if start == -1 or end == -1 or end < start:
+        raise ValueError("A resposta não contém um objeto JSON.")
+    return clean[start : end + 1]
+
+
+def normalize_artifact(artifact: dict) -> dict:
+    """Normaliza e valida os campos obrigatórios do artefato.
+
+    Preserva os campos origem.segmento_indice e origem.segmento_total
+    quando presentes no artefato retornado pelo LLM.
+    """
+    # --- conteudo_pedagogico ---
+    content = artifact.setdefault("conteudo_pedagogico", {})
+    for key in (
+        "barreiras_identificadas",
+        "estrategias_pedagogicas",
+        "recursos_acessibilidade",
+    ):
+        value = content.get(key)
+        if not isinstance(value, list):
+            content[key] = []
+            continue
+        content[key] = [str(item) for item in value[:6]]
+
+    # --- anonimizacao ---
+    anon = artifact.setdefault("anonimizacao", {})
+    anon["aplicada"] = True
+    labels = anon.get("itens_mascarados")
+    if not isinstance(labels, list):
+        labels = []
+    allowed = {
+        "private_person",
+        "private_address",
+        "private_email",
+        "private_phone",
+        "private_url",
+        "private_date",
+        "account_number",
+        "secret",
+    }
+    unique_labels: list[str] = []
+    for label in labels:
+        label = str(label).strip("[]").lower()
+        if label in allowed and label not in unique_labels:
+            unique_labels.append(label)
+    anon["itens_mascarados"] = unique_labels or ["private_person"]
+    anon.setdefault("risco_reidentificacao", "nao_avaliado")
+
+    # --- validacao_humana ---
+    validation = artifact.setdefault("validacao_humana", {})
+    validation["necessaria"] = True
+    validation["status"] = "pendente"
+    validation["responsavel"] = None
+
+    # --- metadados_processamento ---
+    metadata = artifact.setdefault("metadados_processamento", {})
+    metadata.setdefault("pipeline_versao", "apda-local-0.3-segmented")
+    metadata.setdefault("data_processamento", datetime.now().isoformat())
+    metadata["status"] = "pendente_revisao"
+    metadata.setdefault("confianca_extracao", "nao_calculada")
+
+    # --- origem: preserva segmento_indice / segmento_total se presentes ---
+    origem = artifact.get("origem", {})
+    if isinstance(origem, dict):
+        for field in ("segmento_indice", "segmento_total"):
+            if field in origem and not isinstance(origem[field], (int, type(None))):
+                try:
+                    origem[field] = int(origem[field])
+                except (ValueError, TypeError):
+                    origem[field] = None
+
+    return artifact
+
+
+# ---------------------------------------------------------------------------
+# Segment text extraction
+# ---------------------------------------------------------------------------
+
+
+def extract_segment_text(full_text: str, segment: dict, max_chars: int) -> str:
+    """Extrai o trecho do texto completo correspondente ao segmento.
+
+    Usa posicao_aproximada.inicio_chars / fim_chars quando disponíveis;
+    caso contrário, devolve o texto inteiro truncado a max_chars.
+    """
+    pos = segment.get("posicao_aproximada") or {}
+    inicio = pos.get("inicio_chars")
+    fim = pos.get("fim_chars")
+
+    if isinstance(inicio, int) and isinstance(fim, int) and fim > inicio:
+        trecho = full_text[inicio:fim]
+    else:
+        trecho = full_text
+
+    return trecho[:max_chars]
+
+
+# ---------------------------------------------------------------------------
+# main
+# ---------------------------------------------------------------------------
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description=(
+            "Fase 2 do workflow de segmentação: gera APDAs JSON a partir de um manifesto "
+            "produzido por 02_scan_segments.py."
+        )
+    )
+    parser.add_argument(
+        "--manifest", required=True, help="Caminho para o .segmentos.json."
+    )
+    parser.add_argument(
+        "--input", required=True, help="Texto anonimizado .opf_anonimizado.txt."
+    )
+    parser.add_argument("--output-dir", default=str(SAIDA), help="Diretório de saída.")
+    parser.add_argument("--base-url", default="http://127.0.0.1:8091")
+    parser.add_argument(
+        "--max-chars-per-segment",
+        type=int,
+        default=12000,
+        help="Máximo de caracteres por segmento enviado ao LLM.",
+    )
+    parser.add_argument("--max-tokens", type=int, default=1200)
+    parser.add_argument("--temperature", type=float, default=0.1)
+    args = parser.parse_args()
+
+    manifest_path = Path(args.manifest).resolve()
+    input_path = Path(args.input).resolve()
+    output_dir = Path(args.output_dir).resolve()
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Lê manifesto e texto completo
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    full_text = input_path.read_text(encoding="utf-8")
+
+    segments: list[dict] = manifest.get("segmentos", [])
+    total_segments = len(segments)
+
+    # Stem do arquivo de entrada (usado nos nomes de saída)
+    # Remove sufixos conhecidos para obter o stem limpo
+    stem = input_path.name
+    for suffix in (".opf_anonimizado.txt", ".txt"):
+        if stem.endswith(suffix):
+            stem = stem[: -len(suffix)]
+            break
+
+    # Controlo de progresso para o manifesto processado
+    resultado_segmentos: list[dict] = []
+    total_artifacts = 0
+
+    print(f"[INFO] manifesto: {manifest_path.name} | {total_segments} segmento(s)")
+    print(f"[INFO] texto:     {input_path.name} ({len(full_text)} chars)")
+
+    for segment in segments:
+        indice = segment.get("indice", 0)
+        tipos: list[str] = (
+            segment.get("tipos_artefato") or segment.get("tipo_artefato") or []
+        )
+        if isinstance(tipos, str):
+            tipos = [tipos]
+        if not tipos:
+            print(f"[AVISO] segmento {indice} sem tipos_artefato — ignorado")
+            resultado_segmentos.append(
+                {
+                    "indice": indice,
+                    "status": "ignorado",
+                    "motivo": "sem tipos_artefato",
+                    "artefatos": [],
+                }
+            )
+            continue
+
+        trecho = extract_segment_text(full_text, segment, args.max_chars_per_segment)
+        artefatos_gerados: list[dict] = []
+
+        for tipo_artefato in tipos:
+            slug = re.sub(r"[^\w\-]", "_", tipo_artefato).lower()
+            output_name = f"{stem}.seg{indice}.{slug}.apda.json"
+            output_path = output_dir / output_name
+            raw_path = output_path.with_suffix(output_path.suffix + ".raw.txt")
+
+            print(
+                f"  [→] seg{indice}/{total_segments} tipo={tipo_artefato} "
+                f"({len(trecho)} chars) → {output_name}"
+            )
+
+            started = time.perf_counter()
+            raw_content: str | None = None
+            erro: str | None = None
+            usage: dict = {}
+
+            try:
+                # Chama o LLM e obtém resposta bruta para salvaguarda
+                trecho_prompt = trecho
+                data = json.dumps(
+                    {
+                        "messages": [
+                            {"role": "system", "content": SYSTEM_PROMPT},
+                            {
+                                "role": "user",
+                                "content": USER_TEMPLATE.format(
+                                    tipo_artefato=tipo_artefato,
+                                    indice=indice,
+                                    total=total_segments,
+                                    nome_arquivo=input_path.name,
+                                    formato_original=input_path.suffix.lstrip(".")
+                                    or "txt",
+                                    secao_origem=(
+                                        segment.get("secao_origem")
+                                        or segment.get("tipo_conteudo")
+                                        or "desconhecida"
+                                    ),
+                                    secao_origem_json=json.dumps(
+                                        segment.get("secao_origem")
+                                        or segment.get("tipo_conteudo")
+                                        or "desconhecida",
+                                        ensure_ascii=False,
+                                    ),
+                                    data_processamento=datetime.now().isoformat(),
+                                    texto=trecho_prompt,
+                                ),
+                            },
+                        ],
+                        "temperature": args.temperature,
+                        "max_tokens": args.max_tokens,
+                        "response_format": {"type": "json_object"},
+                    }
+                ).encode("utf-8")
+
+                req = urllib.request.Request(
+                    f"{args.base_url}/v1/chat/completions",
+                    data=data,
+                    headers={"Content-Type": "application/json"},
+                    method="POST",
+                )
+                with urllib.request.urlopen(req, timeout=300) as resp:
+                    response = json.loads(resp.read().decode("utf-8"))
+
+                raw_str: str = response["choices"][0]["message"]["content"]
+                raw_content = raw_str
+                usage = response.get("usage", {})
+
+                # Salva resposta bruta antes de tentar parsear
+                raw_path.write_text(raw_str, encoding="utf-8")
+
+                artifact = normalize_artifact(json.loads(extract_json(raw_str)))
+
+                # Garante metadados de segmento e tipo correcto
+                origem = artifact.setdefault("origem", {})
+                origem.setdefault("nome_arquivo", input_path.name)
+                origem.setdefault(
+                    "formato_original", input_path.suffix.lstrip(".") or "txt"
+                )
+                origem["segmento_indice"] = indice
+                origem["segmento_total"] = total_segments
+                if "pagina_ou_aba" not in origem:
+                    origem["pagina_ou_aba"] = (
+                        segment.get("secao_origem")
+                        or segment.get("tipo_conteudo")
+                        or "desconhecida"
+                    )
+                artifact["tipo_artefato"] = tipo_artefato
+
+                output_path.write_text(
+                    json.dumps(artifact, ensure_ascii=False, indent=2), encoding="utf-8"
+                )
+
+                elapsed = round(time.perf_counter() - started, 3)
+                print(f"  [OK] {output_name} | tempo={elapsed}s usage={usage}")
+                total_artifacts += 1
+                artefatos_gerados.append(
+                    {
+                        "tipo_artefato": tipo_artefato,
+                        "arquivo": output_name,
+                        "status": "ok",
+                        "elapsed_seconds": elapsed,
+                        "usage": usage,
+                    }
+                )
+
+            except Exception as exc:
+                elapsed = round(time.perf_counter() - started, 3)
+                erro = str(exc)
+                print(f"  [ERRO] seg{indice} tipo={tipo_artefato}: {erro}")
+
+                # Salva resposta bruta se existir
+                if raw_content is not None:
+                    raw_path.write_text(raw_content, encoding="utf-8")
+
+                # Salva metadados de erro junto ao arquivo de saída esperado
+                error_meta = output_path.with_suffix(output_path.suffix + ".error.json")
+                error_meta.write_text(
+                    json.dumps(
+                        {
+                            "data": datetime.now().isoformat(),
+                            "segmento_indice": indice,
+                            "tipo_artefato": tipo_artefato,
+                            "entrada": str(input_path),
+                            "saida_esperada": str(output_path),
+                            "raw_saida": str(raw_path)
+                            if raw_content is not None
+                            else None,
+                            "elapsed_seconds": elapsed,
+                            "erro": erro,
+                            "usage": usage,
+                        },
+                        ensure_ascii=False,
+                        indent=2,
+                    ),
+                    encoding="utf-8",
+                )
+
+                artefatos_gerados.append(
+                    {
+                        "tipo_artefato": tipo_artefato,
+                        "arquivo": output_name,
+                        "status": "erro",
+                        "elapsed_seconds": elapsed,
+                        "erro": erro,
+                    }
+                )
+
+        status_seg = (
+            "ok"
+            if all(a["status"] == "ok" for a in artefatos_gerados)
+            else (
+                "parcial"
+                if any(a["status"] == "ok" for a in artefatos_gerados)
+                else "erro"
+            )
+        )
+        resultado_segmentos.append(
+            {
+                "indice": indice,
+                "status": status_seg,
+                "artefatos": artefatos_gerados,
+            }
+        )
+
+    # Salva manifesto processado
+    manifesto_processado = {
+        "data_processamento": datetime.now().isoformat(),
+        "pipeline_versao": "apda-local-0.3-segmented",
+        "arquivo_entrada": input_path.name,
+        "arquivo_manifesto": manifest_path.name,
+        "total_segmentos": total_segments,
+        "total_artefatos_gerados": total_artifacts,
+        "segmentos": resultado_segmentos,
+    }
+    manifesto_out = output_dir / f"{stem}.manifesto_processado.json"
+    manifesto_out.write_text(
+        json.dumps(manifesto_processado, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    print(f"[INFO] manifesto processado salvo: {manifesto_out.name}")
+    print(
+        f"[OK] {total_segments} segmentos processados, {total_artifacts} artefatos gerados"
+    )
+
+
+if __name__ == "__main__":
+    main()

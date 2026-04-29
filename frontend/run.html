@@ -1,0 +1,694 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>APDA — Executar</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/shared.css">
+  <style>
+    main { display: flex; flex-direction: column; gap: 14px; }
+
+    /* ── Wizard ──────────────────────────────── */
+    .wizard-steps {
+      display: flex;
+      gap: 0;
+      margin-bottom: 4px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--panel);
+    }
+
+    .wstep {
+      flex: 1;
+      padding: 10px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+      color: var(--muted);
+      border-right: 1px solid var(--line);
+      background: #f8fafb;
+    }
+    .wstep:last-child { border-right: none; }
+    .wstep.active  { background: var(--primary-weak); color: var(--primary); }
+    .wstep.done    { background: #f0fbf5; color: var(--ok); }
+
+    /* ── Seleção de arquivo ──────────────────── */
+    .file-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 10px;
+    }
+
+    .file-card {
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: var(--panel);
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .file-card:hover   { border-color: var(--primary); }
+    .file-card.selected {
+      border-color: var(--primary);
+      background: var(--primary-weak);
+    }
+
+    .file-ext {
+      display: inline-flex;
+      background: var(--chip);
+      border-radius: 4px;
+      padding: 2px 7px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .file-ext.docx { background: #dbeafe; color: #1d4ed8; }
+    .file-ext.xlsx { background: #dcfce7; color: #15803d; }
+    .file-ext.pdf  { background: #fee2e2; color: #b91c1c; }
+    .file-ext.txt  { background: #fef9c3; color: #854d0e; }
+    .file-ext.json { background: #ede9fe; color: #6d28d9; }
+
+    .file-name { font-weight: 700; font-size: 13px; overflow-wrap: anywhere; }
+
+    /* ── Workflow cards ──────────────────────── */
+    .workflow-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .workflow-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      padding: 12px 16px;
+      background: var(--panel);
+      cursor: pointer;
+      text-align: left;
+    }
+    .workflow-card:hover    { border-color: var(--primary); }
+    .workflow-card.selected { border-color: var(--primary); background: var(--primary-weak); }
+
+    .workflow-info  { flex: 1; }
+    .workflow-name  { font-weight: 700; font-size: 13px; }
+    .workflow-steps { color: var(--muted); font-size: 12px; margin-top: 3px; }
+
+    .workflow-arrow { color: var(--muted); font-size: 18px; }
+    .workflow-card.selected .workflow-arrow { color: var(--primary); }
+
+    /* ── Config ─────────────────────────────── */
+    .config-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .config-row input[type="url"],
+    .config-row input[type="text"] {
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .server-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--muted);
+      flex-shrink: 0;
+    }
+    .server-dot.ok   { background: var(--ok); }
+    .server-dot.warn { background: var(--warn); }
+
+    /* ── Execução / progresso ────────────────── */
+    .exec-steps  { display: flex; flex-direction: column; gap: 8px; }
+
+    .exec-step {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      font-size: 13px;
+    }
+    .exec-step.pending { opacity: 0.45; }
+    .exec-step.running { border-color: var(--warn); background: #fffdf5; }
+    .exec-step.done    { border-color: var(--ok);   background: #f4fdf8; }
+    .exec-step.error   { border-color: var(--risk);  background: #fef5f5; }
+
+    .exec-step-icon { font-size: 18px; width: 22px; text-align: center; flex-shrink: 0; }
+    .exec-step-label { font-weight: 700; flex: 1; }
+    .exec-step-detail { color: var(--muted); font-size: 12px; }
+
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--warn);
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Resultado ───────────────────────────── */
+    .result-block {
+      border: 2px solid var(--ok);
+      border-radius: 10px;
+      padding: 20px;
+      background: #f2fbf6;
+    }
+    .result-block.error-result {
+      border-color: var(--risk);
+      background: #fef5f5;
+    }
+
+    .result-title { font-size: 18px; font-weight: 800; margin-bottom: 12px; }
+    .result-title.ok   { color: var(--ok); }
+    .result-title.err  { color: var(--risk); }
+
+    .result-files { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+
+    .result-file {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      font-size: 13px;
+    }
+
+    .result-file a { color: var(--primary); font-weight: 700; }
+    .result-file-path { flex: 1; font-family: monospace; font-size: 12px; overflow-wrap: anywhere; }
+
+    .section { display: none; }
+    .section.visible { display: block; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div class="topbar-left">
+        <h1>APDA — Executar Workflow</h1>
+        <div class="subtitle">Selecione um arquivo, escolha o workflow e acompanhe a execução.</div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Indicador de etapas do wizard -->
+    <div class="wizard-steps" id="wizardSteps">
+      <div class="wstep active" data-step="0">1. Arquivo</div>
+      <div class="wstep"       data-step="1">2. Workflow</div>
+      <div class="wstep"       data-step="2">3. Config</div>
+      <div class="wstep"       data-step="3">4. Execução</div>
+      <div class="wstep"       data-step="4">5. Resultado</div>
+    </div>
+
+    <!-- Passo 1: Seleção de arquivo -->
+    <div class="panel section visible" id="step0">
+      <div class="panel-head">
+        <h2>Selecione o arquivo de entrada</h2>
+        <div class="filters">
+          <input id="fileSearch" type="search" placeholder="Filtrar arquivos..." style="width:200px">
+          <button id="reloadFilesBtn" type="button">Recarregar</button>
+        </div>
+      </div>
+      <div id="fileGrid" class="file-grid">
+        <div class="empty">Carregando arquivos...</div>
+      </div>
+    </div>
+
+    <!-- Passo 2: Seleção de workflow -->
+    <div class="panel section" id="step1">
+      <div class="panel-head">
+        <h2>Selecione o workflow</h2>
+        <div>
+          <span id="selectedFilePill" class="badge" style="font-size:12px"></span>
+          <button id="changeFileBtn" type="button" style="margin-left:8px;font-size:12px">Trocar arquivo</button>
+        </div>
+      </div>
+      <div id="workflowList" class="workflow-list">
+        <div class="empty">Nenhum workflow disponível.</div>
+      </div>
+    </div>
+
+    <!-- Passo 3: Configuração -->
+    <div class="panel section" id="step2">
+      <div class="panel-head">
+        <h2>Configuração</h2>
+        <button id="changeWorkflowBtn" type="button" style="font-size:12px">Trocar workflow</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div id="configWorkflowSummary" class="field"></div>
+
+        <div class="field" id="serverUrlField">
+          <div class="field-label">URL do llama-server</div>
+          <div class="config-row" style="margin-top:6px">
+            <div class="server-dot" id="serverDot"></div>
+            <input id="serverUrlInput" type="url" value="http://127.0.0.1:8091" style="flex:1;min-width:220px">
+            <button id="checkServerBtn" type="button">Verificar</button>
+            <a href="/server.html" class="btn" style="font-size:12px">Gerenciar servidor</a>
+          </div>
+          <div id="serverUrlStatus" style="font-size:12px;margin-top:4px;color:var(--muted)"></div>
+        </div>
+
+        <div class="field">
+          <div class="field-label" style="margin-bottom:6px">Opções</div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer">
+            <input id="dryRunCheck" type="checkbox">
+            Modo dry-run — mostrar comandos sem executar
+          </label>
+        </div>
+
+        <div>
+          <button id="executeBtn" class="primary" type="button" style="font-size:14px;padding:10px 20px">
+            Executar workflow →
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Passo 4: Execução -->
+    <div class="panel section" id="step3">
+      <div class="panel-head">
+        <h2>Executando</h2>
+        <div id="execTimer" style="color:var(--muted);font-size:13px">0s</div>
+      </div>
+      <div id="execSteps" class="exec-steps"></div>
+      <div id="execError" style="display:none;margin-top:12px" class="error-msg"></div>
+    </div>
+
+    <!-- Passo 5: Resultado -->
+    <div class="section" id="step4">
+      <div id="resultBlock"></div>
+      <div style="margin-top:12px">
+        <button id="newRunBtn" type="button">Executar novo arquivo</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    /* ── Estado global ──────────────────────── */
+    const state = {
+      step: 0,
+      files: [],
+      selectedFile: null,
+      workflows: [],
+      selectedWorkflow: null,
+      serverUrl: "http://127.0.0.1:8091",
+      dryRun: false,
+      runId: null,
+      sseSource: null,
+      timerInterval: null,
+      elapsed: 0,
+    };
+
+    /* ── Utilitários ────────────────────────── */
+    function esc(v) {
+      return String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+    }
+
+    const STEP_LABELS = {
+      "extract-text":      "Extraindo texto do arquivo",
+      "privacy-filter":    "Aplicando Privacy Filter (PII)",
+      "generate-artifact": "Gerando artefato JSON com LLM",
+      "validate-schema":   "Validando schema APDA",
+    };
+
+    const STEP_ICONS = {
+      "extract-text":      "📄",
+      "privacy-filter":    "🔒",
+      "generate-artifact": "🤖",
+      "validate-schema":   "✅",
+    };
+
+    const EXT_CLASS = { ".docx":"docx", ".xlsx":"xlsx", ".xls":"xlsx", ".pdf":"pdf", ".txt":"txt", ".json":"json" };
+
+    function extClass(ext) { return EXT_CLASS[ext?.toLowerCase()] ?? ""; }
+
+    /* ── Wizard ─────────────────────────────── */
+    function goTo(step) {
+      state.step = step;
+      document.querySelectorAll(".section").forEach((el, i) => {
+        el.classList.toggle("visible", i === step);
+      });
+      document.querySelectorAll(".wstep").forEach((el, i) => {
+        el.classList.remove("active", "done");
+        if (i < step) el.classList.add("done");
+        if (i === step) el.classList.add("active");
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    /* ── Passo 1: Arquivos ──────────────────── */
+    async function loadFiles() {
+      document.getElementById("fileGrid").innerHTML = `<div class="empty">Carregando...</div>`;
+      try {
+        const r = await fetch("/api/inputs", { cache: "no-store" });
+        state.files = await r.json();
+        renderFiles();
+      } catch (e) {
+        document.getElementById("fileGrid").innerHTML = `<div class="empty error-msg">Erro: ${esc(e.message)}</div>`;
+      }
+    }
+
+    function renderFiles() {
+      const q = document.getElementById("fileSearch").value.trim().toLowerCase();
+      const items = q ? state.files.filter(f => f.name.toLowerCase().includes(q)) : state.files;
+      if (!items.length) {
+        document.getElementById("fileGrid").innerHTML = `<div class="empty">Nenhum arquivo encontrado em <code>entrada/</code>.</div>`;
+        return;
+      }
+      document.getElementById("fileGrid").innerHTML = items.map(f => {
+        const ext = f.extension?.replace(".", "") ?? "";
+        const sel = state.selectedFile?.path === f.path ? " selected" : "";
+        return `<button class="file-card${sel}" type="button" data-path="${esc(f.path)}">
+          <div class="file-ext ${extClass(f.extension)}">${esc(ext || "?")}</div>
+          <div class="file-name">${esc(f.name)}</div>
+        </button>`;
+      }).join("");
+      document.getElementById("fileGrid").querySelectorAll(".file-card").forEach(card => {
+        card.addEventListener("click", () => selectFile(card.dataset.path));
+      });
+    }
+
+    async function selectFile(filePath) {
+      state.selectedFile = state.files.find(f => f.path === filePath);
+      if (!state.selectedFile) return;
+      document.getElementById("selectedFilePill").textContent = state.selectedFile.name;
+      await loadWorkflows(filePath);
+      goTo(1);
+    }
+
+    /* ── Passo 2: Workflows ─────────────────── */
+    async function loadWorkflows(filePath) {
+      document.getElementById("workflowList").innerHTML = `<div class="empty">Carregando workflows...</div>`;
+      try {
+        const r = await fetch(`/api/workflows?file=${encodeURIComponent(filePath)}`, { cache: "no-store" });
+        state.workflows = await r.json();
+        renderWorkflows();
+      } catch (e) {
+        document.getElementById("workflowList").innerHTML = `<div class="empty error-msg">Erro: ${esc(e.message)}</div>`;
+      }
+    }
+
+    function renderWorkflows() {
+      if (!state.workflows.length) {
+        document.getElementById("workflowList").innerHTML = `<div class="empty">Nenhum workflow compatível com este arquivo.</div>`;
+        return;
+      }
+      document.getElementById("workflowList").innerHTML = state.workflows.map(wf => {
+        const stepLabels = wf.steps.map(s => STEP_LABELS[s] ?? s).join(" → ");
+        const sel = state.selectedWorkflow?.id === wf.id ? " selected" : "";
+        return `<button class="workflow-card${sel}" type="button" data-id="${esc(wf.id)}">
+          <div class="workflow-info">
+            <div class="workflow-name">${esc(wf.name)}</div>
+            <div class="workflow-steps">${esc(stepLabels)}</div>
+          </div>
+          <div class="workflow-arrow">›</div>
+        </button>`;
+      }).join("");
+      document.getElementById("workflowList").querySelectorAll(".workflow-card").forEach(card => {
+        card.addEventListener("click", () => selectWorkflow(card.dataset.id));
+      });
+    }
+
+    function selectWorkflow(workflowId) {
+      state.selectedWorkflow = state.workflows.find(w => w.id === workflowId);
+      if (!state.selectedWorkflow) return;
+      renderConfig();
+      goTo(2);
+    }
+
+    /* ── Passo 3: Config ────────────────────── */
+    function renderConfig() {
+      const wf = state.selectedWorkflow;
+      const needsServer = wf.steps.includes("generate-artifact");
+      document.getElementById("serverUrlField").style.display = needsServer ? "" : "none";
+
+      document.getElementById("configWorkflowSummary").innerHTML = `
+        <div class="field-label">Workflow selecionado</div>
+        <div class="field-value" style="margin-top:4px">
+          <strong>${esc(wf.name)}</strong>
+          <div style="color:var(--muted);font-size:12px;margin-top:2px">
+            ${wf.steps.map(s => STEP_ICONS[s] ?? "·").join(" ")} &nbsp;
+            ${wf.steps.map(s => STEP_LABELS[s] ?? s).join(" → ")}
+          </div>
+        </div>`;
+
+      if (needsServer) checkServer();
+    }
+
+    async function checkServer() {
+      const url = document.getElementById("serverUrlInput").value.trim();
+      state.serverUrl = url;
+      const dot = document.getElementById("serverDot");
+      const status = document.getElementById("serverUrlStatus");
+      dot.className = "server-dot";
+      status.textContent = "Verificando...";
+      try {
+        const r = await fetch(`/api/server/status`, { cache: "no-store" });
+        const d = await r.json();
+        if (d.endpoint.status === "openai-compatible") {
+          dot.className = "server-dot ok";
+          status.textContent = "Servidor disponível — API compatível respondendo.";
+        } else {
+          dot.className = "server-dot warn";
+          status.innerHTML = `Servidor não responde em <code>${esc(url)}</code>. <a href="/server.html">Iniciar servidor →</a>`;
+        }
+      } catch {
+        dot.className = "server-dot warn";
+        status.textContent = "Não foi possível verificar o servidor.";
+      }
+    }
+
+    /* ── Passo 4: Execução ──────────────────── */
+    function buildExecSteps(workflow, currentStep = -1, doneSteps = [], errorStep = null) {
+      return workflow.steps.map((s, i) => {
+        let cls = "pending";
+        let icon = STEP_ICONS[s] ?? "·";
+        let detail = "";
+
+        if (errorStep === s) { cls = "error"; icon = "✗"; detail = "Erro nesta etapa."; }
+        else if (doneSteps.includes(s)) { cls = "done"; icon = "✓"; }
+        else if (currentStep === s) { cls = "running"; icon = ""; }
+
+        return `<div class="exec-step ${cls}">
+          <div class="exec-step-icon">${cls === "running" ? `<div class="spinner"></div>` : esc(icon)}</div>
+          <div class="exec-step-label">${esc(STEP_LABELS[s] ?? s)}</div>
+          <div class="exec-step-detail">${esc(detail)}</div>
+        </div>`;
+      }).join("");
+    }
+
+    function startTimer() {
+      state.elapsed = 0;
+      state.timerInterval = setInterval(() => {
+        state.elapsed += 1;
+        document.getElementById("execTimer").textContent = `${state.elapsed}s`;
+      }, 1000);
+    }
+
+    function stopTimer() {
+      if (state.timerInterval) { clearInterval(state.timerInterval); state.timerInterval = null; }
+    }
+
+    async function executeWorkflow() {
+      const wf = state.selectedWorkflow;
+      const file = state.selectedFile;
+      if (!wf || !file) return;
+
+      goTo(3);
+      document.getElementById("execError").style.display = "none";
+      document.getElementById("execSteps").innerHTML = buildExecSteps(wf, wf.steps[0]);
+      startTimer();
+
+      try {
+        const r = await fetch("/api/run", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            file: file.path,
+            workflow: wf.id,
+            baseUrl: state.serverUrl,
+            dryRun: state.dryRun,
+          }),
+        });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error ?? `HTTP ${r.status}`);
+
+        // Servidor antigo (sem reiniciar): resposta síncrona sem runId
+        if (d.status === "ok" || d.status === "dry-run") {
+          document.getElementById("execSteps").innerHTML = buildExecSteps(wf, null, wf.steps);
+          stopTimer();
+          showResult(d, false);
+          return;
+        }
+
+        if (!d.runId) {
+          throw new Error("Servidor não retornou ID de execução. Reinicie o servidor APDA com `apda web`.");
+        }
+
+        state.runId = d.runId;
+        watchRun(wf);
+      } catch (err) {
+        stopTimer();
+        showExecError(err.message);
+      }
+    }
+
+    function watchRun(wf) {
+      if (state.sseSource) state.sseSource.close();
+
+      const src = new EventSource(`/api/run/stream?runId=${encodeURIComponent(state.runId)}`);
+      state.sseSource = src;
+
+      let stepIndex = 0;
+
+      const ticker = setInterval(() => {
+        const nextStep = stepIndex < wf.steps.length - 1 ? stepIndex + 1 : stepIndex;
+        if (stepIndex < wf.steps.length - 1) stepIndex++;
+        document.getElementById("execSteps").innerHTML = buildExecSteps(wf, wf.steps[nextStep]);
+      }, 4000);
+
+      src.addEventListener("update", (e) => {
+        const record = JSON.parse(e.data);
+        clearInterval(ticker);
+        if (record.status === "ok" || record.status === "dry-run") {
+          document.getElementById("execSteps").innerHTML =
+            buildExecSteps(wf, null, wf.steps);
+          stopTimer();
+          src.close();
+          showResult(record, false);
+        } else if (record.status === "error") {
+          document.getElementById("execSteps").innerHTML =
+            buildExecSteps(wf, null, [], wf.steps[wf.steps.length - 1]);
+          stopTimer();
+          src.close();
+          showExecError(record.error?.message ?? "Erro desconhecido.");
+        }
+      });
+
+      src.addEventListener("error", (e) => {
+        clearInterval(ticker);
+        const data = e.data ? JSON.parse(e.data) : null;
+        stopTimer();
+        src.close();
+        showExecError(data?.message ?? "Conexão com o servidor perdida.");
+      });
+
+      src.onerror = () => {
+        clearInterval(ticker);
+        stopTimer();
+        src.close();
+        checkRunFallback(wf);
+      };
+    }
+
+    async function checkRunFallback(wf) {
+      if (!state.runId) return;
+      try {
+        const r = await fetch(`/api/runs/${encodeURIComponent(state.runId)}`, { cache: "no-store" });
+        const record = await r.json();
+        if (record.status === "ok" || record.status === "dry-run") {
+          document.getElementById("execSteps").innerHTML = buildExecSteps(wf, null, wf.steps);
+          showResult(record, false);
+        } else if (record.status === "error") {
+          showExecError(record.error?.message ?? "Erro desconhecido.");
+        }
+      } catch { /* ignora */ }
+    }
+
+    function showExecError(msg) {
+      const el = document.getElementById("execError");
+      el.textContent = `Erro: ${msg}`;
+      el.style.display = "";
+    }
+
+    /* ── Passo 5: Resultado ─────────────────── */
+    function showResult(record, isError) {
+      goTo(4);
+      const elapsed = record.elapsedMs != null
+        ? `${(record.elapsedMs / 1000).toFixed(1)}s`
+        : state.elapsed > 0 ? `${state.elapsed}s` : "";
+      const outputs = record.outputs ?? record.result?.outputs ?? {};
+      const isDry = record.status === "dry-run";
+
+      const files = [];
+      if (outputs.extracted?.relativePath) {
+        files.push({ label: "Texto extraído", path: outputs.extracted.relativePath, type: "txt" });
+      }
+      if (outputs.anonymized?.relativePath) {
+        files.push({ label: "Texto anonimizado", path: outputs.anonymized.relativePath, type: "txt" });
+      }
+      if (outputs.artifact?.relativePath) {
+        files.push({ label: "Artefato pedagógico", path: outputs.artifact.relativePath, type: "json" });
+      }
+
+      const artifact = outputs.artifact?.relativePath;
+
+      document.getElementById("resultBlock").innerHTML = `
+        <div class="result-block${isError ? " error-result" : ""}">
+          <div class="result-title ${isError ? "err" : "ok"}">
+            ${isDry ? "✓ Dry-run concluído" : isError ? "✗ Execução com erro" : "✓ Execução concluída"}
+          </div>
+          <div style="color:var(--muted);font-size:13px;margin-bottom:10px">
+            ${esc(record.workflowName ?? record.workflowId)} · ${elapsed}
+            ${isDry ? ' · <span class="badge warn">dry-run</span>' : ""}
+          </div>
+          ${files.length ? `
+            <div class="result-files">
+              ${files.map(f => `
+                <div class="result-file">
+                  <span class="file-ext ${extClass("." + f.type)}">${esc(f.type)}</span>
+                  <span class="result-file-path">${esc(f.path)}</span>
+                  <span class="field-label">${esc(f.label)}</span>
+                </div>`).join("")}
+            </div>` : ""}
+          ${artifact && !isDry ? `
+            <div style="margin-top:14px">
+              <a href="/index.html" class="btn primary" style="font-size:13px">
+                Ver artefato no Visualizador →
+              </a>
+            </div>` : ""}
+          ${record.error ? `<div class="error-msg" style="margin-top:10px">${esc(record.error.message)}</div>` : ""}
+        </div>`;
+    }
+
+    /* ── Eventos ────────────────────────────── */
+    document.getElementById("fileSearch").addEventListener("input", renderFiles);
+    document.getElementById("reloadFilesBtn").addEventListener("click", loadFiles);
+    document.getElementById("changeFileBtn").addEventListener("click", () => goTo(0));
+    document.getElementById("changeWorkflowBtn").addEventListener("click", () => goTo(1));
+    document.getElementById("checkServerBtn").addEventListener("click", checkServer);
+    document.getElementById("dryRunCheck").addEventListener("change", e => { state.dryRun = e.target.checked; });
+    document.getElementById("serverUrlInput").addEventListener("change", e => {
+      state.serverUrl = e.target.value;
+      checkServer();
+    });
+    document.getElementById("executeBtn").addEventListener("click", executeWorkflow);
+    document.getElementById("newRunBtn").addEventListener("click", () => {
+      state.selectedFile = null;
+      state.selectedWorkflow = null;
+      state.runId = null;
+      if (state.sseSource) { state.sseSource.close(); state.sseSource = null; }
+      stopTimer();
+      loadFiles();
+      goTo(0);
+    });
+
+    /* ── Init ───────────────────────────────── */
+    loadFiles();
+  </script>
+  <script src="/nav.js"></script>
+</body>
+</html>
