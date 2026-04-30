@@ -1,0 +1,33 @@
+{
+  "tipo_artefato": "plano_atendimento",
+  "origem": {
+    "nome_arquivo": "Aluno_2.anon.txt",
+    "formato_original": "txt",
+    "pagina_ou_aba": "REESTRUTURAÇÃO DO PLANO",
+    "segmento_indice": 2,
+    "segmento_total": 2
+  },
+  "conteudo_pedagogico": {
+    "objetivo_pedagogico": null,
+    "barreiras_identificadas": [],
+    "estrategias_pedagogicas": [],
+    "recursos_acessibilidade": [],
+    "observacoes_relevantes": null
+  },
+  "anonimizacao": {
+    "aplicada": true,
+    "itens_mascarados": ["private_person"],
+    "risco_reidentificacao": "nao_avaliado"
+  },
+  "metadados_processamento": {
+    "pipeline_versao": "apda-local-0.3-segmented",
+    "data_processamento": "2026-04-29T19:17:24.360458",
+    "status": "pendente_revisao",
+    "confianca_extracao": "nao_calculada"
+  },
+  "validacao_humana": {
+    "necessaria": true,
+    "status": "pendente",
+    "responsavel": null
+  }
+}

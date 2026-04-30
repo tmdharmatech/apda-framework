@@ -1,0 +1,23 @@
+{
+  "data": "2026-04-29T19:08:06.624254",
+  "modelo": "openai/privacy-filter",
+  "modelo_local": "/home/eu/apda-framework/modelos/openai-privacy-filter",
+  "entrada": "/home/eu/apda-framework/benchmarks/resultados/qwen2.5-3b/Aluno_2.raw.txt",
+  "saida": "/home/eu/apda-framework/benchmarks/resultados/qwen2.5-3b/Aluno_2.anon.txt",
+  "elapsed_seconds": 31.139,
+  "input_chars": 5187,
+  "output_chars": 5185,
+  "span_count": 32,
+  "propagated_private_person_replacements": 0,
+  "private_person_memory": [
+    "Renata Alves Monteiro",
+    "Renata Alves",
+    "Renata"
+  ],
+  "labels": {
+    "private_date": 22,
+    "private_person": 10
+  },
+  "threshold": 0.5,
+  "chunk_chars": 12000
+}

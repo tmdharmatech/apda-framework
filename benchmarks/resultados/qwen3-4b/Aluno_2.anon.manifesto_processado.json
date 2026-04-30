@@ -1,0 +1,116 @@
+{
+  "data_processamento": "2026-04-29T19:15:28.801033",
+  "pipeline_versao": "apda-local-0.3-segmented",
+  "arquivo_entrada": "Aluno_2.anon.txt",
+  "arquivo_manifesto": "Aluno_2.segmentos.json",
+  "total_segmentos": 6,
+  "total_artefatos_gerados": 4,
+  "segmentos": [
+    {
+      "indice": 1,
+      "status": "ok",
+      "artefatos": [
+        {
+          "tipo_artefato": "plano_atendimento",
+          "arquivo": "Aluno_2.anon.seg1.plano_atendimento.apda.json",
+          "status": "ok",
+          "elapsed_seconds": 24.499,
+          "usage": {
+            "completion_tokens": 892,
+            "prompt_tokens": 639,
+            "total_tokens": 1531,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "indice": 2,
+      "status": "ok",
+      "artefatos": [
+        {
+          "tipo_artefato": "plano_atendimento",
+          "arquivo": "Aluno_2.anon.seg2.plano_atendimento.apda.json",
+          "status": "ok",
+          "elapsed_seconds": 24.679,
+          "usage": {
+            "completion_tokens": 940,
+            "prompt_tokens": 657,
+            "total_tokens": 1597,
+            "prompt_tokens_details": {
+              "cached_tokens": 238
+            }
+          }
+        }
+      ]
+    },
+    {
+      "indice": 3,
+      "status": "ok",
+      "artefatos": [
+        {
+          "tipo_artefato": "estudo_de_caso",
+          "arquivo": "Aluno_2.anon.seg3.estudo_de_caso.apda.json",
+          "status": "ok",
+          "elapsed_seconds": 19.591,
+          "usage": {
+            "completion_tokens": 714,
+            "prompt_tokens": 715,
+            "total_tokens": 1429,
+            "prompt_tokens_details": {
+              "cached_tokens": 214
+            }
+          }
+        }
+      ]
+    },
+    {
+      "indice": 4,
+      "status": "erro",
+      "artefatos": [
+        {
+          "tipo_artefato": "plano_atendimento",
+          "arquivo": "Aluno_2.anon.seg4.plano_atendimento.apda.json",
+          "status": "erro",
+          "elapsed_seconds": 31.397,
+          "erro": "Expecting ',' delimiter: line 9 column 4 (char 236)"
+        }
+      ]
+    },
+    {
+      "indice": 5,
+      "status": "erro",
+      "artefatos": [
+        {
+          "tipo_artefato": "plano_atendimento",
+          "arquivo": "Aluno_2.anon.seg5.plano_atendimento.apda.json",
+          "status": "erro",
+          "elapsed_seconds": 31.561,
+          "erro": "A resposta não contém um objeto JSON."
+        }
+      ]
+    },
+    {
+      "indice": 6,
+      "status": "ok",
+      "artefatos": [
+        {
+          "tipo_artefato": "plano_atendimento",
+          "arquivo": "Aluno_2.anon.seg6.plano_atendimento.apda.json",
+          "status": "ok",
+          "elapsed_seconds": 27.839,
+          "usage": {
+            "completion_tokens": 1049,
+            "prompt_tokens": 673,
+            "total_tokens": 1722,
+            "prompt_tokens_details": {
+              "cached_tokens": 238
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "data": "2026-04-29T19:12:49.154016",
+  "modelo": "Qwen3-4B-Q4_K_M.gguf",
+  "servidor": "http://127.0.0.1:8091",
+  "entrada": "/home/eu/apda-framework/benchmarks/resultados/qwen3-4b/Aluno_2.anon.txt",
+  "saida": "/home/eu/apda-framework/benchmarks/resultados/qwen3-4b/Aluno_2.segmentos.json",
+  "elapsed_seconds": 74.275,
+  "usage": {
+    "completion_tokens": 2500,
+    "prompt_tokens": 2092,
+    "total_tokens": 4592,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

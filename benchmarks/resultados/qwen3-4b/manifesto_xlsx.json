@@ -1,0 +1,157 @@
+{
+  "instituicao": {
+    "escola": "Escola Municipal Aurora do Saber",
+    "cod_inep": "29876543",
+    "professor_aee": "Renata Alves Monteiro",
+    "municipio": "Lagoa Serena",
+    "ano": "2025",
+    "observacoes": null
+  },
+  "documento": {
+    "tipo_documento_inferido": "plano_atendimento",
+    "total_alunos_registrados": 10,
+    "padrao_abas": [
+      "Capa",
+      "Identificação",
+      "Relação nominal",
+      "Aluno 1",
+      "Aluno 2",
+      "Aluno 3",
+      "Aluno 4",
+      "Aluno 5",
+      "Aluno 6",
+      "Aluno 7",
+      "Aluno 8",
+      "Aluno 9",
+      "Aluno 10"
+    ],
+    "observacoes": null
+  },
+  "tipos_artefato_detectados": [
+    {
+      "tipo": "plano_atendimento",
+      "confianca": "alta",
+      "secoes_detectadas": [
+        "Identificação do Estudante",
+        "FREQUÊNCIA / DIA DO ATENDIMENTO",
+        "ESTUDO DE CASO DO ESTUDANTE",
+        "OUTROS PROFISSIONAIS ENVOLVIDOS",
+        "ORGANIZAÇÃO DO AEE",
+        "ORIENTAÇÕES A SEREM REALIZADAS PELO PROFESSOR DE AEE",
+        "OBJETIVOS",
+        "ATIVIDADES QUE PRETENDE DESENVOLVER COM O ALUNO NO AEE",
+        "REESTRUTURAÇÃO DO PLANO"
+      ],
+      "descricao": null
+    }
+  ],
+  "alunos": [
+    {
+      "indice": 1,
+      "aba_origem": "Aluno 1",
+      "nome_anonimizado": "Aluno 1",
+      "tipos_artefato": [
+        "plano_atendimento"
+      ]
+    },
+    {
+      "indice": 2,
+      "aba_origem": "Aluno 2",
+      "nome_anonimizado": "Aluno 2",
+      "tipos_artefato": [
+        "plano_atendimento"
+      ]
+    },
+    {
+      "indice": 3,
+      "aba_origem": "Aluno 3",
+      "nome_anonimizado": "Aluno 3",
+      "tipos_artefato": [
+        "plano_atendimento"
+      ]
+    },
+    {
+      "indice": 4,
+      "aba_origem": "Aluno 4",
+      "nome_anonimizado": "Aluno 4",
+      "tipos_artefato": [
+        "plano_atendimento"
+      ]
+    },
+    {
+      "indice": 5,
+      "aba_origem": "Aluno 5",
+      "nome_anonimizado": "Aluno 5",
+      "tipos_artefato": [
+        "plano_atendimento"
+      ]
+    },
+    {
+      "indice": 6,
+      "aba_origem": "Aluno 6",
+      "nome_anonimizado": "Aluno 6",
+      "tipos_artefato": [
+        "plano_atendimento"
+      ]
+    },
+    {
+      "indice": 7,
+      "aba_origem": "Aluno 7",
+      "nome_anonimizado": "Aluno 7",
+      "tipos_artefato": [
+        "plano_atendimento"
+      ]
+    },
+    {
+      "indice": 8,
+      "aba_origem": "Aluno 8",
+      "nome_anonimizado": "Aluno 8",
+      "tipos_artefato": [
+        "plano_atendimento"
+      ]
+    },
+    {
+      "indice": 9,
+      "aba_origem": "Aluno 9",
+      "nome_anonimizado": "Aluno 9",
+      "tipos_artefato": [
+        "plano_atendimento"
+      ]
+    },
+    {
+      "indice": 10,
+      "aba_origem": "Aluno 10",
+      "nome_anonimizado": "Aluno 10",
+      "tipos_artefato": [
+        "plano_atendimento"
+      ]
+    }
+  ],
+  "_meta": {
+    "pipeline_versao": "apda-local-0.3-xlsx-scan",
+    "data_processamento": "2026-04-29T19:10:53.862210",
+    "arquivo_origem": "/home/eu/apda-framework/entrada/Diario_de_Classe_AEE_2025_10_Estudantes_Ficticios_Escola_Professor_Ficticios.xlsx",
+    "elapsed_seconds": 56.389,
+    "abas_aluno_total": 10,
+    "abas_aluno": [
+      "Aluno 1",
+      "Aluno 2",
+      "Aluno 3",
+      "Aluno 4",
+      "Aluno 5",
+      "Aluno 6",
+      "Aluno 7",
+      "Aluno 8",
+      "Aluno 9",
+      "Aluno 10"
+    ],
+    "usage": {
+      "completion_tokens": 1583,
+      "prompt_tokens": 3261,
+      "total_tokens": 4844,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "tipo_artefato": "plano_atendimento",
+  "origem": {
+    "nome_arquivo": "Aluno_2.anon.txt",
+    "formato_original": "txt",
+    "pagina_ou_aba": "Dados referentes ao estudante",
+    "segmento_indice": 1,
+    "segmento_total": 2
+  },
+  "conteudo_pedagogico": {
+    "objetivo_pedagogico": null,
+    "barreiras_identificadas": [],
+    "estrategias_pedagogicas": [
+      "jogos de sequência, memória, pareamento e raciocínio lógico",
+      "utilização de cartões com instruções curtas e checklist visual de tarefas",
+      "atividades de leitura funcional e produção de frases com apoio",
+      "exercícios de contagem, agrupamento e problemas concretos",
+      "inserir pausas regulatórias planejadas entre as atividades",
+      "promover jogos cooperativos com regras simples e combinados visuais"
+    ],
+    "recursos_acessibilidade": [],
+    "observacoes_relevantes": null
+  },
+  "anonimizacao": {
+    "aplicada": true,
+    "itens_mascarados": ["private_person"],
+    "risco_reidentificacao": "nao_avaliado"
+  },
+  "metadados_processamento": {
+    "pipeline_versao": "apda-local-0.3-segmented",
+    "data_processamento": "2026-04-29T19:17:10.213824",
+    "status": "pendente_revisao",
+    "confianca_extracao": "nao_calculada"
+  },
+  "validacao_humana": {
+    "necessaria": true,
+    "status": "pendente",
+    "responsavel": null
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "documento": {
+    "tipo_documento_inferido": "Plano de Atendimento Educacional Especializado",
+    "total_segmentos": 2,
+    "observacoes": "O documento apresenta um plano de atendimento educacional especializado para um estudante com necessidades educacionais especiais."
+  },
+  "segmentos": [
+    {
+      "indice": 1,
+      "secao_origem": "Dados referentes ao estudante",
+      "tipos_artefato": [
+        "plano_atendimento"
+      ],
+      "confianca": "alta",
+      "trecho_identificador": "PLANO DE ATENDIMENTO EDUCACIONAL ESPECIALIZADO - AEE",
+      "resumo_nao_identificavel": "O estudante apresenta dificuldades de atenção, organização das tarefas e compreensão de instruções longas. Necessita de mediação para iniciar e concluir atividades, especialmente em propostas abstratas.",
+      "posicao_aproximada": {
+        "inicio_chars": 0,
+        "fim_chars": 0
+      }
+    },
+    {
+      "indice": 2,
+      "secao_origem": "REESTRUTURAÇÃO DO PLANO",
+      "tipos_artefato": [
+        "plano_atendimento"
+      ],
+      "confianca": "alta",
+      "trecho_identificador": "REESTRUTURAÇÃO DO PLANO",
+      "resumo_nao_identificavel": "O Plano de AEE será reestruturado no momento que for necessário, ficando registrado a data e o motivo pelo qual houve modificações.",
+      "posicao_aproximada": {
+        "inicio_chars": 0,
+        "fim_chars": 0
+      }
+    }
+  ]
+}

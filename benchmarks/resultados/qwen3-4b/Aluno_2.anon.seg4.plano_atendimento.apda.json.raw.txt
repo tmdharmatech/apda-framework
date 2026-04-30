@@ -1,0 +1,13 @@
+{
+  "tipo_artefato": "plano_atendimento",
+  "origem": {
+    "nome_arquivo": "Aluno_2.anon.txt",
+    "formato_original": "txt",
+    "pagina_ou_aba": "OUTROS PROFISSIONAIS ENVOLVIDOS",
+    "segmento_indice": 4,
+    "segmento_total": 6
+  },
+  "conteudo_pedagogico": {
+    "objetivo_pedagogico": null,
+    "barreiras_identificadas": [],
+    "estrategias_pedagog

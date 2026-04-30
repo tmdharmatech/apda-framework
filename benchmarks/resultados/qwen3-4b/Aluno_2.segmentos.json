@@ -1,0 +1,93 @@
+{
+  "documento": {
+    "tipo_documento_inferido": "Plano de Atendimento Educacional Especializado (AEE) com informações do estudante, estudo de caso, frequência, profissionais envolvidos e objetivos",
+    "total_segmentos": 9,
+    "observacoes": "O documento é estruturado em seções distintas, incluindo dados do estudante, frequência, estudo de caso, profissionais envolvidos, organização do AEE, orientações, objetivos e atividades."
+  },
+  "segmentos": [
+    {
+      "indice": 1,
+      "secao_origem": "Dados referentes ao estudante",
+      "tipos_artefato": [
+        "plano_atendimento"
+      ],
+      "confianca": "alta",
+      "trecho_identificador": "Dados referentes ao estudante.",
+      "resumo_nao_identificavel": "Informações básicas do estudante, como nome, data de nascimento, endereço e matrícula.",
+      "posicao_aproximada": {
+        "inicio_chars": 0,
+        "fim_chars": 120
+      }
+    },
+    {
+      "indice": 2,
+      "secao_origem": "FREQUÊNCIA / DIA DO ATENDIMENTO",
+      "tipos_artefato": [
+        "plano_atendimento"
+      ],
+      "confianca": "alta",
+      "trecho_identificador": "FREQUÊNCIA / DIA DO ATENDIMENTO",
+      "resumo_nao_identificavel": "Detalhamento das datas e frequência do atendimento ao estudante.",
+      "posicao_aproximada": {
+        "inicio_chars": 121,
+        "fim_chars": 240
+      }
+    },
+    {
+      "indice": 3,
+      "secao_origem": "ESTUDO DE CASO DO ESTUDANTE",
+      "tipos_artefato": [
+        "estudo_de_caso"
+      ],
+      "confianca": "alta",
+      "trecho_identificador": "O estudante apresenta dificuldades de atenção...",
+      "resumo_nao_identificavel": "Descrição das dificuldades do estudante, como atenção, organização e compreensão de instruções, bem como progressos observados.",
+      "posicao_aproximada": {
+        "inicio_chars": 241,
+        "fim_chars": 480
+      }
+    },
+    {
+      "indice": 4,
+      "secao_origem": "OUTROS PROFISSIONAIS ENVOLVIDOS",
+      "tipos_artefato": [
+        "plano_atendimento"
+      ],
+      "confianca": "alta",
+      "trecho_identificador": "OUTROS PROFISSIONAIS ENVOLVIDOS",
+      "resumo_nao_identificavel": "Listagem de profissionais envolvidos no atendimento, como fonoaudiólogo, psicólogo e assistente social.",
+      "posicao_aproximada": {
+        "inicio_chars": 481,
+        "fim_chars": 560
+      }
+    },
+    {
+      "indice": 5,
+      "secao_origem": "ORGANIZAÇÃO DO AEE",
+      "tipos_artefato": [
+        "plano_atendimento"
+      ],
+      "confianca": "alta",
+      "trecho_identificador": "ORGANIZAÇÃO DO AEE",
+      "resumo_nao_identificavel": "Detalhamento sobre a forma, frequência e duração do atendimento, bem como os tipos de AEE oferecidos.",
+      "posicao_aproximada": {
+        "inicio_chars": 561,
+        "fim_chars": 680
+      }
+    },
+    {
+      "indice": 6,
+      "secao_origem": "ORIENTAÇÕES A SEREM REALIZADAS PELO PROFESSOR DE AEE",
+      "tipos_artefato": [
+        "plano_atendimento"
+      ],
+      "confianca": "alta",
+      "trecho_identificador": "Orientações ao diretor da escola.",
+      "resumo_nao_identificavel": "Listagem de orientações que o professor de AEE deve realizar com a escola e outros envolvidos.",
+      "posicao_aproximada": {
+        "inicio_chars": 681,
+        "fim_chars": 760
+      }
+    }
+  ]
+}

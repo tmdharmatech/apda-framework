@@ -1,0 +1,17 @@
+{
+  "data": "2026-04-29T19:07:27.929059",
+  "modelo": "Qwen2.5-3B-Instruct-Q4_K_M.gguf",
+  "entrada": "/home/eu/apda-framework/entrada/Diario_de_Classe_AEE_2025_10_Estudantes_Ficticios_Escola_Professor_Ficticios.xlsx",
+  "saida": "/home/eu/apda-framework/benchmarks/resultados/qwen2.5-3b/manifesto_xlsx.json",
+  "elapsed_seconds": 25.149,
+  "n_alunos": 10,
+  "n_tipos_artefato": 1,
+  "usage": {
+    "completion_tokens": 912,
+    "prompt_tokens": 3261,
+    "total_tokens": 4173,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

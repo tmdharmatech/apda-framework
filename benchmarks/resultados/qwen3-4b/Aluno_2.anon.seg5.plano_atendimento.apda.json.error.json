@@ -1,0 +1,18 @@
+{
+  "data": "2026-04-29T19:15:00.961870",
+  "segmento_indice": 5,
+  "tipo_artefato": "plano_atendimento",
+  "entrada": "/home/eu/apda-framework/benchmarks/resultados/qwen3-4b/Aluno_2.anon.txt",
+  "saida_esperada": "/home/eu/apda-framework/benchmarks/resultados/qwen3-4b/Aluno_2.anon.seg5.plano_atendimento.apda.json",
+  "raw_saida": "/home/eu/apda-framework/benchmarks/resultados/qwen3-4b/Aluno_2.anon.seg5.plano_atendimento.apda.json.raw.txt",
+  "elapsed_seconds": 31.561,
+  "erro": "A resposta não contém um objeto JSON.",
+  "usage": {
+    "completion_tokens": 1200,
+    "prompt_tokens": 652,
+    "total_tokens": 1852,
+    "prompt_tokens_details": {
+      "cached_tokens": 238
+    }
+  }
+}

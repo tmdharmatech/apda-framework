@@ -1,0 +1,200 @@
+{
+  "modelo_id": "qwen2.5-3b",
+  "modelo_nome": "Qwen2.5-3B-Instruct-Q4_K_M",
+  "aba_aluno": "Aluno 2",
+  "timestamp": "2026-04-29T19:07:02.228612",
+  "fases": {
+    "1_scan_xlsx": {
+      "elapsed_s": 25.82,
+      "rc": 0,
+      "ok": true,
+      "score": {
+        "n_alunos_listados": 10,
+        "tipos_detectados": [
+          "plano_atendimento"
+        ],
+        "cobertura_tipos_pct": 25,
+        "tem_instituicao": true,
+        "tem_secoes": true,
+        "pontuacao": 65
+      }
+    },
+    "2_anonimizacao": {
+      "elapsed_s": 39.41,
+      "rc": 0,
+      "ok": true
+    },
+    "3_scan_aluno": {
+      "elapsed_s": 30.03,
+      "rc": 0,
+      "ok": true,
+      "n_segmentos": 10,
+      "tipos_artefato": [
+        "estudo_de_caso",
+        "plano_atendimento"
+      ]
+    },
+    "4_geracao_apda": {
+      "elapsed_s": 65.99,
+      "rc": 0,
+      "ok": true,
+      "artefatos": [
+        {
+          "arquivo": "Aluno_2.anon.seg1.plano_atendimento.apda.json",
+          "score": {
+            "tipo": "plano_atendimento",
+            "tem_objetivo": false,
+            "n_barreiras": 0,
+            "n_estrategias": 0,
+            "n_recursos": 0,
+            "tem_observacoes": false,
+            "validacao_correta": true,
+            "anonimizacao_ok": true,
+            "nomes_vazados": false,
+            "pontuacao": 45
+          }
+        },
+        {
+          "arquivo": "Aluno_2.anon.seg10.plano_atendimento.apda.json",
+          "score": {
+            "tipo": "plano_atendimento",
+            "tem_objetivo": false,
+            "n_barreiras": 0,
+            "n_estrategias": 0,
+            "n_recursos": 0,
+            "tem_observacoes": false,
+            "validacao_correta": true,
+            "anonimizacao_ok": true,
+            "nomes_vazados": false,
+            "pontuacao": 45
+          }
+        },
+        {
+          "arquivo": "Aluno_2.anon.seg2.estudo_de_caso.apda.json",
+          "score": {
+            "tipo": "estudo_de_caso",
+            "tem_objetivo": false,
+            "n_barreiras": 0,
+            "n_estrategias": 0,
+            "n_recursos": 0,
+            "tem_observacoes": false,
+            "validacao_correta": true,
+            "anonimizacao_ok": true,
+            "nomes_vazados": false,
+            "pontuacao": 45
+          }
+        },
+        {
+          "arquivo": "Aluno_2.anon.seg3.plano_atendimento.apda.json",
+          "score": {
+            "tipo": "plano_atendimento",
+            "tem_objetivo": false,
+            "n_barreiras": 0,
+            "n_estrategias": 0,
+            "n_recursos": 0,
+            "tem_observacoes": false,
+            "validacao_correta": true,
+            "anonimizacao_ok": true,
+            "nomes_vazados": false,
+            "pontuacao": 45
+          }
+        },
+        {
+          "arquivo": "Aluno_2.anon.seg4.plano_atendimento.apda.json",
+          "score": {
+            "tipo": "plano_atendimento",
+            "tem_objetivo": false,
+            "n_barreiras": 0,
+            "n_estrategias": 0,
+            "n_recursos": 0,
+            "tem_observacoes": false,
+            "validacao_correta": true,
+            "anonimizacao_ok": true,
+            "nomes_vazados": false,
+            "pontuacao": 45
+          }
+        },
+        {
+          "arquivo": "Aluno_2.anon.seg5.plano_atendimento.apda.json",
+          "score": {
+            "tipo": "plano_atendimento",
+            "tem_objetivo": false,
+            "n_barreiras": 0,
+            "n_estrategias": 0,
+            "n_recursos": 0,
+            "tem_observacoes": false,
+            "validacao_correta": true,
+            "anonimizacao_ok": true,
+            "nomes_vazados": false,
+            "pontuacao": 45
+          }
+        },
+        {
+          "arquivo": "Aluno_2.anon.seg6.plano_atendimento.apda.json",
+          "score": {
+            "tipo": "plano_atendimento",
+            "tem_objetivo": false,
+            "n_barreiras": 0,
+            "n_estrategias": 0,
+            "n_recursos": 0,
+            "tem_observacoes": false,
+            "validacao_correta": true,
+            "anonimizacao_ok": true,
+            "nomes_vazados": false,
+            "pontuacao": 45
+          }
+        },
+        {
+          "arquivo": "Aluno_2.anon.seg7.plano_atendimento.apda.json",
+          "score": {
+            "tipo": "plano_atendimento",
+            "tem_objetivo": false,
+            "n_barreiras": 0,
+            "n_estrategias": 0,
+            "n_recursos": 0,
+            "tem_observacoes": false,
+            "validacao_correta": true,
+            "anonimizacao_ok": true,
+            "nomes_vazados": false,
+            "pontuacao": 45
+          }
+        },
+        {
+          "arquivo": "Aluno_2.anon.seg8.plano_atendimento.apda.json",
+          "score": {
+            "tipo": "plano_atendimento",
+            "tem_objetivo": false,
+            "n_barreiras": 0,
+            "n_estrategias": 0,
+            "n_recursos": 0,
+            "tem_observacoes": false,
+            "validacao_correta": true,
+            "anonimizacao_ok": true,
+            "nomes_vazados": false,
+            "pontuacao": 45
+          }
+        },
+        {
+          "arquivo": "Aluno_2.anon.seg9.plano_atendimento.apda.json",
+          "score": {
+            "tipo": "plano_atendimento",
+            "tem_objetivo": false,
+            "n_barreiras": 0,
+            "n_estrategias": 0,
+            "n_recursos": 0,
+            "tem_observacoes": false,
+            "validacao_correta": true,
+            "anonimizacao_ok": true,
+            "nomes_vazados": false,
+            "pontuacao": 45
+          }
+        }
+      ],
+      "n_artefatos": 10,
+      "score_medio": 45.0,
+      "score_minimo": 45,
+      "score_maximo": 45
+    }
+  },
+  "scores": {}
+}

@@ -1,0 +1,149 @@
+{
+  "documento": {
+    "tipo_documento_inferido": "plano de atendimento educacional especializado (AEE)",
+    "total_segmentos": 10,
+    "observacoes": "O documento contém um estudo de caso, um plano de atendimento, e outras informações relacionadas ao estudante."
+  },
+  "segmentos": [
+    {
+      "indice": 1,
+      "secao_origem": null,
+      "tipos_artefato": [
+        "plano_atendimento"
+      ],
+      "confianca": "alta",
+      "trecho_identificador": "PLANO DE ATENDIMENTO EDUCACIONAL ESPECIALIZADO - AEE",
+      "resumo_nao_identificavel": "O estudante apresenta dificuldades em atenção, organização e compreensão de instruções. Precisa de mediação para atividades e demonstra melhor desempenho com atividades práticas.",
+      "posicao_aproximada": {
+        "inicio_chars": 1,
+        "fim_chars": 118
+      }
+    },
+    {
+      "indice": 2,
+      "secao_origem": null,
+      "tipos_artefato": [
+        "estudo_de_caso"
+      ],
+      "confianca": "alta",
+      "trecho_identificador": "O estudante apresenta dificuldades de atenção, organização das tarefas e compreensão de instruções longas.",
+      "resumo_nao_identificavel": "O estudante tem dificuldades em atenção e organização, necessitando de mediação para atividades.",
+      "posicao_aproximada": {
+        "inicio_chars": 119,
+        "fim_chars": 217
+      }
+    },
+    {
+      "indice": 3,
+      "secao_origem": null,
+      "tipos_artefato": [
+        "plano_atendimento"
+      ],
+      "confianca": "alta",
+      "trecho_identificador": "Frequência do atendimento: semanal",
+      "resumo_nao_identificavel": "O atendimento é semanal e a frequência é semanal.",
+      "posicao_aproximada": {
+        "inicio_chars": 218,
+        "fim_chars": 256
+      }
+    },
+    {
+      "indice": 4,
+      "secao_origem": null,
+      "tipos_artefato": [
+        "plano_atendimento"
+      ],
+      "confianca": "alta",
+      "trecho_identificador": "Duração do atendimento: 1 hora",
+      "resumo_nao_identificavel": "O atendimento dura 1 hora.",
+      "posicao_aproximada": {
+        "inicio_chars": 257,
+        "fim_chars": 305
+      }
+    },
+    {
+      "indice": 5,
+      "secao_origem": null,
+      "tipos_artefato": [
+        "plano_atendimento"
+      ],
+      "confianca": "alta",
+      "trecho_identificador": "Forma de atendimento: coletivo",
+      "resumo_nao_identificavel": "O atendimento é coletivo.",
+      "posicao_aproximada": {
+        "inicio_chars": 306,
+        "fim_chars": 344
+      }
+    },
+    {
+      "indice": 6,
+      "secao_origem": null,
+      "tipos_artefato": [
+        "plano_atendimento"
+      ],
+      "confianca": "alta",
+      "trecho_identificador": "Orientações ao diretor da escola.",
+      "resumo_nao_identificavel": "O professor de AEE orienta o diretor da escola.",
+      "posicao_aproximada": {
+        "inicio_chars": 345,
+        "fim_chars": 373
+      }
+    },
+    {
+      "indice": 7,
+      "secao_origem": null,
+      "tipos_artefato": [
+        "plano_atendimento"
+      ],
+      "confianca": "alta",
+      "trecho_identificador": "Orientações ao professor da turma regular.",
+      "resumo_nao_identificavel": "O professor de AEE orienta o professor da turma regular.",
+      "posicao_aproximada": {
+        "inicio_chars": 374,
+        "fim_chars": 402
+      }
+    },
+    {
+      "indice": 8,
+      "secao_origem": null,
+      "tipos_artefato": [
+        "plano_atendimento"
+      ],
+      "confianca": "alta",
+      "trecho_identificador": "Orientações ao Professor de Educação Física.",
+      "resumo_nao_identificavel": "O professor de AEE orienta o Professor de Educação Física.",
+      "posicao_aproximada": {
+        "inicio_chars": 403,
+        "fim_chars": 431
+      }
+    },
+    {
+      "indice": 9,
+      "secao_origem": null,
+      "tipos_artefato": [
+        "plano_atendimento"
+      ],
+      "confianca": "alta",
+      "trecho_identificador": "Orientações aos colegas de turma.",
+      "resumo_nao_identificavel": "O professor de AEE orienta aos colegas de turma.",
+      "posicao_aproximada": {
+        "inicio_chars": 432,
+        "fim_chars": 459
+      }
+    },
+    {
+      "indice": 10,
+      "secao_origem": null,
+      "tipos_artefato": [
+        "plano_atendimento"
+      ],
+      "confianca": "alta",
+      "trecho_identificador": "O estudante demonstra avanços na participação durante os atendimentos do AEE.",
+      "resumo_nao_identificavel": "O estudante demonstra avanços na participação durante os atendimentos do AEE.",
+      "posicao_aproximada": {
+        "inicio_chars": 460,
+        "fim_chars": 510
+      }
+    }
+  ]
+}

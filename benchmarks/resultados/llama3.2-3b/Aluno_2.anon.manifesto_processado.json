@@ -1,0 +1,50 @@
+{
+  "data_processamento": "2026-04-29T19:17:35.655498",
+  "pipeline_versao": "apda-local-0.3-segmented",
+  "arquivo_entrada": "Aluno_2.anon.txt",
+  "arquivo_manifesto": "Aluno_2.segmentos.json",
+  "total_segmentos": 2,
+  "total_artefatos_gerados": 2,
+  "segmentos": [
+    {
+      "indice": 1,
+      "status": "ok",
+      "artefatos": [
+        {
+          "tipo_artefato": "plano_atendimento",
+          "arquivo": "Aluno_2.anon.seg1.plano_atendimento.apda.json",
+          "status": "ok",
+          "elapsed_seconds": 14.147,
+          "usage": {
+            "completion_tokens": 423,
+            "prompt_tokens": 2146,
+            "total_tokens": 2569,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "indice": 2,
+      "status": "ok",
+      "artefatos": [
+        {
+          "tipo_artefato": "plano_atendimento",
+          "arquivo": "Aluno_2.anon.seg2.plano_atendimento.apda.json",
+          "status": "ok",
+          "elapsed_seconds": 11.295,
+          "usage": {
+            "completion_tokens": 305,
+            "prompt_tokens": 2151,
+            "total_tokens": 2456,
+            "prompt_tokens_details": {
+              "cached_tokens": 261
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

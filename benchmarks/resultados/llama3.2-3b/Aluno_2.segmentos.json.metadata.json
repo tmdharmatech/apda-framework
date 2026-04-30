@@ -1,0 +1,16 @@
+{
+  "data": "2026-04-29T19:17:10.131281",
+  "modelo": "Llama-3.2-3B-Instruct-Q4_K_M.gguf",
+  "servidor": "http://127.0.0.1:8091",
+  "entrada": "/home/eu/apda-framework/benchmarks/resultados/llama3.2-3b/Aluno_2.anon.txt",
+  "saida": "/home/eu/apda-framework/benchmarks/resultados/llama3.2-3b/Aluno_2.segmentos.json",
+  "elapsed_seconds": 13.591,
+  "usage": {
+    "completion_tokens": 391,
+    "prompt_tokens": 2102,
+    "total_tokens": 2493,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

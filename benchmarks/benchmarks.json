@@ -1,7 +1,10 @@
 {
   "schema_version": "1.0",
   "project": "APDA",
-  "generated_at": "2026-04-27T21:45:00-03:00",
+  "generated_at": "2026-04-29T19:20:05.839769",
+  "source": "/home/eu/apda-framework/benchmarks/resultados/resumo_benchmark.json",
+  "xlsx": "/home/eu/apda-framework/entrada/Diario_de_Classe_AEE_2025_10_Estudantes_Ficticios_Escola_Professor_Ficticios.xlsx",
+  "elapsed_total": 644.0,
   "hardware": {
     "gpu": "AMD Radeon RX 580 2048SP",
     "backend": "llama.cpp Vulkan",
@@ -12,17 +15,102 @@
   },
   "models": {
     "qwen2_5_3b_q4_k_m": {
-      "label": "Qwen2.5 3B Instruct Q4_K_M",
-      "path": "/home/eu/.lmstudio/models/local/Qwen2.5-3B-Instruct-Q4_K_M/Qwen2.5-3B-Instruct-Q4_K_M.gguf",
+      "label": "Qwen2.5-3B-Instruct-Q4_K_M",
+      "path": "/home/eu/apda-framework/modelos/Qwen2.5-3B-Instruct-Q4_K_M/Qwen2.5-3B-Instruct-Q4_K_M.gguf",
       "params_b": 3.09,
-      "file_size_gib": 1.79
+      "file_size_gib": 1.8
     },
     "qwen3_4b_q4_k_m": {
-      "label": "Qwen3 4B Q4_K_M",
-      "path": "/home/eu/.lmstudio/models/lmstudio-community/Qwen3-4B-GGUF/Qwen3-4B-Q4_K_M.gguf",
+      "label": "Qwen3-4B-Q4_K_M",
+      "path": "/home/eu/apda-framework/modelos/Qwen3-4B-GGUF/Qwen3-4B-Q4_K_M.gguf",
       "params_b": 4.02,
-      "file_size_gib": 2.32
+      "file_size_gib": 2.33
+    },
+    "llama3_2_3b_q4_k_m": {
+      "label": "Llama-3.2-3B-Instruct-Q4_K_M",
+      "path": "/home/eu/apda-framework/modelos/Llama-3.2-3B-Instruct-Q4_K_M/Llama-3.2-3B-Instruct-Q4_K_M.gguf",
+      "params_b": 3.21,
+      "file_size_gib": 1.88
     }
   },
-  "tests": []
+  "tests": [
+    {
+      "id": "xlsx_aluno2_qwen2.5-3b",
+      "category": "json_generation",
+      "model_key": "qwen2_5_3b_q4_k_m",
+      "model_label": "Qwen2.5-3B-Instruct-Q4_K_M",
+      "ctx_size": 20000,
+      "students": 10,
+      "json_valid": true,
+      "name_leak_detected": false,
+      "student_separation": "10_segmentos",
+      "retry_needed": false,
+      "semantic_quality": "boa_com_revisao",
+      "schema_adherence": "ok",
+      "required_fields_missing": null,
+      "invented_fields": null,
+      "privacy_risk": "baixo",
+      "human_validation_consistency": "ok",
+      "language_issues": null,
+      "notes": "F1=65/100; F3=10 segmentos; F4=10 APDAs; score médio=45.0/100",
+      "metrics": {
+        "vram_total_mib": 8192,
+        "elapsed_seconds": 161.25,
+        "prompt_tokens_per_second": 97.17,
+        "generation_tokens_per_second": 40.95
+      }
+    },
+    {
+      "id": "xlsx_aluno2_qwen3-4b",
+      "category": "json_generation",
+      "model_key": "qwen3_4b_q4_k_m",
+      "model_label": "Qwen3-4B-Q4_K_M",
+      "ctx_size": 20000,
+      "students": 10,
+      "json_valid": false,
+      "name_leak_detected": false,
+      "student_separation": "6_segmentos",
+      "retry_needed": true,
+      "semantic_quality": "boa_com_inconsistencia_validacao",
+      "schema_adherence": "parcial",
+      "required_fields_missing": null,
+      "invented_fields": null,
+      "privacy_risk": "baixo",
+      "human_validation_consistency": "ok",
+      "language_issues": null,
+      "notes": "F1=65/100; F3=6 segmentos; F4=4 APDAs; score médio=45.0/100",
+      "metrics": {
+        "vram_total_mib": 8192,
+        "elapsed_seconds": 331.87,
+        "prompt_tokens_per_second": 40.97,
+        "generation_tokens_per_second": 31.25
+      }
+    },
+    {
+      "id": "xlsx_aluno2_llama3.2-3b",
+      "category": "json_generation",
+      "model_key": "llama3_2_3b_q4_k_m",
+      "model_label": "Llama-3.2-3B-Instruct-Q4_K_M",
+      "ctx_size": 20000,
+      "students": 10,
+      "json_valid": true,
+      "name_leak_detected": false,
+      "student_separation": "2_segmentos",
+      "retry_needed": false,
+      "semantic_quality": "mistura_semantica_detectada",
+      "schema_adherence": "ok",
+      "required_fields_missing": null,
+      "invented_fields": null,
+      "privacy_risk": "baixo",
+      "human_validation_consistency": "ok",
+      "language_issues": null,
+      "notes": "F1=55/100; F3=2 segmentos; F4=2 APDAs; score médio=50.0/100",
+      "metrics": {
+        "vram_total_mib": 8192,
+        "elapsed_seconds": 115.69,
+        "prompt_tokens_per_second": 112.79,
+        "generation_tokens_per_second": 33.39
+      }
+    }
+  ]
 }
