@@ -7,6 +7,7 @@ import { runDoctor } from "./doctor.js";
 import { runOnboarding } from "./onboard.js";
 import { runRunsCommand } from "./runs.js";
 import { runServerCommand } from "./server.js";
+import { runStackCommand } from "./stack.js";
 import { getWorkflowsForFile, listWorkflows } from "./workflows/registry.js";
 import { runWorkflow } from "./workflows/run-workflow.js";
 import { validateArtifactFile } from "./schema/validate.js";
@@ -33,6 +34,8 @@ async function main() {
   }
 
   if (command === "server") return runServerCommand(root, argv);
+
+  if (command === "stack") return runStackCommand(root, argv);
 
   if (command === "runs") return runRunsCommand(root, argv);
 
@@ -105,6 +108,7 @@ async function main() {
         workflow: { type: "string", short: "w" },
         "base-url": { type: "string" },
         "dry-run": { type: "boolean" },
+        litellm: { type: "boolean" },
       },
     });
     if (!values.file || !values.workflow)
@@ -112,6 +116,7 @@ async function main() {
     return runWorkflow(root, values.workflow, values.file, {
       baseUrl: values["base-url"],
       dryRun: values["dry-run"],
+      litellm: values.litellm,
     });
   }
 

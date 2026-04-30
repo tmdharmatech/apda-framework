@@ -198,6 +198,89 @@ Páginas disponíveis:
 - **Benchmarks** (`/benchmarks.html`): painel comparativo de modelos.
 - **Histórico** (`/history.html`): equivalente visual do `runs`, com detalhe de cada execução e auditoria do JSON.
 
+## Stack de Observabilidade (LiteLLM + Prometheus + Grafana)
+
+O stack de observabilidade adiciona proxy de modelos com fallback automático, métricas de qualidade e um dashboard em tempo real.
+
+### Requisitos extras
+
+- Docker (para Prometheus e Grafana)
+- `pip install litellm prometheus-client`
+
+### Comandos
+
+```bash
+node src/cli.js stack start          # inicia todo o stack
+node src/cli.js stack status         # verifica o estado dos serviços
+node src/cli.js stack status --json  # estado em JSON
+node src/cli.js stack logs           # últimas linhas do log do LiteLLM
+node src/cli.js stack logs litellm   # log de um serviço específico
+node src/cli.js stack stop           # encerra tudo
+```
+
+Ou diretamente pelos scripts:
+
+```bash
+infra/start.sh
+infra/stop.sh
+```
+
+### Endpoints do Stack
+
+| Serviço | URL | Credenciais |
+|---|---|---|
+| LiteLLM API | http://localhost:4000/v1 | Bearer apda-master-key |
+| Prometheus | http://localhost:9090 | — |
+| Grafana | http://localhost:3001 | admin / apda2025 |
+| Métricas APDA | http://localhost:8000/metrics | — |
+
+### Usando o proxy LiteLLM nos workflows
+
+Para rotear a geração de artefatos via LiteLLM (com métricas automáticas):
+
+```bash
+node src/cli.js run --file entrada/arquivo.docx --workflow docx-to-apda-json --litellm
+```
+
+Ou via variável de ambiente:
+
+```bash
+APDA_LITELLM=1 node src/cli.js run --file entrada/arquivo.docx --workflow docx-to-apda-json
+```
+
+### Modelos disponíveis via LiteLLM
+
+| Nome lógico | Modelo real | Quando usar |
+|---|---|---|
+| `apda-local-3b` | Qwen2.5-3B local | Produção municipal |
+| `apda-local-1b` | Qwen2.5-1.5B local | Hardware muito limitado |
+| `sabia-professor` | Sabiá-4 via API | Geração do dataset ouro |
+
+O proxy faz fallback automático: se o 3B não estiver disponível, usa o 1B.
+
+### Métricas coletadas
+
+O dashboard Grafana é provisionado automaticamente e inclui:
+
+- Total de artefatos processados
+- Taxa de JSON válido por modelo
+- Alertas de PII detectados na saída
+- Latência por percentil (p50 / p95 / p99)
+- Campos inventados por tipo de artefato (alucinação)
+- Revisões humanas pendentes e taxa de aprovação
+- Custo acumulado por modelo (Sabiá API)
+
+### Variáveis de ambiente
+
+| Variável | Padrão | Descrição |
+|---|---|---|
+| `MODEL_3B` | — | Caminho para o modelo GGUF 3B |
+| `MODEL_1B` | — | Caminho para o modelo GGUF 1B (opcional) |
+| `LLAMA_BINARY` | `llama-server` | Caminho para o binário llama-server |
+| `MARITACA_API_KEY` | — | Chave da API Maritaca |
+| `LITELLM_PORT` | `4000` | Porta do proxy LiteLLM |
+| `LITELLM_MASTER_KEY` | `apda-master-key` | Chave de autenticação do proxy |
+
 ## Pipeline Python Direto
 
 Também é possível executar os scripts sem passar pela CLI:
@@ -206,6 +289,14 @@ Também é possível executar os scripts sem passar pela CLI:
 .venv/bin/python scripts/01_extrair_texto.py
 .venv/bin/python scripts/04_privacy_filter_anonimizar.py --input saida/arquivo.txt --output saida/anonimo.txt
 .venv/bin/python scripts/05_gerar_artefato_3b.py --input saida/anonimo.txt --output saida/artefato.json
+```
+
+Para usar o proxy LiteLLM diretamente no script:
+
+```bash
+.venv/bin/python scripts/05_gerar_artefato_3b.py \
+  --input saida/anonimo.txt --output saida/artefato.json \
+  --litellm --municipio paulo-afonso
 ```
 
 ## Validação e Testes
@@ -260,12 +351,13 @@ A anonimização combina:
 
 - `entrada/`: documentos originais.
 - `saida/`: textos extraídos, textos anonimizados e artefatos JSON finais.
-- `scripts/`: scripts Python do pipeline.
+- `scripts/`: scripts Python do pipeline (inclui `metrics_exporter.py`).
 - `schemas/`: contratos de dados em JSON Schema.
 - `logs/`: rastreabilidade das etapas executadas.
 - `src/`: CLI, detectores, workflows e servidor WebUI.
 - `frontend/`: páginas estáticas da WebUI.
-- `.apda/`: configuração e histórico locais, não versionados.
+- `infra/`: Docker Compose, Prometheus e Grafana para observabilidade.
+- `.apda/`: configuração, histórico e PIDs locais, não versionados.
 
 ---
 

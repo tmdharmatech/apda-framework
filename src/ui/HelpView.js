@@ -130,6 +130,18 @@ export function HelpView() {
       }),
     ),
 
+    // ── Stack de observabilidade ───────────────────────────────────────────
+    e(
+      CmdGroup,
+      { title: "📊  Stack de Observabilidade (LiteLLM + Prometheus + Grafana)" },
+      e(Cmd, { cmd: "apda stack status",       desc: "mostra o estado de todos os serviços" }),
+      e(Cmd, { cmd: "apda stack status --json", desc: "emite o estado em JSON" }),
+      e(Cmd, { cmd: "apda stack start",        desc: "inicia LiteLLM, Prometheus, Grafana e métricas" }),
+      e(Cmd, { cmd: "apda stack stop",         desc: "encerra todo o stack" }),
+      e(Cmd, { cmd: "apda stack logs",         desc: "exibe últimas linhas do log do LiteLLM" }),
+      e(Cmd, { cmd: "apda stack logs litellm", desc: "log de um serviço específico" }),
+    ),
+
     // ── Interface Web ──────────────────────────────────────────────────────
     e(
       CmdGroup,

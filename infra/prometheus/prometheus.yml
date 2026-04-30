@@ -1,0 +1,42 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    project: 'apda-framework'
+    environment: 'desenvolvimento'
+
+scrape_configs:
+
+  # LiteLLM Proxy — métricas automáticas de modelos, latência, custo e tokens
+  - job_name: 'litellm'
+    static_configs:
+      - targets: ['localhost:4000']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    follow_redirects: true
+
+  # Pipeline APDA — métricas customizadas (JSON válido, PII, alucinação)
+  - job_name: 'apda-pipeline'
+    static_configs:
+      - targets: ['localhost:8000']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # llama-server 3B — métricas de inferência local
+  - job_name: 'llama-3b'
+    static_configs:
+      - targets: ['localhost:8091']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # llama-server 1B — métricas de inferência local
+  - job_name: 'llama-1b'
+    static_configs:
+      - targets: ['localhost:8092']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # Auto-monitoramento do Prometheus
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']

@@ -25,6 +25,7 @@ import {
   handleRunSync,
   handleRunStream,
 } from "./api/workflows-api.js";
+import { handleStackStatus } from "./api/stack-api.js";
 
 const MIME = {
   ".html": "text/html; charset=utf-8",
@@ -96,6 +97,7 @@ function routeApi(root, req, res) {
   if (match("POST", "/api/run"))           return handle(handleRun);
   if (match("POST", "/api/run/sync"))      return handle(handleRunSync);
   if (match("GET", "/api/run/stream"))     return handle(handleRunStream);
+  if (match("GET", "/api/stack/status"))   return handle(handleStackStatus);
   if (match("*", "/api/validate"))         return handle(handleValidate);
   if (match("GET", "/api/runs"))           return handle(handleRuns);
 

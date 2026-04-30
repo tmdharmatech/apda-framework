@@ -21,11 +21,13 @@
     "src",
     "schemas",
     "frontend",
+    "infra",
     "README.md",
     "requirements.txt",
     "scripts/01_extrair_texto.py",
     "scripts/04_privacy_filter_anonimizar.py",
-    "scripts/05_gerar_artefato_3b.py"
+    "scripts/05_gerar_artefato_3b.py",
+    "scripts/metrics_exporter.py"
   ],
   "license": "UNLICENSED",
   "dependencies": {

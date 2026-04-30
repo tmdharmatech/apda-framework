@@ -252,16 +252,23 @@ export async function runWorkflow(root, workflowId, inputFile, options = {}) {
     }
 
     if (workflow.steps.includes("generate-artifact")) {
+      const baseUrl =
+        options.baseUrl ??
+        process.env.APDA_LLAMA_BASE_URL ??
+        "http://127.0.0.1:8091";
+      const useLitellm =
+        options.litellm ||
+        process.env.APDA_LITELLM === "1" ||
+        baseUrl.includes(":4000");
       const args = [
         "--input",
         currentText,
         "--output",
         artifact,
         "--base-url",
-        options.baseUrl ??
-          process.env.APDA_LLAMA_BASE_URL ??
-          "http://127.0.0.1:8091",
+        baseUrl,
       ];
+      if (useLitellm) args.push("--litellm");
       if (options.dryRun) {
         printPlannedStep(
           python.command,
