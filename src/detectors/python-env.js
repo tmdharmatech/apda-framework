@@ -4,6 +4,7 @@ import { runCommand } from "../lib/command.js";
 
 const REQUIRED_SCRIPTS = [
   "scripts/01_extrair_texto.py",
+  "scripts/02_anonimizar_texto.py",
   "scripts/04_privacy_filter_anonimizar.py",
   "scripts/05_gerar_artefato_3b.py",
 ];

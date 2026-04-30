@@ -42,6 +42,23 @@ def anonimizar(texto: str):
 
 
 def main():
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Anonimizacao por regras (regex)")
+    parser.add_argument("--input", help="Arquivo de texto a anonimizar")
+    parser.add_argument("--output", help="Arquivo de saida anonimizado")
+    args = parser.parse_args()
+
+    if args.input and args.output:
+        input_path = Path(args.input).resolve()
+        output_path = Path(args.output).resolve()
+        texto = input_path.read_text(encoding="utf-8")
+        texto_anon, itens = anonimizar(texto)
+        output_path.parent.mkdir(exist_ok=True)
+        output_path.write_text(texto_anon, encoding="utf-8")
+        print(f"[OK] {input_path.name} -> {output_path.name} | mascarados: {itens}")
+        return
+
     arquivos = list(SAIDA.glob("*.texto_extraido.txt"))
     resultados = []
 

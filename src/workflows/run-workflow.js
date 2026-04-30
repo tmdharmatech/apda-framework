@@ -46,6 +46,7 @@ function requiresPython(workflow) {
     (step) =>
       step === "extract-text" ||
       step === "privacy-filter" ||
+      step === "regex-anon" ||
       step === "generate-artifact" ||
       step === "scan-segments" ||
       step === "generate-from-manifest",
@@ -187,6 +188,28 @@ export async function runWorkflow(root, workflowId, inputFile, options = {}) {
         );
       }
       currentText = anonymized;
+    }
+
+    if (workflow.steps.includes("regex-anon")) {
+      const regexOut = path.join(root, "saida", `${stem}.texto_anonimizado.txt`);
+      const args = ["--input", currentText, "--output", regexOut];
+      if (options.dryRun) {
+        printPlannedStep(python.command, "scripts/02_anonimizar_texto.py", args);
+        emitter.emit("step:start", "regex-anon");
+        emitter.emit("step:done", "regex-anon");
+      } else {
+        await runPython(
+          root,
+          python.command,
+          "scripts/02_anonimizar_texto.py",
+          args,
+          emitter,
+          "regex-anon",
+        );
+        if (!existsSync(regexOut))
+          throw new Error(`Texto anonimizado (regex) nao gerado: ${regexOut}`);
+      }
+      currentText = regexOut;
     }
 
     if (workflow.steps.includes("scan-segments")) {

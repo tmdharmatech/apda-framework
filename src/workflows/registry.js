@@ -112,6 +112,105 @@ const workflows = [
       "validate-schema",
     ],
   },
+
+  // ── Eixo 1: Produção rápida (sem anonimização — dados fictícios ou pré-anonimizados)
+
+  {
+    id: "txt-fast",
+    name: "TXT → JSON APDA (sem anonimização)",
+    inputExtensions: [".txt"],
+    steps: ["generate-artifact", "validate-schema"],
+  },
+  {
+    id: "docx-fast",
+    name: "DOCX → texto → JSON APDA (sem anonimização)",
+    inputExtensions: [".docx"],
+    steps: ["extract-text", "generate-artifact", "validate-schema"],
+  },
+  {
+    id: "xlsx-fast",
+    name: "XLSX → texto → JSON APDA (sem anonimização)",
+    inputExtensions: [".xlsx", ".xls"],
+    steps: ["extract-text", "generate-artifact", "validate-schema"],
+  },
+  {
+    id: "pdf-fast",
+    name: "PDF → texto → JSON APDA (sem anonimização)",
+    inputExtensions: [".pdf"],
+    steps: ["extract-text", "generate-artifact", "validate-schema"],
+  },
+
+  // ── Eixo 2: Anonimização leve (regex — sem GPU)
+
+  {
+    id: "txt-regex-anon",
+    name: "TXT → regex-anon → JSON APDA",
+    inputExtensions: [".txt"],
+    steps: ["regex-anon", "generate-artifact", "validate-schema"],
+  },
+  {
+    id: "docx-regex-anon",
+    name: "DOCX → texto → regex-anon → JSON APDA",
+    inputExtensions: [".docx"],
+    steps: ["extract-text", "regex-anon", "generate-artifact", "validate-schema"],
+  },
+  {
+    id: "xlsx-regex-anon",
+    name: "XLSX → texto → regex-anon → JSON APDA",
+    inputExtensions: [".xlsx", ".xls"],
+    steps: ["extract-text", "regex-anon", "generate-artifact", "validate-schema"],
+  },
+  {
+    id: "pdf-regex-anon",
+    name: "PDF → texto → regex-anon → JSON APDA",
+    inputExtensions: [".pdf"],
+    steps: ["extract-text", "regex-anon", "generate-artifact", "validate-schema"],
+  },
+
+  // ── Eixo 3: Segmentação multi-artefato (sem Privacy Filter neural)
+
+  {
+    id: "txt-scan-fast",
+    name: "TXT → varredura → APDA por segmento (sem anonimização)",
+    inputExtensions: [".txt"],
+    steps: ["scan-segments", "generate-from-manifest", "validate-schema"],
+  },
+  {
+    id: "xlsx-scan-fast",
+    name: "XLSX → texto → varredura → APDA por segmento (sem anonimização)",
+    inputExtensions: [".xlsx", ".xls"],
+    steps: ["extract-text", "scan-segments", "generate-from-manifest", "validate-schema"],
+  },
+  {
+    id: "docx-scan-fast",
+    name: "DOCX → texto → varredura → APDA por segmento (sem anonimização)",
+    inputExtensions: [".docx"],
+    steps: ["extract-text", "scan-segments", "generate-from-manifest", "validate-schema"],
+  },
+  {
+    id: "xlsx-scan-regex",
+    name: "XLSX → texto → regex-anon → varredura → APDA por segmento",
+    inputExtensions: [".xlsx", ".xls"],
+    steps: [
+      "extract-text",
+      "regex-anon",
+      "scan-segments",
+      "generate-from-manifest",
+      "validate-schema",
+    ],
+  },
+  {
+    id: "docx-scan-regex",
+    name: "DOCX → texto → regex-anon → varredura → APDA por segmento",
+    inputExtensions: [".docx"],
+    steps: [
+      "extract-text",
+      "regex-anon",
+      "scan-segments",
+      "generate-from-manifest",
+      "validate-schema",
+    ],
+  },
 ];
 
 export function listWorkflows() {
