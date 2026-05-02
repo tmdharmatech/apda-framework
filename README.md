@@ -1,6 +1,6 @@
-# Pipeline APDA (Artefatos Pedagógicos Digitais Abertos)
+# APDA Framework (Artefatos Pedagógicos Digitais Abertos)
 
-Este repositório contém um pipeline local para criação de **Artefatos Pedagógicos Digitais Abertos (APDA)** a partir de documentos educacionais. O fluxo combina extração de texto, anonimização de PII, geração de JSON pedagógico por LLM local e validação por JSON Schema.
+Este repositório contém um prótotipo de um pipeline local para criação de **Artefatos Pedagógicos Digitais Abertos (APDA)** a partir de documentos educacionais. O fluxo combina extração de texto, anonimização de PII, geração de JSON pedagógico por LLM local e validação por JSON Schema.
 
 O objetivo operacional é permitir que documentos em `entrada/` sejam transformados em artefatos estruturados em `saida/`, mantendo rastreabilidade nos logs e revisão humana obrigatória antes de qualquer uso final.
 
