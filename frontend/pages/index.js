@@ -1,4 +1,4 @@
-﻿import { getJSON, postJSON } from "../lib/api.js";
+import { getJSON, postJSON } from "../lib/api.js";
 import { esc, text } from "../lib/dom.js";
 
 const state = { artifacts: [], selectedIndex: 0, query: "", validations: {} };
@@ -19,7 +19,7 @@ function statusClass(v) {
 }
 
 function arrayItems(items) {
-  if (!Array.isArray(items) || !items.length) return `<div class="field-value">NÃ£o informado</div>`;
+  if (!Array.isArray(items) || !items.length) return `<div class="field-value">Não informado</div>`;
   return `<ul>${items.map(i => `<li>${esc(i)}</li>`).join("")}</ul>`;
 }
 
@@ -29,7 +29,7 @@ function chips(items) {
 }
 
 function artifactTitle(item) {
-  return item.label || item.data?.origem?.nome_arquivo || item.path || "Artefato sem tÃ­tulo";
+  return item.label || item.data?.origem?.nome_arquivo || item.path || "Artefato sem título";
 }
 
 function filtered() {
@@ -44,10 +44,10 @@ function filtered() {
 function validationBadge(item) {
   const v = state.validations[item.path];
   if (!v) return "";
-  if (v.loading) return `<span class="item-valid" title="Validando...">â€¦</span>`;
+  if (v.loading) return `<span class="item-valid" title="Validando...">…</span>`;
   return v.result?.ok
-    ? `<span class="item-valid" title="Schema vÃ¡lido">âœ“</span>`
-    : `<span class="item-invalid" title="${v.result?.errors?.length ?? 0} erro(s) de schema">âœ—</span>`;
+    ? `<span class="item-valid" title="Schema válido">✓</span>`
+    : `<span class="item-invalid" title="${v.result?.errors?.length ?? 0} erro(s) de schema">✗</span>`;
 }
 
 function renderList() {
@@ -57,7 +57,7 @@ function renderList() {
     els.list.innerHTML = hasAny
       ? `<div class="empty">Nenhum artefato corresponde ao filtro.</div>`
       : `<div class="empty">Nenhum artefato em <code>saida/</code>.<br><br>
-           <a href="/run.html" style="color:var(--primary);font-weight:700">Executar workflow â†’</a></div>`;
+           <a href="/run.html" style="color:var(--primary);font-weight:700">Executar workflow →</a></div>`;
     return;
   }
   els.list.innerHTML = items.map(item => {
@@ -67,9 +67,9 @@ function renderList() {
     return `<button class="item-btn${active}" type="button" data-index="${ri}">
       <div class="item-title">${validationBadge(item)}${esc(artifactTitle(item))}</div>
       <div class="item-meta">
-        ${esc(d.tipo_artefato || "tipo indefinido")} Â·
-        ${esc((d.metadados_processamento || {}).status || "sem status")} Â·
-        ${esc((d.validacao_humana || {}).status || "sem validaÃ§Ã£o")}
+        ${esc(d.tipo_artefato || "tipo indefinido")} ·
+        ${esc((d.metadados_processamento || {}).status || "sem status")} ·
+        ${esc((d.validacao_humana || {}).status || "sem validação")}
       </div>
     </button>`;
   }).join("");
@@ -89,10 +89,10 @@ function renderMetrics(d) {
                 (cp.recursos_acessibilidade || []).length;
 
   els.metrics.innerHTML = [
-    `<div class="metric"><div class="metric-label">Tipo</div><div class="metric-value">${esc(d.tipo_artefato || "â€”")}</div></div>`,
-    `<div class="metric"><div class="metric-label">Sinais extraÃ­dos</div><div class="metric-value">${total}</div></div>`,
+    `<div class="metric"><div class="metric-label">Tipo</div><div class="metric-value">${esc(d.tipo_artefato || "—")}</div></div>`,
+    `<div class="metric"><div class="metric-label">Sinais extraídos</div><div class="metric-value">${total}</div></div>`,
     `<div class="metric"><div class="metric-label">Risco PII</div><div class="metric-value"><span class="status ${statusClass(anon.risco_reidentificacao)}">${esc(anon.risco_reidentificacao || "nao_avaliado")}</span></div></div>`,
-    `<div class="metric"><div class="metric-label">ValidaÃ§Ã£o</div><div class="metric-value"><span class="status ${statusClass(val.status || meta.status)}">${esc(val.status || meta.status || "pendente")}</span></div></div>`,
+    `<div class="metric"><div class="metric-label">Validação</div><div class="metric-value"><span class="status ${statusClass(val.status || meta.status)}">${esc(val.status || meta.status || "pendente")}</span></div></div>`,
   ].join("");
 }
 
@@ -118,24 +118,24 @@ function renderDetail() {
       <div>
         <div class="field"><div class="field-label">Arquivo de origem</div><div class="field-value">${esc(orig.nome_arquivo)}</div></div>
         <div class="field"><div class="field-label">Formato original</div><div class="field-value">${esc(orig.formato_original)}</div></div>
-        <div class="field"><div class="field-label">PÃ¡gina ou aba</div><div class="field-value">${esc(orig.pagina_ou_aba)}</div></div>
+        <div class="field"><div class="field-label">Página ou aba</div><div class="field-value">${esc(orig.pagina_ou_aba)}</div></div>
       </div>
       <div>
-        <div class="field"><div class="field-label">Pipeline</div><div class="field-value">${esc(meta.pipeline_versao)} Â· ${esc(meta.status)}</div></div>
-        <div class="field"><div class="field-label">ConfianÃ§a da extraÃ§Ã£o</div><div class="field-value"><span class="status ${statusClass(meta.confianca_extracao)}">${esc(meta.confianca_extracao)}</span></div></div>
-        <div class="field"><div class="field-label">ValidaÃ§Ã£o humana</div><div class="field-value"><span class="status ${statusClass(val.status)}">${esc(val.status)}</span></div></div>
+        <div class="field"><div class="field-label">Pipeline</div><div class="field-value">${esc(meta.pipeline_versao)} · ${esc(meta.status)}</div></div>
+        <div class="field"><div class="field-label">Confiança da extração</div><div class="field-value"><span class="status ${statusClass(meta.confianca_extracao)}">${esc(meta.confianca_extracao)}</span></div></div>
+        <div class="field"><div class="field-label">Validação humana</div><div class="field-value"><span class="status ${statusClass(val.status)}">${esc(val.status)}</span></div></div>
       </div>
     </div>
-    <div class="field"><div class="field-label">Objetivo pedagÃ³gico</div><div class="field-value">${esc(cp.objetivo_pedagogico)}</div></div>
+    <div class="field"><div class="field-label">Objetivo pedagógico</div><div class="field-value">${esc(cp.objetivo_pedagogico)}</div></div>
     <div class="grid-two">
       <div class="field"><div class="field-label">Barreiras identificadas</div>${arrayItems(cp.barreiras_identificadas)}</div>
-      <div class="field"><div class="field-label">EstratÃ©gias pedagÃ³gicas</div>${arrayItems(cp.estrategias_pedagogicas)}</div>
+      <div class="field"><div class="field-label">Estratégias pedagógicas</div>${arrayItems(cp.estrategias_pedagogicas)}</div>
     </div>
     <div class="grid-two">
       <div class="field"><div class="field-label">Recursos de acessibilidade</div>${arrayItems(cp.recursos_acessibilidade)}</div>
       <div class="field"><div class="field-label">Itens mascarados</div>${chips(anon.itens_mascarados)}</div>
     </div>
-    <div class="field"><div class="field-label">ObservaÃ§Ãµes relevantes</div><div class="field-value">${esc(cp.observacoes_relevantes)}</div></div>
+    <div class="field"><div class="field-label">Observações relevantes</div><div class="field-value">${esc(cp.observacoes_relevantes)}</div></div>
       <details>
         <summary>JSON bruto para auditoria</summary>
         <pre>${esc(JSON.stringify(d, null, 2))}</pre>
@@ -148,15 +148,15 @@ function renderValidationSection(item) {
   if (!item) return "";
   const v = state.validations[item.path];
 
-  const btnLabel = v?.loading ? "Validandoâ€¦" : "Validar schema";
+  const btnLabel = v?.loading ? "Validando…" : "Validar schema";
   const btnDisabled = v?.loading ? " disabled" : "";
 
   let resultHtml = "";
   if (v?.result) {
     if (v.result.ok) {
       resultHtml = `<div class="validation-bar valid">
-        <span style="font-size:18px">âœ“</span>
-        <span class="validation-label">Schema vÃ¡lido â€” artefato conforme com <code>artefato_pedagogico.schema.json</code>.</span>
+        <span style="font-size:18px">✓</span>
+        <span class="validation-label">Schema válido — artefato conforme com <code>artefato_pedagogico.schema.json</code>.</span>
       </div>`;
     } else {
       const rows = (v.result.details ?? []).map(e =>
@@ -166,7 +166,7 @@ function renderValidationSection(item) {
         </div>`
       ).join("");
       resultHtml = `<div class="validation-bar invalid">
-        <span style="font-size:18px">âœ—</span>
+        <span style="font-size:18px">✗</span>
         <span class="validation-label">${v.result.errors?.length ?? 0} erro(s) de schema encontrado(s).</span>
       </div>
       <div class="validation-errors">${rows}</div>`;
@@ -175,7 +175,7 @@ function renderValidationSection(item) {
 
   return `<div style="margin-top:8px;display:flex;flex-direction:column;gap:8px">
     <div style="display:flex;align-items:center;gap:8px">
-      <div class="field-label">ValidaÃ§Ã£o de schema</div>
+      <div class="field-label">Validação de schema</div>
           <button type="button" id="validateBtn"${btnDisabled}
             style="font-size:12px;padding:4px 10px">${btnLabel}</button>
     </div>
@@ -185,7 +185,7 @@ function renderValidationSection(item) {
 
 function render() { renderList(); renderDetail(); }
 
-/* â”€â”€ ValidaÃ§Ã£o â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Validação ────────────────────────────── */
 async function triggerValidation() {
   const item = state.artifacts[state.selectedIndex];
   if (!item) return;
@@ -228,9 +228,9 @@ async function loadArtifacts() {
     render();
   } catch (err) {
     els.metrics.innerHTML = "";
-    els.list.innerHTML = `<div class="empty">NÃ£o foi possÃ­vel carregar artefatos.</div>`;
+    els.list.innerHTML = `<div class="empty">Não foi possível carregar artefatos.</div>`;
     els.panel.innerHTML = `<p class="error-msg">Erro: ${esc(err.message)}</p>
-      <p>Verifique se o servidor APDA estÃ¡ rodando: <code>apda web</code></p>`;
+      <p>Verifique se o servidor APDA está rodando: <code>apda web</code></p>`;
   }
 }
 
@@ -253,7 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const fileInput = document.getElementById("fileInput");
   fileInput?.addEventListener("change", async e => {
     try { await loadFiles(Array.from(e.target.files || [])); }
-    catch (err) { els.panel.innerHTML = `<p class="error-msg">JSON invÃ¡lido: ${esc(err.message)}</p>`; }
+    catch (err) { els.panel.innerHTML = `<p class="error-msg">JSON inválido: ${esc(err.message)}</p>`; }
     finally { e.target.value = ""; }
   });
 

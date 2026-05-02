@@ -1,4 +1,4 @@
-﻿import { getJSON } from "../lib/api.js";
+import { getJSON } from "../lib/api.js";
 import { esc } from "../lib/dom.js";
 
 const STEP_LABELS = {
@@ -8,15 +8,15 @@ const STEP_LABELS = {
   "validate-schema":   "Validando schema",
 };
 const STEP_ICONS = {
-  "extract-text":      "ðŸ“„",
-  "privacy-filter":    "ðŸ”’",
-  "generate-artifact": "ðŸ¤–",
-  "validate-schema":   "âœ…",
+  "extract-text":      "📄",
+  "privacy-filter":    "🔒",
+  "generate-artifact": "🤖",
+  "validate-schema":   "✅",
 };
 const OUTPUT_LABELS = {
-  extracted:  "Texto extraÃ­do",
+  extracted:  "Texto extraído",
   anonymized: "Texto anonimizado",
-  artifact:   "Artefato pedagÃ³gico",
+  artifact:   "Artefato pedagógico",
 };
 const EXT_CLASS = { txt:"txt", json:"json", docx:"docx", pdf:"pdf", xlsx:"xlsx" };
 
@@ -32,22 +32,22 @@ function statusBadge(status) {
 }
 
 function fmtDate(iso) {
-  if (!iso) return "â€“";
+  if (!iso) return "–";
   const d = new Date(iso);
   return d.toLocaleDateString("pt-BR") + " " + d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 }
 
 function fmtElapsed(ms) {
-  if (ms == null) return "â€“";
+  if (ms == null) return "–";
   if (ms < 1000) return `${ms}ms`;
   return `${(ms / 1000).toFixed(1)}s`;
 }
 
 function fileName(path) {
-  return path ? path.split("/").pop() : "â€“";
+  return path ? path.split("/").pop() : "–";
 }
 
-/* â”€â”€ Carregar dados â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Carregar dados ─────────────────────── */
 async function loadRuns() {
   document.getElementById("runsBody").innerHTML =
     `<tr><td colspan="6" class="empty-state">Carregando...</td></tr>`;
@@ -95,7 +95,7 @@ function renderTable() {
   const runs = filteredRuns();
   if (!runs.length) {
     document.getElementById("runsBody").innerHTML =
-      `<tr><td colspan="6" class="empty-state">Nenhuma execuÃ§Ã£o encontrada.</td></tr>`;
+      `<tr><td colspan="6" class="empty-state">Nenhuma execução encontrada.</td></tr>`;
     return;
   }
   document.getElementById("runsBody").innerHTML = runs.map(r => {
@@ -104,7 +104,7 @@ function renderTable() {
     const inputName = fileName(r.input?.relativePath ?? r.input?.path ?? "");
     return `<tr${sel} data-id="${esc(r.id)}">
       <td>${statusBadge(r.status)}</td>
-      <td>${esc(r.workflowName ?? r.workflowId ?? "â€“")}</td>
+      <td>${esc(r.workflowName ?? r.workflowId ?? "–")}</td>
       <td class="input-cell" title="${esc(inputName)}">${esc(inputName)}</td>
       <td class="elapsed-cell">${fmtElapsed(r.elapsedMs)}</td>
       <td class="date-cell">${fmtDate(r.startedAt)}</td>
@@ -121,14 +121,14 @@ function updateSubtitle() {
   const ok      = allRuns.filter(r => r.status === "ok").length;
   const errors  = allRuns.filter(r => r.status === "error").length;
   const running = allRuns.filter(r => r.status === "running").length;
-  let parts = [`${total} execuÃ§${total === 1 ? "Ã£o" : "Ãµes"}`];
+  let parts = [`${total} execuç${total === 1 ? "ão" : "ões"}`];
   if (ok)      parts.push(`${ok} ok`);
   if (errors)  parts.push(`${errors} com erro`);
   if (running) parts.push(`${running} em andamento`);
-  document.getElementById("subtitle").textContent = parts.join(" Â· ");
+  document.getElementById("subtitle").textContent = parts.join(" · ");
 }
 
-/* â”€â”€ Detalhe â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Detalhe ────────────────────────────── */
 async function openDetail(id) {
   selectedId = id;
   renderTable();
@@ -160,7 +160,7 @@ function renderDetail(rec) {
 
   const inputName = fileName(rec.input?.relativePath ?? rec.input?.path ?? "");
   document.getElementById("detailMeta").textContent =
-    [inputName, fmtDate(rec.startedAt), fmtElapsed(rec.elapsedMs)].filter(Boolean).join(" Â· ");
+    [inputName, fmtDate(rec.startedAt), fmtElapsed(rec.elapsedMs)].filter(Boolean).join(" · ");
 
   document.getElementById("detailBadge").innerHTML = statusBadge(rec.status);
 
@@ -168,7 +168,7 @@ function renderDetail(rec) {
   const steps = rec.steps ?? [];
   document.getElementById("detailSteps").innerHTML = steps.length
     ? steps.map(s => `<div class="step-row done">
-        <div class="step-icon">${esc(STEP_ICONS[s] ?? "Â·")}</div>
+        <div class="step-icon">${esc(STEP_ICONS[s] ?? "·")}</div>
         <div class="step-label">${esc(STEP_LABELS[s] ?? s)}</div>
       </div>`).join("")
     : `<div style="color:var(--muted);font-size:13px">Nenhuma etapa registrada.</div>`;
@@ -193,7 +193,7 @@ function renderDetail(rec) {
     }).join("");
   }
 
-  // MÃ©tricas
+  // Métricas
   const meta = rec.meta ?? {};
   const metricItems = [];
   if (meta.tokenCount != null)
@@ -203,7 +203,7 @@ function renderDetail(rec) {
   if (meta.completionTokens != null)
     metricItems.push({ label: "Tokens resposta", value: meta.completionTokens.toLocaleString("pt-BR") });
   if (rec.elapsedMs != null)
-    metricItems.push({ label: "DuraÃ§Ã£o total", value: fmtElapsed(rec.elapsedMs) });
+    metricItems.push({ label: "Duração total", value: fmtElapsed(rec.elapsedMs) });
 
   if (metricItems.length) {
     document.getElementById("detailMetricsWrap").style.display = "";
@@ -221,10 +221,10 @@ function renderDetail(rec) {
   // JSON bruto
   document.getElementById("detailJson").textContent = JSON.stringify(rec, null, 2);
 
-  // AÃ§Ãµes
+  // Ações
   const actions = [];
   if (rec.outputs?.artifact?.relativePath) {
-    actions.push(`<a href="/index.html" class="btn primary" style="font-size:12px">Ver artefato â†’</a>`);
+    actions.push(`<a href="/index.html" class="btn primary" style="font-size:12px">Ver artefato →</a>`);
   }
   const inputFile = rec.input?.relativePath ?? rec.input?.path;
   if (inputFile && (rec.status === "ok" || rec.status === "error")) {
@@ -233,7 +233,7 @@ function renderDetail(rec) {
   document.getElementById("detailActions").innerHTML = actions.join("");
 }
 
-/* â”€â”€ Eventos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Eventos ────────────────────────────── */
 document.getElementById("reloadBtn").addEventListener("click", loadRuns);
 document.getElementById("filterStatus").addEventListener("change", renderTable);
 document.getElementById("filterWorkflow").addEventListener("change", renderTable);

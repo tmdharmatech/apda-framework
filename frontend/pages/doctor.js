@@ -1,10 +1,10 @@
-﻿import { getJSON } from "../lib/api.js";
+import { getJSON } from "../lib/api.js";
 import { esc } from "../lib/dom.js";
 
 function icon(ok, warn = false) {
-  if (ok)   return `<span class="check-icon" style="color:var(--ok)">âœ“</span>`;
-  if (warn) return `<span class="check-icon" style="color:var(--warn)">âš </span>`;
-  return `<span class="check-icon" style="color:var(--risk)">âœ—</span>`;
+  if (ok)   return `<span class="check-icon" style="color:var(--ok)">✓</span>`;
+  if (warn) return `<span class="check-icon" style="color:var(--warn)">⚠</span>`;
+  return `<span class="check-icon" style="color:var(--risk)">✗</span>`;
 }
 
 function pill(label, cls) {
@@ -23,9 +23,9 @@ function endpointPill(status) {
 
 function renderPython(py) {
   const rows = [
-    { ok: py.ok, label: "Python disponÃ­vel", detail: py.ok ? `${py.command} Â· ${py.version || "versÃ£o desconhecida"}` : "python3 / .venv nÃ£o encontrado" },
+    { ok: py.ok, label: "Python disponível", detail: py.ok ? `${py.command} · ${py.version || "versão desconhecida"}` : "python3 / .venv não encontrado" },
     { ok: py.scriptsOk, label: "Scripts APDA presentes", detail: py.scripts.filter(s => !s.ok).map(s => s.path).join(", ") || "todos encontrados" },
-    { ok: py.modulesOk, label: "DependÃªncias Python instaladas",
+    { ok: py.modulesOk, label: "Dependências Python instaladas",
       detail: py.modules.filter(m => !m.ok).map(m => m.packageName).join(", ") || "todas presentes" },
   ];
   return `
@@ -39,7 +39,7 @@ function renderPython(py) {
         </div>`).join("")}
       ${!py.modulesOk ? `
         <details style="margin-top:10px">
-          <summary>MÃ³dulos ausentes</summary>
+          <summary>Módulos ausentes</summary>
           <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px">
             ${py.modules.filter(m => !m.ok).map(m =>
               `<span class="chip" style="border-color:var(--risk);color:var(--risk)">${esc(m.packageName)}</span>`
@@ -59,7 +59,7 @@ function renderGpus(gpus) {
           ${icon(true)}
           <span class="check-label">${esc(g.label)}</span>
           <span class="check-detail">${esc(g.kind)}</span>
-        </div>`).join("") : `<div class="check-row">${icon(false, true)}<span class="check-label">Nenhuma GPU detectada â€” CPU disponÃ­vel como fallback</span></div>`}
+        </div>`).join("") : `<div class="check-row">${icon(false, true)}<span class="check-label">Nenhuma GPU detectada — CPU disponível como fallback</span></div>`}
     </div>`;
 }
 
@@ -74,12 +74,12 @@ function renderModels(models, defaultModel) {
       ${defaultModel ? `
         <div class="check-row">
           ${icon(true)}
-          <span class="check-label"><strong>PadrÃ£o:</strong> ${esc(defaultModel.name)}</span>
-          <span class="check-detail">${esc(defaultModel.sizeLabel)} Â· ${esc(defaultModel.source)}</span>
+          <span class="check-label"><strong>Padrão:</strong> ${esc(defaultModel.name)}</span>
+          <span class="check-detail">${esc(defaultModel.sizeLabel)} · ${esc(defaultModel.source)}</span>
         </div>` : `
         <div class="check-row">
           ${icon(false, true)}
-          <span class="check-label">Nenhum modelo configurado como padrÃ£o</span>
+          <span class="check-label">Nenhum modelo configurado como padrão</span>
         </div>`}
       ${models.filter(m => m.path !== defPath).slice(0, 6).map(m => `
         <div class="check-row">
@@ -99,8 +99,8 @@ function renderServer(llamaBinary, endpoint, llamaCommand) {
       <div class="panel-head"><h2>llama-server</h2></div>
       <div class="check-row">
         ${icon(llamaBinary.ok)}
-        <span class="check-label">BinÃ¡rio llama-server</span>
-        <span class="check-detail">${llamaBinary.ok ? `${esc(llamaBinary.path)} Â· ${esc(llamaBinary.source)}` : "nÃ£o encontrado"}</span>
+        <span class="check-label">Binário llama-server</span>
+        <span class="check-detail">${llamaBinary.ok ? `${esc(llamaBinary.path)} · ${esc(llamaBinary.source)}` : "não encontrado"}</span>
       </div>
       <div class="check-row">
         ${icon(endpointOk, endpointWarn)}
@@ -129,7 +129,7 @@ function renderInputs(inputs) {
       </div>
       ${!inputs.length ? `<div class="check-row">${icon(false, true)}<span class="check-label">Nenhum arquivo suportado encontrado</span></div>` :
         `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
-          ${Object.entries(extCount).map(([ext, n]) => `<span class="chip">${esc(ext)} Ã— ${n}</span>`).join("")}
+          ${Object.entries(extCount).map(([ext, n]) => `<span class="chip">${esc(ext)} × ${n}</span>`).join("")}
         </div>
         ${inputs.slice(0, 8).map(f => `
           <div class="check-row">
@@ -144,11 +144,11 @@ function renderInputs(inputs) {
 function renderConfig(cfg) {
   return `
     <div class="panel">
-      <div class="panel-head"><h2>ConfiguraÃ§Ã£o local</h2></div>
+      <div class="panel-head"><h2>Configuração local</h2></div>
       <div class="check-row">
         ${icon(cfg.exists)}
         <span class="check-label">.apda/config.json</span>
-        <span class="check-detail">${cfg.exists ? "encontrada" : "nÃ£o criada â€” serÃ¡ gerada no primeiro onboarding"}</span>
+        <span class="check-detail">${cfg.exists ? "encontrada" : "não criada — será gerada no primeiro onboarding"}</span>
       </div>
       ${cfg.exists ? `
         <details style="margin-top:10px">
@@ -162,20 +162,20 @@ function renderActions(actions) {
   if (!actions.length) {
     return `
       <div class="panel">
-        <div class="panel-head"><h2>PrÃ³ximas aÃ§Ãµes</h2></div>
+        <div class="panel-head"><h2>Próximas ações</h2></div>
         <div class="check-row">
           ${icon(true)}
-          <span class="check-label">Ambiente pronto â€” execute <strong>apda web</strong> ou <a href="/run.html">Executar</a> para iniciar.</span>
+          <span class="check-label">Ambiente pronto — execute <strong>apda web</strong> ou <a href="/run.html">Executar</a> para iniciar.</span>
         </div>
       </div>`;
   }
   return `
     <div class="panel">
-      <div class="panel-head"><h2>PrÃ³ximas aÃ§Ãµes</h2><span class="badge warn">${actions.length}</span></div>
+      <div class="panel-head"><h2>Próximas ações</h2><span class="badge warn">${actions.length}</span></div>
       <div class="actions-list">
         ${actions.map(a => `
           <div class="action-item">
-            <span class="action-icon">â†’</span>
+            <span class="action-icon">→</span>
             <span>${esc(a)}</span>
           </div>`).join("")}
       </div>
@@ -196,7 +196,7 @@ function renderSummaryCards(report) {
     ${card("Modelos", report.models.length)}
     ${card("Servidor", `<span class="badge ${report.endpoint.status === "openai-compatible" ? "ok" : ""}">${report.endpoint.status === "openai-compatible" ? "ativo" : "inativo"}</span>`)}
     ${card("Arquivos", report.inputs.length)}
-    ${card("Status geral", allOk ? `<span class="badge ok">pronto</span>` : hasActions ? `<span class="badge warn">${report.actions.length} aÃ§Ã£o${report.actions.length > 1 ? "Ãµes" : ""}</span>` : `<span class="badge warn">verificar</span>`)}
+    ${card("Status geral", allOk ? `<span class="badge ok">pronto</span>` : hasActions ? `<span class="badge warn">${report.actions.length} ação${report.actions.length > 1 ? "ões" : ""}</span>` : `<span class="badge warn">verificar</span>`)}
   </div>`;
 }
 
@@ -218,11 +218,11 @@ function render(report) {
 
 async function load() {
   const main = document.getElementById("main");
-  main.innerHTML = `<div class="loading">Carregando diagnÃ³stico...</div>`;
+  main.innerHTML = `<div class="loading">Carregando diagnóstico...</div>`;
   try {
     render(await getJSON("/api/doctor"));
   } catch (err) {
-    main.innerHTML = `<div class="panel"><p class="error-msg">Erro ao carregar diagnÃ³stico: ${esc(err.message)}</p></div>`;
+    main.innerHTML = `<div class="panel"><p class="error-msg">Erro ao carregar diagnóstico: ${esc(err.message)}</p></div>`;
   }
 }
 

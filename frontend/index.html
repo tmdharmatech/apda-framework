@@ -1,9 +1,9 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>APDA â€” Artefatos</title>
+  <title>APDA — Artefatos</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="/shared.css">
   <style>
@@ -20,7 +20,7 @@
       main { grid-template-columns: 1fr; }
     }
 
-    /* â”€â”€ ValidaÃ§Ã£o â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    /* ── Validação ───────────────────────────── */
     .validation-bar {
       display: flex;
       align-items: center;
@@ -58,7 +58,7 @@
     }
     .error-msg-text { color: var(--fg); }
 
-    /* â”€â”€ Upload zone â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    /* ── Upload zone ─────────────────────────── */
     .upload-zone {
       border: 2px dashed var(--line);
       border-radius: 10px;
@@ -74,7 +74,7 @@
 
     .upload-zone label { cursor: pointer; }
 
-    /* â”€â”€ Sidebar item badge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    /* ── Sidebar item badge ──────────────────── */
     .item-valid   { float: right; color: var(--ok);   font-size: 12px; margin-left: 4px; }
     .item-invalid { float: right; color: var(--risk); font-size: 12px; margin-left: 4px; }
   </style>
@@ -83,12 +83,12 @@
   <header>
     <div class="topbar">
       <div class="topbar-left">
-        <h1>APDA â€” Visualizador de Artefatos</h1>
-        <div class="subtitle">Leitura visual dos artefatos pedagÃ³gicos gerados pelo pipeline.</div>
+        <h1>APDA — Visualizador de Artefatos</h1>
+        <div class="subtitle">Leitura visual dos artefatos pedagógicos gerados pelo pipeline.</div>
       </div>
       <div class="topbar-right">
         <button id="reloadBtn">Recarregar</button>
-        <label class="btn" style="cursor:pointer" title="Carregar JSON local para visualizaÃ§Ã£o e validaÃ§Ã£o">
+        <label class="btn" style="cursor:pointer" title="Carregar JSON local para visualização e validação">
           Carregar JSON
           <input id="fileInput" type="file" accept=".json,application/json" multiple style="display:none">
         </label>

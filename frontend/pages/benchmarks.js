@@ -1,4 +1,4 @@
-﻿import { getJSON } from "../lib/api.js";
+import { getJSON } from "../lib/api.js";
 import { esc } from "../lib/dom.js";
 
 const state = { data: null, model: "", category: "" };
@@ -36,7 +36,7 @@ function qualityBadge(v) {
 
 function boolBadge(v) {
   const cls   = v === true ? "risk" : v === false ? "ok" : "warn";
-  const label = v === true ? "sim"  : v === false ? "nÃ£o" : "n/a";
+  const label = v === true ? "sim"  : v === false ? "não" : "n/a";
   return `<span class="badge ${cls}">${label}</span>`;
 }
 
@@ -62,10 +62,10 @@ function renderCards(all) {
 
   els.cards.innerHTML = [
     card("Testes",        all.length),
-    card("JSON vÃ¡lidos",  `${validJson}/${jsonTests.length}`),
+    card("JSON válidos",  `${validJson}/${jsonTests.length}`),
     card("Sem vazamento", `${noLeak}/${jsonTests.length}`),
     card("Pico de VRAM",  fmt(maxVram, 0, " MiB")),
-    card("Melhor geraÃ§Ã£o",fmt(bestSpeed, 1, " t/s")),
+    card("Melhor geração",fmt(bestSpeed, 1, " t/s")),
   ].join("");
 }
 
@@ -94,13 +94,13 @@ function renderBars(container, items, key, suffix) {
   const measured = items.filter(t => t.metrics[key] != null);
   const max = measured.reduce((m, t) => Math.max(m, t.metrics[key]), 0);
   if (!measured.length) {
-    container.innerHTML = `<div class="panel-notes">Sem mediÃ§Ãµes disponÃ­veis.</div>`;
+    container.innerHTML = `<div class="panel-notes">Sem medições disponíveis.</div>`;
     return;
   }
   container.innerHTML = measured.map(t => {
     const pct = max ? Math.max(2, (t.metrics[key] / max) * 100) : 0;
     return `<div class="bar-row">
-      <div class="bar-label">${esc(t.model_label)} Â· ${esc(t.id)}</div>
+      <div class="bar-label">${esc(t.model_label)} · ${esc(t.id)}</div>
       <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
       <div>${fmt(t.metrics[key], key.includes("vram") ? 0 : 1, suffix)}</div>
     </div>`;
@@ -123,12 +123,12 @@ function render() {
   renderBars(els.vramBars,   items, "vram_total_mib",                " MiB");
   renderBars(els.speedBars,  items, "generation_tokens_per_second",  " t/s");
   const hw = state.data.hardware || {};
-  els.hardware.textContent = [hw.gpu, hw.backend, hw.device, hw.vram_total_mib ? `VRAM ${hw.vram_total_mib} MiB` : ""].filter(Boolean).join(" Â· ");
+  els.hardware.textContent = [hw.gpu, hw.backend, hw.device, hw.vram_total_mib ? `VRAM ${hw.vram_total_mib} MiB` : ""].filter(Boolean).join(" · ");
   els.rawJson.textContent = JSON.stringify(state.data, null, 2);
 }
 
 function showError(msg) {
-  els.cards.innerHTML = `<div class="empty" style="color:var(--risk)">âš  ${esc(msg)}</div>`;
+  els.cards.innerHTML = `<div class="empty" style="color:var(--risk)">⚠ ${esc(msg)}</div>`;
   els.rows.innerHTML = "";
   els.vramBars.innerHTML = "";
   els.speedBars.innerHTML = "";
