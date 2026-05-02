@@ -1,0 +1,53 @@
+{
+  "tipo_artefato": "plano_atendimento",
+  "origem": {
+    "nome_arquivo": "PAEE_Dados_Ficticios.opf_anonimizado.txt",
+    "formato_original": "txt",
+    "pagina_ou_aba": null
+  },
+  "conteudo_pedagogico": {
+    "objetivo_pedagogico": "Garantir o desenvolvimento integral da estudante por meio de inclusão, acessibilidade e apoios individualizados, promovendo avanços em comunicação, autorregulação, socialização e participação escolar.",
+    "barreiras_identificadas": [
+      "Dificuldade com mudanças de rotina",
+      "Necessidade de mediação para comunicação social",
+      "Tempo reduzido de permanência em atividades",
+      "Atraso no desenvolvimento acadêmico",
+      "Desafios na compreensão de combinados sociais"
+    ],
+    "estrategias_pedagogicas": [
+      "Uso de instruções curtas e claras",
+      "Emprego de pistas visuais e rotinas estruturadas",
+      "Reforço positivo sistemático",
+      "Atividades com começo, meio e fim definidos",
+      "Intervalos planejados para autorregulação",
+      "Mediação em interações sociais"
+    ],
+    "recursos_acessibilidade": [
+      "Materiais visuais e jogos de correspondência",
+      "Produções gráficas e expressão artística",
+      "Assistente educacional em sala",
+      "Fonoaudiologia e terapia ocupacional",
+      "Ambiente previsível e organizado"
+    ],
+    "observacoes_relevantes": "A estudante responde bem a estímulos visuais, música e atividades estruturadas. A colaboração entre equipe escolar, família e profissionais de apoio é essencial para o progresso."
+  },
+  "anonimizacao": {
+    "aplicada": true,
+    "itens_mascarados": [
+      "private_person",
+      "private_phone"
+    ],
+    "risco_reidentificacao": "nao_avaliado"
+  },
+  "metadados_processamento": {
+    "pipeline_versao": "apda-local-0.2-opf",
+    "data_processamento": "2026-04-30T10:57:56.557366",
+    "status": "pendente_revisao",
+    "confianca_extracao": "nao_calculada"
+  },
+  "validacao_humana": {
+    "necessaria": true,
+    "status": "pendente",
+    "responsavel": null
+  }
+}

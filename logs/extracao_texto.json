@@ -1,11 +1,11 @@
 {
-  "data": "2026-04-29T18:48:44.097707",
+  "data": "2026-04-30T10:59:33.562597",
   "resultados": [
     {
-      "arquivo": "PAEE_Dados_Ficticios.docx",
+      "arquivo": "Diario_de_Classe_AEE_2025_10_Estudantes_Ficticios_Escola_Professor_Ficticios.xlsx",
       "status": "ok",
-      "caracteres_extraidos": 4670,
-      "saida": "/home/eu/apda-framework/saida/PAEE_Dados_Ficticios.texto_extraido.txt"
+      "caracteres_extraidos": 713779,
+      "saida": "/home/eu/apda-framework/saida/Diario_de_Classe_AEE_2025_10_Estudantes_Ficticios_Escola_Professor_Ficticios.texto_extraido.txt"
     }
   ]
 }

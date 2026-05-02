@@ -1,0 +1,17 @@
+{
+  "data": "2026-04-30T11:27:01.262519",
+  "modelo": "sabia-professor",
+  "servidor": "http://localhost:4000",
+  "entrada": "/home/eu/apda-framework/saida/Diario_de_Classe_AEE_2025_10_Estudantes_Ficticios_Escola_Professor_Ficticios.bench_anonimizado.txt",
+  "saida": "/home/eu/apda-framework/saida/Diario_de_Classe_AEE_2025_10_Estudantes_Ficticios_Escola_Professor_Ficticios.bench_sabia.apda.json",
+  "raw_saida": "/home/eu/apda-framework/saida/Diario_de_Classe_AEE_2025_10_Estudantes_Ficticios_Escola_Professor_Ficticios.bench_sabia.apda.json.raw.txt",
+  "elapsed_seconds": 4.263,
+  "usage": {
+    "completion_tokens": 377,
+    "prompt_tokens": 1816,
+    "total_tokens": 2193,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

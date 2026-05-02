@@ -1,0 +1,17 @@
+{
+  "data": "2026-04-30T10:58:04.233833",
+  "modelo": "sabia-professor",
+  "servidor": "http://127.0.0.1:4000",
+  "entrada": "/home/eu/apda-framework/saida/PAEE_Dados_Ficticios.opf_anonimizado.txt",
+  "saida": "/home/eu/apda-framework/saida/PAEE_Dados_Ficticios.sabia.apda.json",
+  "raw_saida": "/home/eu/apda-framework/saida/PAEE_Dados_Ficticios.sabia.apda.json.raw.txt",
+  "elapsed_seconds": 7.676,
+  "usage": {
+    "completion_tokens": 607,
+    "prompt_tokens": 1843,
+    "total_tokens": 2450,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  }
+}

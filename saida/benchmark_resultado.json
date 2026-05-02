@@ -1,0 +1,22 @@
+{
+  "llama-3.2-3b-local": {
+    "tempo_geracao_s": 9.17,
+    "sucesso": true,
+    "validacao": {
+      "valido_json": true,
+      "campos_obrigatorios": "3/3",
+      "tipo_artefato": "diario_aee",
+      "tamanho_bytes": 924
+    }
+  },
+  "sabia-3-maritaca": {
+    "tempo_geracao_s": 4.34,
+    "sucesso": true,
+    "validacao": {
+      "valido_json": true,
+      "campos_obrigatorios": "3/3",
+      "tipo_artefato": "plano_atendimento",
+      "tamanho_bytes": 1118
+    }
+  }
+}
