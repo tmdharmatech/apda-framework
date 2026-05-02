@@ -1,19 +1,19 @@
 {
   "documento": {
-    "tipo_documento_inferido": "Plano de Atendimento Educacional Especializado (AEE) para um aluno",
-    "total_segmentos": 2,
-    "observacoes": "O documento apresenta informações detalhadas sobre o plano de atendimento educacional especializado para um aluno, incluindo dados pessoais, informações sobre a escola e o professor, e um resumo das necessidades e objetivos do aluno."
+    "tipo_documento_inferido": "Relatório Pedagógico",
+    "total_segmentos": 7,
+    "observacoes": "O documento apresenta uma estrutura clara, com diferentes seções que tratam de diferentes aspectos do relatório pedagógico."
   },
   "segmentos": [
     {
       "indice": 1,
-      "secao_origem": "ABA: Aluno 1",
+      "secao_origem": "Capa",
       "tipos_artefato": [
-        "plano_atendimento"
+        "outro"
       ],
       "confianca": "alta",
-      "trecho_identificador": "PLANO DE ATENDIMENTO EDUCACIONAL ESPECIALIZADO - AEE",
-      "resumo_nao_identificavel": "O aluno apresenta necessidade de apoio pedagógico especializado para organização da rotina, compreensão de instruções e fortalecimento da autonomia nas atividades escolares.",
+      "trecho_identificador": "Unnamed: 0",
+      "resumo_nao_identificavel": "Informações gerais sobre o documento",
       "posicao_aproximada": {
         "inicio_chars": 0,
         "fim_chars": 0
@@ -21,13 +21,83 @@
     },
     {
       "indice": 2,
-      "secao_origem": "ABA: Identificação",
+      "secao_origem": "Identificação",
       "tipos_artefato": [
-        "identificação"
+        "diario_aee"
       ],
       "confianca": "alta",
       "trecho_identificador": "IDENTIFICAÇÃO",
-      "resumo_nao_identificavel": "Informações sobre a escola, os gestores, coordenadores e professores.",
+      "resumo_nao_identificavel": "Informações de contato e endereço da escola",
+      "posicao_aproximada": {
+        "inicio_chars": 0,
+        "fim_chars": 0
+      }
+    },
+    {
+      "indice": 3,
+      "secao_origem": "Relação nominal",
+      "tipos_artefato": [
+        "diario_aee"
+      ],
+      "confianca": "alta",
+      "trecho_identificador": "RELAÇÃO NOMINAL",
+      "resumo_nao_identificavel": "Lista de nomes de alunos",
+      "posicao_aproximada": {
+        "inicio_chars": 0,
+        "fim_chars": 0
+      }
+    },
+    {
+      "indice": 4,
+      "secao_origem": "Aluno 1",
+      "tipos_artefato": [
+        "plano_atendimento"
+      ],
+      "confianca": "alta",
+      "trecho_identificador": "PLANO DE ATENDIMENTO EDUCACIONAL ESPECIALIZADO - AEE",
+      "resumo_nao_identificavel": "Informações sobre o aluno e o plano de atendimento",
+      "posicao_aproximada": {
+        "inicio_chars": 0,
+        "fim_chars": 0
+      }
+    },
+    {
+      "indice": 5,
+      "secao_origem": "Estudo de caso",
+      "tipos_artefato": [
+        "estudo_de_caso"
+      ],
+      "confianca": "alta",
+      "trecho_identificador": "A estudante apresenta necessidade de apoio pedagógico especializado",
+      "resumo_nao_identificavel": "Análise do comportamento e necessidades do aluno",
+      "posicao_aproximada": {
+        "inicio_chars": 0,
+        "fim_chars": 0
+      }
+    },
+    {
+      "indice": 6,
+      "secao_origem": "Observações",
+      "tipos_artefato": [
+        "outro"
+      ],
+      "confianca": "alta",
+      "trecho_identificador": "Observações",
+      "resumo_nao_identificavel": "Comentários adicionais sobre o aluno e o plano de atendimento",
+      "posicao_aproximada": {
+        "inicio_chars": 0,
+        "fim_chars": 0
+      }
+    },
+    {
+      "indice": 7,
+      "secao_origem": "Fim do documento",
+      "tipos_artefato": [
+        "outro"
+      ],
+      "confianca": "alta",
+      "trecho_identificador": "Fim do documento",
+      "resumo_nao_identificavel": "Fim do relatório pedagógico",
       "posicao_aproximada": {
         "inicio_chars": 0,
         "fim_chars": 0

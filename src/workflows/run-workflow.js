@@ -7,7 +7,7 @@ import { render } from "ink";
 import { runCommand } from "../lib/command.js";
 import { pushMetrics } from "../lib/metrics-client.js";
 import { toAbsolute } from "../lib/paths.js";
-import { resolveBaseUrl } from "../lib/resolve-base-url.js";
+import { resolveLlmEndpoint } from "../lib/resolve-base-url.js";
 import { detectPython } from "../detectors/python-env.js";
 import { finishRunRecord, startRunRecord } from "../runs.js";
 import { getWorkflow } from "./registry.js";
@@ -188,9 +188,9 @@ export async function runWorkflow(root, workflowId, inputFile, options = {}) {
   const manifest   = path.join(outputDir, `${stem}.segmentos.json`);
 
   // Resolve baseUrl e litellm uma única vez — usados por múltiplos steps.
-  const baseUrl = resolveBaseUrl(options.baseUrl);
-  const litellm =
-    options.litellm || process.env.APDA_LITELLM === "1" || baseUrl.includes(":4000");
+  const endpoint = resolveLlmEndpoint(options);
+  const baseUrl = endpoint.url;
+  const litellm = endpoint.useLitellm;
   const inputFormat = inputExtension.replace(/^\./, "") || "sem_extensao";
   const modelo =
     options.modelo || options.model || process.env.APDA_MODELO || "apda-local-3b";

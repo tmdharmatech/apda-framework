@@ -22,7 +22,7 @@ from pathlib import Path
 from lib.artifact import normalize_artifact
 from lib.llm_client import extract_json, post_json
 from lib.paths import SAIDA
-from lib.config import resolve_base_url
+from lib.config import resolve_litellm
 
 
 # ---------------------------------------------------------------------------
@@ -130,6 +130,9 @@ def main() -> None:
     parser.add_argument("--input", required=True, help="Texto anonimizado .opf_anonimizado.txt.")
     parser.add_argument("--output-dir", default=str(SAIDA), help="Diretório de saída.")
     parser.add_argument("--base-url", default=None, help="URL base do llama-server (padrão: APDA_LLAMA_BASE_URL ou http://127.0.0.1:8091)")
+    parser.add_argument("--litellm", action="store_true", help="Roteia via LiteLLM proxy.")
+    parser.add_argument("--api-key", default=None, help="API key para autenticacao no LiteLLM proxy.")
+    parser.add_argument("--modelo", default=None, help="Nome logico do modelo no LiteLLM.")
     parser.add_argument(
         "--max-chars-per-segment",
         type=int,
@@ -140,7 +143,8 @@ def main() -> None:
     parser.add_argument("--temperature", type=float, default=0.1)
     args = parser.parse_args()
 
-    base_url = resolve_base_url(args.base_url)
+    base_url, api_key = resolve_litellm(args.base_url, args.api_key, args.litellm)
+    modelo_label = args.modelo or "apda-local-3b"
     manifest_path = Path(args.manifest).resolve()
     input_path = Path(args.input).resolve()
     output_dir = Path(args.output_dir).resolve()
@@ -204,6 +208,7 @@ def main() -> None:
 
             try:
                 payload = {
+                    "model": modelo_label,
                     "messages": [
                         {"role": "system", "content": SYSTEM_PROMPT},
                         {
@@ -235,7 +240,9 @@ def main() -> None:
                     "response_format": {"type": "json_object"},
                 }
 
-                response = post_json(f"{base_url}/v1/chat/completions", payload)
+                response = post_json(
+                    f"{base_url}/v1/chat/completions", payload, api_key=api_key
+                )
                 raw_str: str = response["choices"][0]["message"]["content"]
                 raw_content = raw_str
                 usage = response.get("usage", {})
