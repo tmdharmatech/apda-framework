@@ -2,6 +2,147 @@
 
 Registro das decisoes tecnicas, testes e achados do ambiente local do pipeline APDA.
 
+## 2026-04-30 — Stack de Observabilidade (LiteLLM + Prometheus + Grafana)
+
+### Integracao completa do stack de observabilidade ao pipeline APDA
+
+O diretorio `litellm/` (prototipo isolado) foi integrado ao projeto principal como stack de producao, adicionando proxy de modelos com fallback automatico, metricas de qualidade em tempo real e dashboard Grafana auto-provisionado.
+
+#### Arquitetura do stack
+
+Cinco servicos orquestrados pelo comando `apda stack start`:
+
+1. **llama-server 3B** (porta 8091): modelo local Qwen2.5-3B via Vulkan, gerenciado por PID.
+2. **llama-server 1B** (porta 8092, opcional): fallback para hardware limitado.
+3. **LiteLLM Proxy** (porta 4000): proxy OpenAI-compativel com roteamento least-busy, fallback automatico entre modelos, suporte a API Maritaca/Sabia, e exportacao de metricas para Prometheus.
+4. **Prometheus** (porta 9090): coleta metricas de todos os servicos via scraping a cada 10-15s.
+5. **Grafana** (porta 3001): dashboard APDA auto-provisionado com paineis de qualidade, privacidade e desempenho.
+6. **Exportador de metricas APDA** (porta 8000): metricas customizadas do pipeline (taxa JSON valido, PII, alucinacao, tempo de processamento).
+
+#### Reorganizacao de arquivos
+
+Conteudo de `litellm/` movido para estrutura integrada:
+
+- `infra/docker-compose.yml`: Prometheus e Grafana em `network_mode: host` (resolve problema de conectividade Docker-host no Linux).
+- `infra/prometheus/prometheus.yml`: scrape configs para todos os servicos (localhost).
+- `infra/grafana/provisioning/`: datasources e dashboards auto-provisionados.
+- `infra/grafana/dashboards/apda-dashboard.json`: dashboard completo com 12+ paineis.
+- `infra/start.sh`: orquestrador que sobe todos os servicos com health checks.
+- `infra/stop.sh`: encerramento limpo de todos os processos e containers.
+- `scripts/metrics_exporter.py`: exportador Prometheus com endpoint `/push` para receber metricas de processos externos.
+
+#### Novo comando CLI: `apda stack`
+
+Modulo `src/stack.js` adicionado com subcomandos:
+
+- `apda stack status`: mostra estado de todos os servicos (PID, alive, endpoints atingiveis).
+- `apda stack status --json`: saida estruturada para automacao.
+- `apda stack start`: executa `infra/start.sh` com heranca de ambiente.
+- `apda stack stop`: executa `infra/stop.sh`.
+- `apda stack logs [servico]`: ultimas 50 linhas do log de um servico.
+
+API web adicionada: `GET /api/stack/status` em `src/api/stack-api.js`.
+
+Help view (`src/ui/HelpView.js`) atualizado com secao de Stack de Observabilidade.
+
+#### Instrumentacao do script de geracao (`scripts/05_gerar_artefato_3b.py`)
+
+O script principal de geracao de artefatos agora suporta:
+
+- `--litellm`: roteia via proxy LiteLLM (porta 4000) em vez de llama-server direto.
+- `--api-key`: autenticacao no proxy.
+- `--modelo`: nome logico do modelo no LiteLLM (ex: `apda-local-3b`).
+- `--municipio`: identificacao para metricas por municipio.
+- Variavel `APDA_LITELLM=1`: ativa proxy sem flag explicito.
+
+Metricas enviadas ao exportador via HTTP POST em `/push` (fire-and-forget):
+
+- `apda_artefatos_processados_total` (por workflow, formato, municipio, modelo).
+- `apda_json_valido_total` / `apda_json_invalido_total`.
+- `apda_tempo_processamento_segundos` (histograma com buckets de 1s a 300s).
+
+Retrocompatibilidade mantida: sem `--litellm`, o script continua chamando llama-server direto na porta 8091.
+
+#### Flag `--litellm` no workflow runner
+
+`src/workflows/run-workflow.js` detecta automaticamente quando deve passar `--litellm` ao script Python:
+
+- Flag explicito `--litellm` no `apda run`.
+- Variavel `APDA_LITELLM=1`.
+- URL base contendo `:4000`.
+
+`src/cli.js` atualizado com o parseArgs do flag `--litellm` no comando `run`.
+
+#### Exportador de metricas com push HTTP
+
+`scripts/metrics_exporter.py` agora expoe:
+
+- `GET /metrics`: metricas Prometheus padrao.
+- `GET /health`: health check.
+- `POST /push`: aceita JSON com `action: "resultado"` ou `action: "tempo"` para incrementar contadores e histogramas de processos externos (scripts Python executados pela CLI).
+
+Metricas definidas conforme secao 5.14 do documento Sandbox:
+
+- Tecnicas: artefatos processados, JSON valido/invalido, campos ausentes, campos inventados, tempo de processamento, falhas por formato.
+- Privacidade: vazamento PII, artefatos bloqueados, acuracia de anonimizacao, entidades detectadas.
+- Pedagogicas: fidelidade ao conteudo, separacao semantica, correcoes humanas.
+- Revisao humana: pendentes (gauge), concluidas, aprovados sem correcao.
+- Comparativas: benchmark por modelo, latencia p95.
+
+#### Dashboard Grafana provisionado
+
+Dashboard "APDA Framework — Monitor" com paineis:
+
+- Artefatos Processados (total).
+- Taxa de JSON Valido (%).
+- Alertas de PII Detectados.
+- Latencia Mediana (p50).
+- Custo Total (Sabia API).
+- Artefatos por Workflow (ultimas 6h).
+- Taxa JSON Valido por Modelo.
+- Latencia por Percentil (p50/p95/p99).
+- Campos Inventados por Tipo de Artefato.
+- Tokens por Segundo (llama-server local).
+- Alertas de PII por Tipo.
+
+#### Configuracao Docker para Linux
+
+Decisao tecnica: `network_mode: host` nos containers Prometheus e Grafana.
+
+Motivacao: `host.docker.internal` nao resolve corretamente no Docker Linux com nftables/firewall habilitado. Com `network_mode: host`, os containers acessam `localhost` diretamente, eliminando problemas de rede entre container e host.
+
+Grafana configurado com `GF_SERVER_HTTP_PORT=3001` para evitar conflito com a porta 3000 da WebUI APDA.
+
+#### Leitura de configuracao no start.sh
+
+O `infra/start.sh` le o `.apda/config.json` existente (formato camelCase da CLI) com fallback para variaveis de ambiente:
+
+- `llamaBinary` / `LLAMA_BINARY`
+- `modelPath` / `MODEL_3B`
+- `maritacaApiKey` / `MARITACA_API_KEY`
+
+Isso permite que o onboarding feito pela CLI seja reutilizado pelo stack sem configuracao adicional.
+
+#### Dependencias adicionadas
+
+- `requirements.txt`: `prometheus-client>=0.20.0`.
+- Sistema (pip): `litellm[proxy]`, `prometheus-client`.
+- `package.json` campo `files`: `infra/`, `scripts/metrics_exporter.py`.
+
+#### Validacao ponta a ponta
+
+Teste executado:
+
+1. `apda stack start` — todos os servicos subiram (llama-server 3B, LiteLLM, Prometheus, Grafana, metricas).
+2. `apda run --file saida/PAEE_Dados_Ficticios.opf_anonimizado.txt --workflow generate-apda-json --litellm` — artefato gerado em ~12s via proxy.
+3. Metricas confirmadas no exportador: `apda_artefatos_processados_total=1`, `apda_json_valido_total=1`, `apda_tempo_processamento_segundos_sum=10.87`.
+4. Prometheus coletou as metricas com sucesso.
+5. Grafana consulta confirmada via API: `artefatos_processados = 1`.
+
+#### Testes automatizados
+
+Suite existente (10 testes) continua passando sem modificacoes. Nenhum teste novo exige modelo pesado ou stack ativo.
+
 ## 2026-04-28 — WebUI local (`apda web`)
 
 ### Implementacao da Fase 7: interface visual completa do pipeline

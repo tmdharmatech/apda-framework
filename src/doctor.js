@@ -11,6 +11,7 @@ import { checkLlamaServer } from "./detectors/llama-server.js";
 import { findModels } from "./detectors/models.js";
 import { detectPython } from "./detectors/python-env.js";
 import { readConfig } from "./lib/config.js";
+import { resolveBaseUrl } from "./lib/resolve-base-url.js";
 import {
   buildLlamaServerArgs,
   formatLlamaServerCommand,
@@ -79,9 +80,13 @@ function buildActions(report) {
   const actions = [];
   if (!report.python.ok)
     actions.push("Instale Python ou crie um .venv no projeto.");
-  if (report.python.ok && !report.python.modulesOk)
+  if (report.python.ok && !report.python.coreModulesOk)
     actions.push(
-      "Instale dependencias com: .venv/bin/pip install -r requirements.txt",
+      "Instale dependencias com: pip install -r requirements.txt",
+    );
+  if (report.python.ok && report.python.coreModulesOk && !report.python.neuralModulesOk)
+    actions.push(
+      "Privacy Filter neural requer: pip install -r requirements-neural.txt (torch ~2GB, necessario apenas para workflows neural).",
     );
   if (!report.llamaBinary.ok)
     actions.push(
@@ -104,10 +109,7 @@ function buildActions(report) {
 
 export async function buildDoctorReport(root) {
   const config = await readConfig(root);
-  const baseUrl =
-    process.env.APDA_LLAMA_BASE_URL ??
-    config.llamaBaseUrl ??
-    "http://127.0.0.1:8091";
+  const baseUrl = resolveBaseUrl(undefined, config);
 
   const [python, gpus, models, inputs, llamaBinary, endpoint] =
     await Promise.all([

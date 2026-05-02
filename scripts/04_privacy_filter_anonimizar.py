@@ -10,9 +10,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Iterable
 
-BASE = Path(__file__).resolve().parents[1]
-SAIDA = BASE / "saida"
-LOGS = BASE / "logs"
+from lib.paths import BASE, SAIDA, LOGS
+
 DEFAULT_MODEL_DIR = BASE / "modelos" / "openai-privacy-filter"
 
 REGEX_FALLBACKS = {

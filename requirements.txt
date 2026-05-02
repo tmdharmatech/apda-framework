@@ -1,5 +1,8 @@
 # Dependências diretas dos scripts APDA
 # Instale com: pip install -r requirements.txt
+#
+# Para workflows com Privacy Filter neural (privacy-filter), instale também:
+#   pip install -r requirements-neural.txt
 
 # scripts/01_extrair_texto.py
 python-docx>=1.1.0      # leitura de arquivos .docx
@@ -7,6 +10,9 @@ PyMuPDF>=1.24.0         # leitura de arquivos .pdf
 openpyxl>=3.1.0         # leitura de arquivos .xlsx/.xls
 pandas>=2.0.0           # processamento de planilhas
 
-# scripts/04_privacy_filter_anonimizar.py e 05_gerar_artefato_3b.py
-torch>=2.3.0           # backend de tensor exigido pelo transformers pipeline
-transformers>=4.40.0    # pipeline de NLP (NER para anonimização e geração)
+# scripts/metrics_exporter.py — observabilidade do pipeline
+prometheus-client>=0.20.0  # exportação de métricas para Prometheus
+
+# Testes e qualidade (devDependencies equivalente em Python)
+pytest>=8.0.0           # runner de testes unitários
+jsonschema>=4.23.0      # validação de JSON Schema nos testes de contrato

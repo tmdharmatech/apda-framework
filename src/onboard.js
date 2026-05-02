@@ -7,6 +7,7 @@ import { checkLlamaServer } from "./detectors/llama-server.js";
 import { getWorkflowsForFile } from "./workflows/registry.js";
 import { runWorkflow } from "./workflows/run-workflow.js";
 import { mergeConfig, readConfig } from "./lib/config.js";
+import { resolveBaseUrl } from "./lib/resolve-base-url.js";
 import { buildLlamaServerArgs, formatLlamaServerCommand, startLlamaServer } from "./runners/llama-server-process.js";
 
 function choices(items, mapper) {
@@ -61,7 +62,7 @@ export async function runOnboarding(root, options = {}) {
     default: workflows[defaultIndex(workflows, (item) => item.id === config.workflowId)],
   });
 
-  const defaultBaseUrl = process.env.APDA_LLAMA_BASE_URL ?? config.llamaBaseUrl ?? "http://127.0.0.1:8091";
+  const defaultBaseUrl = resolveBaseUrl(undefined, config);
   const baseUrl = await input({
     message: "URL do llama-server",
     default: defaultBaseUrl,

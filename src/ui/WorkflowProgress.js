@@ -25,6 +25,7 @@ const e = React.createElement;
 const STEP_LABELS = {
   "extract-text": "Extrair texto",
   "privacy-filter": "Anonimizar (filtro de privacidade)",
+  "regex-anon": "Anonimizar (regex — sem GPU)",
   "generate-artifact": "Gerar artefato APDA via LLM",
   "validate-schema": "Validar schema JSON",
   "scan-segments": "Varredura semântica (identificar segmentos)",

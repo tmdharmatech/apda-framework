@@ -1,0 +1,122 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - heading "APDA â€” Visualizador de Artefatos" [level=1] [ref=e5]
+        - generic [ref=e6]: Leitura visual dos artefatos pedagÃ³gicos gerados pelo pipeline.
+      - generic [ref=e7]:
+        - button "Recarregar" [ref=e8] [cursor=pointer]
+        - generic "Carregar JSON local para visualizaÃ§Ã£o e validaÃ§Ã£o" [ref=e9] [cursor=pointer]: Carregar JSON
+      - navigation [ref=e10]:
+        - link "Executar" [ref=e11] [cursor=pointer]:
+          - /url: /run.html
+        - link "Diagnóstico" [ref=e12] [cursor=pointer]:
+          - /url: /doctor.html
+        - link "Servidor" [ref=e13] [cursor=pointer]:
+          - /url: /server.html
+        - link "Artefatos" [ref=e14] [cursor=pointer]:
+          - /url: /index.html
+        - link "Benchmarks" [ref=e15] [cursor=pointer]:
+          - /url: /benchmarks.html
+        - link "Histórico" [ref=e16] [cursor=pointer]:
+          - /url: /history.html
+  - main [ref=e17]:
+    - complementary [ref=e18]:
+      - searchbox "Filtrar artefatos" [ref=e20]
+      - generic [ref=e21]:
+        - button "PAEE_Dados_Ficticios.sabia plano_atendimento Â· pendente_revisao Â· pendente" [ref=e22] [cursor=pointer]:
+          - generic [ref=e23]: PAEE_Dados_Ficticios.sabia
+          - generic [ref=e24]: plano_atendimento Â· pendente_revisao Â· pendente
+        - button "PAEE_Dados_Ficticios relatorio_pedagogico Â· pendente_revisao Â· pendente" [ref=e25] [cursor=pointer]:
+          - generic [ref=e26]: PAEE_Dados_Ficticios
+          - generic [ref=e27]: relatorio_pedagogico Â· pendente_revisao Â· pendente
+        - button "Diario_de_Classe_AEE_2025_10_Estudantes_Ficticios_Escola_Professor_Ficticios.texto_extraido.seg1.plano_atendimento plano_atendimento Â· pendente_revisao Â· pendente" [ref=e28] [cursor=pointer]:
+          - generic [ref=e29]: Diario_de_Classe_AEE_2025_10_Estudantes_Ficticios_Escola_Professor_Ficticios.texto_extraido.seg1.plano_atendimento
+          - generic [ref=e30]: plano_atendimento Â· pendente_revisao Â· pendente
+        - button "Diario_de_Classe_AEE_2025_10_Estudantes_Ficticios_Escola_Professor_Ficticios.bench_sabia plano_atendimento Â· pendente_revisao Â· pendente" [ref=e31] [cursor=pointer]:
+          - generic [ref=e32]: Diario_de_Classe_AEE_2025_10_Estudantes_Ficticios_Escola_Professor_Ficticios.bench_sabia
+          - generic [ref=e33]: plano_atendimento Â· pendente_revisao Â· pendente
+        - button "Diario_de_Classe_AEE_2025_10_Estudantes_Ficticios_Escola_Professor_Ficticios.bench_local diario_aee Â· pendente_revisao Â· pendente" [ref=e34] [cursor=pointer]:
+          - generic [ref=e35]: Diario_de_Classe_AEE_2025_10_Estudantes_Ficticios_Escola_Professor_Ficticios.bench_local
+          - generic [ref=e36]: diario_aee Â· pendente_revisao Â· pendente
+        - button "Diario_de_Classe_AEE_2025_10_Estudantes_Ficticios.sabia plano_atendimento Â· pendente_revisao Â· pendente" [ref=e37] [cursor=pointer]:
+          - generic [ref=e38]: Diario_de_Classe_AEE_2025_10_Estudantes_Ficticios.sabia
+          - generic [ref=e39]: plano_atendimento Â· pendente_revisao Â· pendente
+    - generic [ref=e40]:
+      - generic [ref=e41]:
+        - generic [ref=e42]:
+          - generic [ref=e43]: Tipo
+          - generic [ref=e44]: plano_atendimento
+        - generic [ref=e45]:
+          - generic [ref=e46]: Sinais extraÃdos
+          - generic [ref=e47]: "16"
+        - generic [ref=e48]:
+          - generic [ref=e49]: Risco PII
+          - generic [ref=e51]: nao_avaliado
+        - generic [ref=e52]:
+          - generic [ref=e53]: ValidaÃ§Ã£o
+          - generic [ref=e55]: pendente
+      - generic [ref=e56]:
+        - heading "PAEE_Dados_Ficticios.sabia" [level=2] [ref=e57]
+        - generic [ref=e58]:
+          - generic [ref=e59]:
+            - generic [ref=e60]:
+              - generic [ref=e61]: Arquivo de origem
+              - generic [ref=e62]: PAEE_Dados_Ficticios.opf_anonimizado.txt
+            - generic [ref=e63]:
+              - generic [ref=e64]: Formato original
+              - generic [ref=e65]: txt
+            - generic [ref=e67]: PÃ¡gina ou aba
+          - generic [ref=e68]:
+            - generic [ref=e69]:
+              - generic [ref=e70]: Pipeline
+              - generic [ref=e71]: apda-local-0.2-opf Â· pendente_revisao
+            - generic [ref=e72]:
+              - generic [ref=e73]: ConfianÃ§a da extraÃ§Ã£o
+              - generic [ref=e75]: nao_calculada
+            - generic [ref=e76]:
+              - generic [ref=e77]: ValidaÃ§Ã£o humana
+              - generic [ref=e79]: pendente
+        - generic [ref=e80]:
+          - generic [ref=e81]: Objetivo pedagÃ³gico
+          - generic [ref=e82]: Garantir o desenvolvimento integral da estudante por meio de inclusão, acessibilidade e apoios individualizados, promovendo avanços em comunicação, autorregulação, socialização e participação escolar.
+        - generic [ref=e83]:
+          - generic [ref=e84]:
+            - generic [ref=e85]: Barreiras identificadas
+            - list [ref=e86]:
+              - listitem [ref=e87]: Dificuldade com mudanças de rotina
+              - listitem [ref=e88]: Necessidade de mediação para comunicação social
+              - listitem [ref=e89]: Tempo reduzido de permanência em atividades
+              - listitem [ref=e90]: Atraso no desenvolvimento acadêmico
+              - listitem [ref=e91]: Desafios na compreensão de combinados sociais
+          - generic [ref=e92]:
+            - generic [ref=e93]: EstratÃ©gias pedagÃ³gicas
+            - list [ref=e94]:
+              - listitem [ref=e95]: Uso de instruções curtas e claras
+              - listitem [ref=e96]: Emprego de pistas visuais e rotinas estruturadas
+              - listitem [ref=e97]: Reforço positivo sistemático
+              - listitem [ref=e98]: Atividades com começo, meio e fim definidos
+              - listitem [ref=e99]: Intervalos planejados para autorregulação
+              - listitem [ref=e100]: Mediação em interações sociais
+        - generic [ref=e101]:
+          - generic [ref=e102]:
+            - generic [ref=e103]: Recursos de acessibilidade
+            - list [ref=e104]:
+              - listitem [ref=e105]: Materiais visuais e jogos de correspondência
+              - listitem [ref=e106]: Produções gráficas e expressão artística
+              - listitem [ref=e107]: Assistente educacional em sala
+              - listitem [ref=e108]: Fonoaudiologia e terapia ocupacional
+              - listitem [ref=e109]: Ambiente previsível e organizado
+          - generic [ref=e110]:
+            - generic [ref=e111]: Itens mascarados
+            - generic [ref=e112]:
+              - generic [ref=e113]: private_person
+              - generic [ref=e114]: private_phone
+        - generic [ref=e115]:
+          - generic [ref=e116]: ObservaÃ§Ãµes relevantes
+          - generic [ref=e117]: A estudante responde bem a estímulos visuais, música e atividades estruturadas. A colaboração entre equipe escolar, família e profissionais de apoio é essencial para o progresso.
+        - group [ref=e118]:
+          - generic "JSON bruto para auditoria" [ref=e119] [cursor=pointer]
+        - generic [ref=e122]:
+          - generic [ref=e123]: ValidaÃ§Ã£o de schema
+          - button "Validar schema" [ref=e124] [cursor=pointer]

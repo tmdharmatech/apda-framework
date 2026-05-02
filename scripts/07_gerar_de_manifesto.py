@@ -16,12 +16,13 @@ import argparse
 import json
 import re
 import time
-import urllib.request
 from datetime import datetime
 from pathlib import Path
 
-BASE = Path(__file__).resolve().parents[1]
-SAIDA = BASE / "saida"
+from lib.artifact import normalize_artifact
+from lib.llm_client import extract_json, post_json
+from lib.paths import SAIDA
+from lib.config import resolve_base_url
 
 
 # ---------------------------------------------------------------------------
@@ -91,109 +92,6 @@ Trecho anonimizado:
 
 
 # ---------------------------------------------------------------------------
-# HTTP helpers
-# ---------------------------------------------------------------------------
-
-
-def post_json(url: str, payload: dict, timeout: int = 300) -> dict:
-    data = json.dumps(payload).encode("utf-8")
-    req = urllib.request.Request(
-        url,
-        data=data,
-        headers={"Content-Type": "application/json"},
-        method="POST",
-    )
-    with urllib.request.urlopen(req, timeout=timeout) as response:
-        return json.loads(response.read().decode("utf-8"))
-
-
-# ---------------------------------------------------------------------------
-# JSON extraction + normalisation
-# ---------------------------------------------------------------------------
-
-
-def extract_json(text: str) -> str:
-    clean = text.strip()
-    if clean.startswith("```"):
-        clean = re.sub(r"^```(?:json)?", "", clean).strip()
-        clean = re.sub(r"```$", "", clean).strip()
-    start = clean.find("{")
-    end = clean.rfind("}")
-    if start == -1 or end == -1 or end < start:
-        raise ValueError("A resposta não contém um objeto JSON.")
-    return clean[start : end + 1]
-
-
-def normalize_artifact(artifact: dict) -> dict:
-    """Normaliza e valida os campos obrigatórios do artefato.
-
-    Preserva os campos origem.segmento_indice e origem.segmento_total
-    quando presentes no artefato retornado pelo LLM.
-    """
-    # --- conteudo_pedagogico ---
-    content = artifact.setdefault("conteudo_pedagogico", {})
-    for key in (
-        "barreiras_identificadas",
-        "estrategias_pedagogicas",
-        "recursos_acessibilidade",
-    ):
-        value = content.get(key)
-        if not isinstance(value, list):
-            content[key] = []
-            continue
-        content[key] = [str(item) for item in value[:6]]
-
-    # --- anonimizacao ---
-    anon = artifact.setdefault("anonimizacao", {})
-    anon["aplicada"] = True
-    labels = anon.get("itens_mascarados")
-    if not isinstance(labels, list):
-        labels = []
-    allowed = {
-        "private_person",
-        "private_address",
-        "private_email",
-        "private_phone",
-        "private_url",
-        "private_date",
-        "account_number",
-        "secret",
-    }
-    unique_labels: list[str] = []
-    for label in labels:
-        label = str(label).strip("[]").lower()
-        if label in allowed and label not in unique_labels:
-            unique_labels.append(label)
-    anon["itens_mascarados"] = unique_labels or ["private_person"]
-    anon.setdefault("risco_reidentificacao", "nao_avaliado")
-
-    # --- validacao_humana ---
-    validation = artifact.setdefault("validacao_humana", {})
-    validation["necessaria"] = True
-    validation["status"] = "pendente"
-    validation["responsavel"] = None
-
-    # --- metadados_processamento ---
-    metadata = artifact.setdefault("metadados_processamento", {})
-    metadata.setdefault("pipeline_versao", "apda-local-0.3-segmented")
-    metadata.setdefault("data_processamento", datetime.now().isoformat())
-    metadata["status"] = "pendente_revisao"
-    metadata.setdefault("confianca_extracao", "nao_calculada")
-
-    # --- origem: preserva segmento_indice / segmento_total se presentes ---
-    origem = artifact.get("origem", {})
-    if isinstance(origem, dict):
-        for field in ("segmento_indice", "segmento_total"):
-            if field in origem and not isinstance(origem[field], (int, type(None))):
-                try:
-                    origem[field] = int(origem[field])
-                except (ValueError, TypeError):
-                    origem[field] = None
-
-    return artifact
-
-
-# ---------------------------------------------------------------------------
 # Segment text extraction
 # ---------------------------------------------------------------------------
 
@@ -228,14 +126,10 @@ def main() -> None:
             "produzido por 02_scan_segments.py."
         )
     )
-    parser.add_argument(
-        "--manifest", required=True, help="Caminho para o .segmentos.json."
-    )
-    parser.add_argument(
-        "--input", required=True, help="Texto anonimizado .opf_anonimizado.txt."
-    )
+    parser.add_argument("--manifest", required=True, help="Caminho para o .segmentos.json.")
+    parser.add_argument("--input", required=True, help="Texto anonimizado .opf_anonimizado.txt.")
     parser.add_argument("--output-dir", default=str(SAIDA), help="Diretório de saída.")
-    parser.add_argument("--base-url", default="http://127.0.0.1:8091")
+    parser.add_argument("--base-url", default=None, help="URL base do llama-server (padrão: APDA_LLAMA_BASE_URL ou http://127.0.0.1:8091)")
     parser.add_argument(
         "--max-chars-per-segment",
         type=int,
@@ -246,27 +140,24 @@ def main() -> None:
     parser.add_argument("--temperature", type=float, default=0.1)
     args = parser.parse_args()
 
+    base_url = resolve_base_url(args.base_url)
     manifest_path = Path(args.manifest).resolve()
     input_path = Path(args.input).resolve()
     output_dir = Path(args.output_dir).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Lê manifesto e texto completo
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     full_text = input_path.read_text(encoding="utf-8")
 
     segments: list[dict] = manifest.get("segmentos", [])
     total_segments = len(segments)
 
-    # Stem do arquivo de entrada (usado nos nomes de saída)
-    # Remove sufixos conhecidos para obter o stem limpo
     stem = input_path.name
     for suffix in (".opf_anonimizado.txt", ".txt"):
         if stem.endswith(suffix):
             stem = stem[: -len(suffix)]
             break
 
-    # Controlo de progresso para o manifesto processado
     resultado_segmentos: list[dict] = []
     total_artifacts = 0
 
@@ -312,67 +203,53 @@ def main() -> None:
             usage: dict = {}
 
             try:
-                # Chama o LLM e obtém resposta bruta para salvaguarda
-                trecho_prompt = trecho
-                data = json.dumps(
-                    {
-                        "messages": [
-                            {"role": "system", "content": SYSTEM_PROMPT},
-                            {
-                                "role": "user",
-                                "content": USER_TEMPLATE.format(
-                                    tipo_artefato=tipo_artefato,
-                                    indice=indice,
-                                    total=total_segments,
-                                    nome_arquivo=input_path.name,
-                                    formato_original=input_path.suffix.lstrip(".")
-                                    or "txt",
-                                    secao_origem=(
-                                        segment.get("secao_origem")
-                                        or segment.get("tipo_conteudo")
-                                        or "desconhecida"
-                                    ),
-                                    secao_origem_json=json.dumps(
-                                        segment.get("secao_origem")
-                                        or segment.get("tipo_conteudo")
-                                        or "desconhecida",
-                                        ensure_ascii=False,
-                                    ),
-                                    data_processamento=datetime.now().isoformat(),
-                                    texto=trecho_prompt,
+                payload = {
+                    "messages": [
+                        {"role": "system", "content": SYSTEM_PROMPT},
+                        {
+                            "role": "user",
+                            "content": USER_TEMPLATE.format(
+                                tipo_artefato=tipo_artefato,
+                                indice=indice,
+                                total=total_segments,
+                                nome_arquivo=input_path.name,
+                                formato_original=input_path.suffix.lstrip(".") or "txt",
+                                secao_origem=(
+                                    segment.get("secao_origem")
+                                    or segment.get("tipo_conteudo")
+                                    or "desconhecida"
                                 ),
-                            },
-                        ],
-                        "temperature": args.temperature,
-                        "max_tokens": args.max_tokens,
-                        "response_format": {"type": "json_object"},
-                    }
-                ).encode("utf-8")
+                                secao_origem_json=json.dumps(
+                                    segment.get("secao_origem")
+                                    or segment.get("tipo_conteudo")
+                                    or "desconhecida",
+                                    ensure_ascii=False,
+                                ),
+                                data_processamento=datetime.now().isoformat(),
+                                texto=trecho,
+                            ),
+                        },
+                    ],
+                    "temperature": args.temperature,
+                    "max_tokens": args.max_tokens,
+                    "response_format": {"type": "json_object"},
+                }
 
-                req = urllib.request.Request(
-                    f"{args.base_url}/v1/chat/completions",
-                    data=data,
-                    headers={"Content-Type": "application/json"},
-                    method="POST",
-                )
-                with urllib.request.urlopen(req, timeout=300) as resp:
-                    response = json.loads(resp.read().decode("utf-8"))
-
+                response = post_json(f"{base_url}/v1/chat/completions", payload)
                 raw_str: str = response["choices"][0]["message"]["content"]
                 raw_content = raw_str
                 usage = response.get("usage", {})
 
-                # Salva resposta bruta antes de tentar parsear
                 raw_path.write_text(raw_str, encoding="utf-8")
 
-                artifact = normalize_artifact(json.loads(extract_json(raw_str)))
+                artifact = normalize_artifact(
+                    json.loads(extract_json(raw_str)),
+                    pipeline_versao="apda-local-0.3-segmented",
+                )
 
-                # Garante metadados de segmento e tipo correcto
                 origem = artifact.setdefault("origem", {})
                 origem.setdefault("nome_arquivo", input_path.name)
-                origem.setdefault(
-                    "formato_original", input_path.suffix.lstrip(".") or "txt"
-                )
+                origem.setdefault("formato_original", input_path.suffix.lstrip(".") or "txt")
                 origem["segmento_indice"] = indice
                 origem["segmento_total"] = total_segments
                 if "pagina_ou_aba" not in origem:
@@ -405,11 +282,9 @@ def main() -> None:
                 erro = str(exc)
                 print(f"  [ERRO] seg{indice} tipo={tipo_artefato}: {erro}")
 
-                # Salva resposta bruta se existir
                 if raw_content is not None:
                     raw_path.write_text(raw_content, encoding="utf-8")
 
-                # Salva metadados de erro junto ao arquivo de saída esperado
                 error_meta = output_path.with_suffix(output_path.suffix + ".error.json")
                 error_meta.write_text(
                     json.dumps(
@@ -419,9 +294,7 @@ def main() -> None:
                             "tipo_artefato": tipo_artefato,
                             "entrada": str(input_path),
                             "saida_esperada": str(output_path),
-                            "raw_saida": str(raw_path)
-                            if raw_content is not None
-                            else None,
+                            "raw_saida": str(raw_path) if raw_content is not None else None,
                             "elapsed_seconds": elapsed,
                             "erro": erro,
                             "usage": usage,
@@ -459,7 +332,6 @@ def main() -> None:
             }
         )
 
-    # Salva manifesto processado
     manifesto_processado = {
         "data_processamento": datetime.now().isoformat(),
         "pipeline_versao": "apda-local-0.3-segmented",

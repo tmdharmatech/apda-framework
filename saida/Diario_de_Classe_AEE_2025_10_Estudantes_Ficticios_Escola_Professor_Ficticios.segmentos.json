@@ -1,0 +1,37 @@
+{
+  "documento": {
+    "tipo_documento_inferido": "Plano de Atendimento Educacional Especializado (AEE) para um aluno",
+    "total_segmentos": 2,
+    "observacoes": "O documento apresenta informações detalhadas sobre o plano de atendimento educacional especializado para um aluno, incluindo dados pessoais, informações sobre a escola e o professor, e um resumo das necessidades e objetivos do aluno."
+  },
+  "segmentos": [
+    {
+      "indice": 1,
+      "secao_origem": "ABA: Aluno 1",
+      "tipos_artefato": [
+        "plano_atendimento"
+      ],
+      "confianca": "alta",
+      "trecho_identificador": "PLANO DE ATENDIMENTO EDUCACIONAL ESPECIALIZADO - AEE",
+      "resumo_nao_identificavel": "O aluno apresenta necessidade de apoio pedagógico especializado para organização da rotina, compreensão de instruções e fortalecimento da autonomia nas atividades escolares.",
+      "posicao_aproximada": {
+        "inicio_chars": 0,
+        "fim_chars": 0
+      }
+    },
+    {
+      "indice": 2,
+      "secao_origem": "ABA: Identificação",
+      "tipos_artefato": [
+        "identificação"
+      ],
+      "confianca": "alta",
+      "trecho_identificador": "IDENTIFICAÇÃO",
+      "resumo_nao_identificavel": "Informações sobre a escola, os gestores, coordenadores e professores.",
+      "posicao_aproximada": {
+        "inicio_chars": 0,
+        "fim_chars": 0
+      }
+    }
+  ]
+}

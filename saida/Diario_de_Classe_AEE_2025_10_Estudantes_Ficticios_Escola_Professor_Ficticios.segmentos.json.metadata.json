@@ -1,0 +1,16 @@
+{
+  "data": "2026-04-30T11:06:05.512319",
+  "modelo": "Llama-3.2-3B-Instruct-Q4_K_M.gguf",
+  "servidor": "http://127.0.0.1:8091",
+  "entrada": "/home/eu/apda-framework/saida/Diario_de_Classe_AEE_2025_10_Estudantes_Ficticios_Escola_Professor_Ficticios.texto_extraido.txt",
+  "saida": "/home/eu/apda-framework/saida/Diario_de_Classe_AEE_2025_10_Estudantes_Ficticios_Escola_Professor_Ficticios.segmentos.json",
+  "elapsed_seconds": 13.025,
+  "usage": {
+    "completion_tokens": 384,
+    "prompt_tokens": 2205,
+    "total_tokens": 2589,
+    "prompt_tokens_details": {
+      "cached_tokens": 25
+    }
+  }
+}
