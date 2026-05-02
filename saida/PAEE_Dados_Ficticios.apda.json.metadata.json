@@ -1,17 +1,17 @@
 {
-  "data": "2026-04-30T10:47:16.830840",
-  "modelo": "apda-local-3b",
+  "data": "2026-05-02T14:25:03.177664",
+  "modelo": "sabia-professor",
   "servidor": "http://127.0.0.1:4000",
   "entrada": "/home/eu/apda-framework/saida/PAEE_Dados_Ficticios.opf_anonimizado.txt",
   "saida": "/home/eu/apda-framework/saida/PAEE_Dados_Ficticios.apda.json",
   "raw_saida": "/home/eu/apda-framework/saida/PAEE_Dados_Ficticios.apda.json.raw.txt",
-  "elapsed_seconds": 10.867,
+  "elapsed_seconds": 7.691,
   "usage": {
-    "completion_tokens": 376,
-    "prompt_tokens": 1875,
-    "total_tokens": 2251,
+    "completion_tokens": 679,
+    "prompt_tokens": 1843,
+    "total_tokens": 2522,
     "prompt_tokens_details": {
-      "cached_tokens": 475
+      "cached_tokens": 0
     }
   }
 }

@@ -6,8 +6,11 @@
 # Instale somente se for usar workflows com anonimização neural:
 #   pip install -r requirements-neural.txt
 #
-# Para uso sem GPU (regex-anon, fast), instale apenas o requirements.txt principal:
-#   pip install -r requirements.txt
+# Esta máquina não possui GPU NVIDIA. Usamos o índice CPU-only da PyTorch para
+# evitar downloads de pacotes CUDA/NVIDIA.
 
-torch>=2.3.0           # backend de tensor exigido pelo transformers pipeline (~2GB)
+--index-url https://download.pytorch.org/whl/cpu
+--extra-index-url https://pypi.org/simple
+
+torch==2.11.0+cpu      # backend de tensor exigido pelo transformers pipeline (CPU-only)
 transformers>=4.40.0   # pipeline de NLP (NER para anonimização neural)

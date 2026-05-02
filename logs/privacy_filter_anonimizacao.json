@@ -1,23 +1,36 @@
 {
-  "data": "2026-04-29T19:16:55.405007",
+  "data": "2026-05-02T14:24:54.352010",
   "modelo": "openai/privacy-filter",
   "resultados": [
     {
-      "entrada": "Aluno_2.raw.txt",
-      "saida": "Aluno_2.anon.txt",
-      "elapsed_seconds": 35.032,
-      "input_chars": 5187,
-      "output_chars": 5185,
-      "span_count": 32,
-      "propagated_private_person_replacements": 0,
+      "entrada": "PAEE_Dados_Ficticios.texto_extraido.txt",
+      "saida": "PAEE_Dados_Ficticios.opf_anonimizado.txt",
+      "elapsed_seconds": 22.385,
+      "input_chars": 4670,
+      "output_chars": 4652,
+      "span_count": 8,
+      "propagated_private_person_replacements": 1,
       "private_person_memory": [
-        "Renata Alves Monteiro",
-        "Renata Alves",
-        "Renata"
+        "Mariana Alves Oliveira",
+        "Carlos Henrique Souza",
+        "Fernanda Reis Almeida",
+        "Roberta Lima Costa",
+        "Ana Paula Martins",
+        "Carlos Henrique",
+        "Fernanda Reis",
+        "Mariana Alves",
+        "Roberta Lima",
+        "Ana Paula",
+        "Fernanda",
+        "Mariana",
+        "Roberta",
+        "Carlos",
+        "Ana"
       ],
       "labels": {
-        "private_date": 22,
-        "private_person": 10
+        "private_date": 2,
+        "private_person": 7,
+        "private_phone": 1
       },
       "threshold": 0.5,
       "chunk_chars": 12000

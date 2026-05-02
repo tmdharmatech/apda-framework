@@ -8,7 +8,19 @@ from pathlib import Path
 
 from lib.llm_client import extract_json, post_json
 from lib.paths import SAIDA
-from lib.config import resolve_base_url
+from lib.config import resolve_litellm
+
+
+TIPOS_ARTEFATO_VALIDOS = {
+    "diario_aee",
+    "estudo_de_caso",
+    "plano_atendimento",
+    "relatorio_pedagogico",
+    "atividade_adaptada",
+    "outro",
+}
+
+CONFIANCAS_VALIDAS = {"alta", "media", "baixa"}
 
 
 SYSTEM_PROMPT = """Você é um analisador de documentos pedagógicos. Sua tarefa é identificar e segmentar unidades semânticas independentes dentro de um documento extraído.
@@ -58,6 +70,113 @@ Texto do documento:
 """
 
 
+def _normalizar_tipo_artefato(value: object) -> str:
+    text = str(value or "").strip().lower()
+    return text if text in TIPOS_ARTEFATO_VALIDOS else "outro"
+
+
+def _normalizar_inteiro(value: object, default: int) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _normalizar_posicao(value: object) -> dict | None:
+    if not isinstance(value, dict):
+        return None
+
+    return {
+        "inicio_chars": (
+            None
+            if value.get("inicio_chars") is None
+            else _normalizar_inteiro(value.get("inicio_chars"), 0)
+        ),
+        "fim_chars": (
+            None
+            if value.get("fim_chars") is None
+            else _normalizar_inteiro(value.get("fim_chars"), 0)
+        ),
+    }
+
+
+def normalizar_manifesto(manifest: dict) -> dict:
+    """Normaliza campos controlados do manifesto antes da validação por schema."""
+    if not isinstance(manifest, dict):
+        return {
+            "documento": {
+                "tipo_documento_inferido": "desconhecido",
+                "total_segmentos": 1,
+                "observacoes": None,
+            },
+            "segmentos": [
+                {
+                    "indice": 1,
+                    "tipos_artefato": ["outro"],
+                    "confianca": "baixa",
+                    "trecho_identificador": "",
+                }
+            ],
+        }
+
+    segmentos = manifest.get("segmentos")
+    if not isinstance(segmentos, list) or not segmentos:
+        segmentos = [
+            {
+                "indice": 1,
+                "tipos_artefato": ["outro"],
+                "confianca": "baixa",
+                "trecho_identificador": "",
+            }
+        ]
+
+    segmentos_normalizados = []
+    for index, segmento in enumerate(segmentos, start=1):
+        if not isinstance(segmento, dict):
+            segmento = {}
+
+        tipos = segmento.get("tipos_artefato", segmento.get("tipo_artefato", []))
+        if isinstance(tipos, str):
+            tipos = [tipos]
+        if not isinstance(tipos, list):
+            tipos = []
+        tipos = [_normalizar_tipo_artefato(tipo) for tipo in tipos]
+        tipos = list(dict.fromkeys(tipos)) or ["outro"]
+
+        confianca = str(segmento.get("confianca") or "baixa").strip().lower()
+        if confianca not in CONFIANCAS_VALIDAS:
+            confianca = "baixa"
+
+        segmentos_normalizados.append(
+            {
+                "indice": _normalizar_inteiro(segmento.get("indice"), index),
+                "secao_origem": segmento.get("secao_origem"),
+                "tipos_artefato": tipos,
+                "confianca": confianca,
+                "trecho_identificador": str(segmento.get("trecho_identificador") or ""),
+                "resumo_nao_identificavel": segmento.get("resumo_nao_identificavel"),
+                "posicao_aproximada": _normalizar_posicao(
+                    segmento.get("posicao_aproximada")
+                ),
+            }
+        )
+
+    documento = manifest.get("documento")
+    if not isinstance(documento, dict):
+        documento = {}
+
+    return {
+        "documento": {
+            "tipo_documento_inferido": str(
+                documento.get("tipo_documento_inferido") or "desconhecido"
+            ),
+            "total_segmentos": len(segmentos_normalizados),
+            "observacoes": documento.get("observacoes"),
+        },
+        "segmentos": segmentos_normalizados,
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Fase 1 de segmentação: identifica unidades semânticas no documento e gera manifesto de segmentos."
@@ -73,12 +192,16 @@ def main() -> None:
         help="Arquivo JSON de saída (default: saida/<stem>.segmentos.json).",
     )
     parser.add_argument("--base-url", default=None, help="URL base do llama-server (padrão: APDA_LLAMA_BASE_URL ou http://127.0.0.1:8091)")
+    parser.add_argument("--litellm", action="store_true", help="Roteia via LiteLLM proxy.")
+    parser.add_argument("--api-key", default=None, help="API key para autenticacao no LiteLLM proxy.")
+    parser.add_argument("--modelo", default=None, help="Nome logico do modelo no LiteLLM.")
     parser.add_argument("--max-chars", type=int, default=24000)
     parser.add_argument("--max-tokens", type=int, default=2000)
     parser.add_argument("--temperature", type=float, default=0.1)
     args = parser.parse_args()
 
-    base_url = resolve_base_url(args.base_url)
+    base_url, api_key = resolve_litellm(args.base_url, args.api_key, args.litellm)
+    modelo_label = args.modelo or "apda-local-3b"
     input_path = Path(args.input).resolve()
 
     if args.output is not None:
@@ -96,6 +219,7 @@ def main() -> None:
     prompt = USER_TEMPLATE.format(texto=text)
 
     payload = {
+        "model": modelo_label,
         "messages": [
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": prompt},
@@ -106,7 +230,7 @@ def main() -> None:
     }
 
     started = time.perf_counter()
-    response = post_json(f"{base_url}/v1/chat/completions", payload)
+    response = post_json(f"{base_url}/v1/chat/completions", payload, api_key=api_key)
     elapsed = round(time.perf_counter() - started, 3)
     content = response["choices"][0]["message"]["content"]
 
@@ -115,6 +239,7 @@ def main() -> None:
 
     try:
         manifest = json.loads(extract_json(content))
+        manifest = normalizar_manifesto(manifest)
     except Exception as exc:
         raw_path.write_text(content, encoding="utf-8")
         metadata_path = output_path.with_suffix(output_path.suffix + ".metadata.json")

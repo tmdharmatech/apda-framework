@@ -53,11 +53,16 @@ export const STEP_REGISTRY = {
 
   "scan-segments": {
     script: "scripts/02_scan_segments.py",
-    argsFrom: (ctx) => [
-      "--input", ctx.currentText,
-      "--output", ctx.manifest,
-      "--base-url", ctx.baseUrl,
-    ],
+    argsFrom: (ctx) => {
+      const args = [
+        "--input", ctx.currentText,
+        "--output", ctx.manifest,
+        "--base-url", ctx.baseUrl,
+      ];
+      if (ctx.litellm) args.push("--litellm");
+      if (ctx.modelo) args.push("--modelo", ctx.modelo);
+      return args;
+    },
     inputPaths: (ctx) => [ctx.currentText],
     outputPaths: (ctx) => [ctx.manifest],
     checkFile: (ctx) => ({
@@ -68,12 +73,17 @@ export const STEP_REGISTRY = {
 
   "generate-from-manifest": {
     script: "scripts/07_gerar_de_manifesto.py",
-    argsFrom: (ctx) => [
-      "--manifest", ctx.manifest,
-      "--input", ctx.currentText,
-      "--output-dir", path.join(ctx.root, "saida"),
-      "--base-url", ctx.baseUrl,
-    ],
+    argsFrom: (ctx) => {
+      const args = [
+        "--manifest", ctx.manifest,
+        "--input", ctx.currentText,
+        "--output-dir", path.join(ctx.root, "saida"),
+        "--base-url", ctx.baseUrl,
+      ];
+      if (ctx.litellm) args.push("--litellm");
+      if (ctx.modelo) args.push("--modelo", ctx.modelo);
+      return args;
+    },
     inputPaths: (ctx) => [ctx.manifest, ctx.currentText],
     outputPaths: (ctx) => [ctx.outputDir],
   },

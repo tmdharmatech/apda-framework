@@ -1,38 +1,44 @@
-```
 {
-  "tipo_artefato": "relatorio_pedagogico",
+  "tipo_artefato": "plano_atendimento",
   "origem": {
     "nome_arquivo": "PAEE_Dados_Ficticios.opf_anonimizado.txt",
     "formato_original": "txt",
     "pagina_ou_aba": null
   },
   "conteudo_pedagogico": {
-    "objetivo_pedagogico": null,
+    "objetivo_pedagogico": "Garantir o desenvolvimento integral da estudante, promovendo inclusão, participação e aprendizagem por meio de estratégias individualizadas, acessibilidade pedagógica e apoio à comunicação, autorregulação e interação social.",
     "barreiras_identificadas": [
-      "comunicação social",
-      "autorregulação emocional",
-      "permanência em atividades"
+      "Dificuldade de organização da rotina",
+      "Comunicação social limitada em contextos desconhecidos",
+      "Autorregulação emocional e comportamental insuficiente",
+      "Baixa permanência em atividades prolongadas",
+      "Necessidade de mediação para interações sociais"
     ],
     "estrategias_pedagogicas": [
-      "mediação planejada",
-      "ambiente estruturado",
-      "reforço positivo"
+      "Uso de instruções curtas e pistas visuais",
+      "Atividades com começo, meio e fim bem definidos",
+      "Reforço positivo e intervalos planejados",
+      "Mediação para ampliar comunicação funcional",
+      "Propostas lúdicas e visuais (jogos, música, desenho)",
+      "Articulação entre equipe escolar, família e profissionais de apoio"
     ],
     "recursos_acessibilidade": [
-      "apoios necessários",
-      "estratégias individualizadas",
-      "condições de acessibilidade pedagógica"
+      "Pistas visuais (quadros de rotina, cartões de comunicação)",
+      "Materiais adaptados (jogos de correspondência, atividades gráficas)",
+      "Assistente educacional",
+      "Ambiente estruturado e previsível",
+      "Apoio de fonoaudiólogo e terapeuta ocupacional"
     ],
-    "observacoes_relevantes": null
+    "observacoes_relevantes": "A estudante responde melhor a ambientes previsíveis, rotinas claras e estratégias visuais. Mudanças de rotina podem gerar inquietação e fala repetitiva. O progresso é evidenciado por registros fotográficos, produções gráficas, observações sistemáticas e relatórios semestrais."
   },
   "anonimizacao": {
     "aplicada": true,
-    "itens_mascarados": ["private_person", "private_phone"],
+    "itens_mascarados": ["private_person", "private_phone", "private_date"],
     "risco_reidentificacao": "nao_avaliado"
   },
   "metadados_processamento": {
     "pipeline_versao": "apda-local-0.2-opf",
-    "data_processamento": "2026-04-30T10:47:05.963235",
+    "data_processamento": "2026-05-02T14:24:55.485302",
     "status": "pendente_revisao",
     "confianca_extracao": "nao_calculada"
   },
@@ -42,4 +48,3 @@
     "responsavel": null
   }
 }
-```
