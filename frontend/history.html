@@ -1,15 +1,15 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>APDA â€” HistÃ³rico</title>
+  <title>APDA — Histórico</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="/shared.css">
   <style>
     main { display: flex; flex-direction: column; gap: 14px; }
 
-    /* â”€â”€ Tabela â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    /* ── Tabela ──────────────────────────────── */
     .runs-table-wrap { overflow-x: auto; }
 
     table {
@@ -75,7 +75,7 @@
     .input-cell   { max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .date-cell    { white-space: nowrap; color: var(--muted); font-size: 12px; }
 
-    /* â”€â”€ Painel de detalhe â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    /* ── Painel de detalhe ───────────────────── */
     .detail-panel {
       display: none;
       flex-direction: column;
@@ -162,7 +162,7 @@
     }
     details summary:hover { color: var(--fg); }
 
-    /* â”€â”€ Filtros â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    /* ── Filtros ────────────────────────────── */
     .filter-bar {
       display: flex;
       gap: 8px;
@@ -179,7 +179,7 @@
       font-size: 14px;
     }
 
-    /* â”€â”€ Layout dividido â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    /* ── Layout dividido ────────────────────── */
     .split-layout {
       display: grid;
       grid-template-columns: 1fr;
@@ -198,12 +198,12 @@
   <header>
     <div class="topbar">
       <div class="topbar-left">
-        <h1>APDA â€” HistÃ³rico de execuÃ§Ãµes</h1>
+        <h1>APDA — Histórico de execuções</h1>
         <div class="subtitle" id="subtitle">Carregando...</div>
       </div>
       <div class="topbar-right">
         <button id="reloadBtn">Recarregar</button>
-        <a href="/run.html" class="btn primary">Nova execuÃ§Ã£o â†’</a>
+        <a href="/run.html" class="btn primary">Nova execução →</a>
       </div>
     </div>
   </header>
@@ -229,7 +229,7 @@
     </div>
 
     <div class="split-layout">
-      <!-- Tabela de execuÃ§Ãµes -->
+      <!-- Tabela de execuções -->
       <div class="panel">
         <div class="runs-table-wrap">
           <table>
@@ -238,7 +238,7 @@
                 <th>Status</th>
                 <th>Workflow</th>
                 <th>Arquivo</th>
-                <th>DuraÃ§Ã£o</th>
+                <th>Duração</th>
                 <th>Data</th>
                 <th>ID</th>
               </tr>
@@ -254,8 +254,8 @@
       <div id="detailPanel" class="panel detail-panel">
         <div class="detail-header">
           <div>
-            <div class="detail-title" id="detailTitle">â€“</div>
-            <div style="color:var(--muted);font-size:12px;margin-top:3px" id="detailMeta">â€“</div>
+            <div class="detail-title" id="detailTitle">–</div>
+            <div style="color:var(--muted);font-size:12px;margin-top:3px" id="detailMeta">–</div>
           </div>
           <div id="detailBadge"></div>
         </div>
@@ -272,9 +272,9 @@
           <div id="detailOutputs" class="output-list"></div>
         </div>
 
-        <!-- MÃ©tricas -->
+        <!-- Métricas -->
         <div id="detailMetricsWrap" style="display:none">
-          <div class="field-label" style="margin-bottom:8px">MÃ©tricas</div>
+          <div class="field-label" style="margin-bottom:8px">Métricas</div>
           <div id="detailMetrics" class="metric-row"></div>
         </div>
 
@@ -290,7 +290,7 @@
           <pre id="detailJson" class="json-raw"></pre>
         </details>
 
-        <!-- AÃ§Ãµes -->
+        <!-- Ações -->
         <div id="detailActions" style="display:flex;gap:8px;flex-wrap:wrap"></div>
       </div>
     </div>

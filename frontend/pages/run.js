@@ -1,7 +1,7 @@
-﻿import { getJSON, postJSON } from "../lib/api.js";
+import { getJSON, postJSON } from "../lib/api.js";
 import { esc } from "../lib/dom.js";
 
-/* â”€â”€ Estado global â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Estado global ──────────────────────── */
 const state = {
   step: 0,
   files: [],
@@ -16,7 +16,7 @@ const state = {
   elapsed: 0,
 };
 
-/* â”€â”€ UtilitÃ¡rios â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Utilitários ────────────────────────── */
 const STEP_LABELS = {
   "extract-text":      "Extraindo texto do arquivo",
   "privacy-filter":    "Aplicando Privacy Filter (PII)",
@@ -25,17 +25,17 @@ const STEP_LABELS = {
 };
 
 const STEP_ICONS = {
-  "extract-text":      "ðŸ“„",
-  "privacy-filter":    "ðŸ”’",
-  "generate-artifact": "ðŸ¤–",
-  "validate-schema":   "âœ…",
+  "extract-text":      "📄",
+  "privacy-filter":    "🔒",
+  "generate-artifact": "🤖",
+  "validate-schema":   "✅",
 };
 
 const EXT_CLASS = { ".docx":"docx", ".xlsx":"xlsx", ".xls":"xlsx", ".pdf":"pdf", ".txt":"txt", ".json":"json" };
 
 function extClass(ext) { return EXT_CLASS[ext?.toLowerCase()] ?? ""; }
 
-/* â”€â”€ Wizard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Wizard ─────────────────────────────── */
 function goTo(step) {
   state.step = step;
   document.querySelectorAll(".section").forEach((el, i) => {
@@ -49,7 +49,7 @@ function goTo(step) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-/* â”€â”€ Passo 1: Arquivos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Passo 1: Arquivos ──────────────────── */
 async function loadFiles() {
   document.getElementById("fileGrid").innerHTML = `<div class="empty">Carregando...</div>`;
   try {
@@ -88,7 +88,7 @@ async function selectFile(filePath) {
   goTo(1);
 }
 
-/* â”€â”€ Passo 2: Workflows â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Passo 2: Workflows ─────────────────── */
 async function loadWorkflows(filePath) {
   document.getElementById("workflowList").innerHTML = `<div class="empty">Carregando workflows...</div>`;
   try {
@@ -101,18 +101,18 @@ async function loadWorkflows(filePath) {
 
 function renderWorkflows() {
   if (!state.workflows.length) {
-    document.getElementById("workflowList").innerHTML = `<div class="empty">Nenhum workflow compatÃ­vel com este arquivo.</div>`;
+    document.getElementById("workflowList").innerHTML = `<div class="empty">Nenhum workflow compatível com este arquivo.</div>`;
     return;
   }
   document.getElementById("workflowList").innerHTML = state.workflows.map(wf => {
-    const stepLabels = wf.steps.map(s => STEP_LABELS[s] ?? s).join(" â†’ ");
+    const stepLabels = wf.steps.map(s => STEP_LABELS[s] ?? s).join(" → ");
     const sel = state.selectedWorkflow?.id === wf.id ? " selected" : "";
     return `<button class="workflow-card${sel}" type="button" data-id="${esc(wf.id)}">
       <div class="workflow-info">
         <div class="workflow-name">${esc(wf.name)}</div>
         <div class="workflow-steps">${esc(stepLabels)}</div>
       </div>
-      <div class="workflow-arrow">â€º</div>
+      <div class="workflow-arrow">›</div>
     </button>`;
   }).join("");
   document.getElementById("workflowList").querySelectorAll(".workflow-card").forEach(card => {
@@ -127,7 +127,7 @@ function selectWorkflow(workflowId) {
   goTo(2);
 }
 
-/* â”€â”€ Passo 3: Config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Passo 3: Config ────────────────────── */
 function renderConfig() {
   const wf = state.selectedWorkflow;
   const needsServer = wf.steps.includes("generate-artifact");
@@ -138,8 +138,8 @@ function renderConfig() {
     <div class="field-value" style="margin-top:4px">
       <strong>${esc(wf.name)}</strong>
       <div style="color:var(--muted);font-size:12px;margin-top:2px">
-        ${wf.steps.map(s => STEP_ICONS[s] ?? "Â·").join(" ")} &nbsp;
-        ${wf.steps.map(s => STEP_LABELS[s] ?? s).join(" â†’ ")}
+        ${wf.steps.map(s => STEP_ICONS[s] ?? "·").join(" ")} &nbsp;
+        ${wf.steps.map(s => STEP_LABELS[s] ?? s).join(" → ")}
       </div>
     </div>`;
 
@@ -157,26 +157,26 @@ async function checkServer() {
     const d = await getJSON("/api/server/status");
     if (d.endpoint.status === "openai-compatible") {
       dot.className = "server-dot ok";
-      status.textContent = "Servidor disponÃ­vel â€” API compatÃ­vel respondendo.";
+      status.textContent = "Servidor disponível — API compatível respondendo.";
     } else {
       dot.className = "server-dot warn";
-      status.innerHTML = `Servidor nÃ£o responde em <code>${esc(url)}</code>. <a href="/server.html">Iniciar servidor â†’</a>`;
+      status.innerHTML = `Servidor não responde em <code>${esc(url)}</code>. <a href="/server.html">Iniciar servidor →</a>`;
     }
   } catch {
     dot.className = "server-dot warn";
-    status.textContent = "NÃ£o foi possÃ­vel verificar o servidor.";
+    status.textContent = "Não foi possível verificar o servidor.";
   }
 }
 
-/* â”€â”€ Passo 4: ExecuÃ§Ã£o â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Passo 4: Execução ──────────────────── */
 function buildExecSteps(workflow, currentStep = -1, doneSteps = [], errorStep = null) {
   return workflow.steps.map((s, i) => {
     let cls = "pending";
-    let icon = STEP_ICONS[s] ?? "Â·";
+    let icon = STEP_ICONS[s] ?? "·";
     let detail = "";
 
-    if (errorStep === s) { cls = "error"; icon = "âœ—"; detail = "Erro nesta etapa."; }
-    else if (doneSteps.includes(s)) { cls = "done"; icon = "âœ“"; }
+    if (errorStep === s) { cls = "error"; icon = "✗"; detail = "Erro nesta etapa."; }
+    else if (doneSteps.includes(s)) { cls = "done"; icon = "✓"; }
     else if (currentStep === s) { cls = "running"; icon = ""; }
 
     return `<div class="exec-step ${cls}">
@@ -217,7 +217,7 @@ async function executeWorkflow() {
       dryRun: state.dryRun,
     });
 
-    // Servidor antigo (sem reiniciar): resposta sÃ­ncrona sem runId
+    // Servidor antigo (sem reiniciar): resposta síncrona sem runId
     if (d.status === "ok" || d.status === "dry-run") {
       document.getElementById("execSteps").innerHTML = buildExecSteps(wf, null, wf.steps);
       stopTimer();
@@ -226,7 +226,7 @@ async function executeWorkflow() {
     }
 
     if (!d.runId) {
-      throw new Error("Servidor nÃ£o retornou ID de execuÃ§Ã£o. Reinicie o servidor APDA com `apda web`.");
+      throw new Error("Servidor não retornou ID de execução. Reinicie o servidor APDA com `apda web`.");
     }
 
     state.runId = d.runId;
@@ -274,7 +274,7 @@ function watchRun(wf) {
     const data = e.data ? JSON.parse(e.data) : null;
     stopTimer();
     src.close();
-    showExecError(data?.message ?? "ConexÃ£o com o servidor perdida.");
+    showExecError(data?.message ?? "Conexão com o servidor perdida.");
   });
 
   src.onerror = () => {
@@ -304,7 +304,7 @@ function showExecError(msg) {
   el.style.display = "";
 }
 
-/* â”€â”€ Passo 5: Resultado â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Passo 5: Resultado ─────────────────── */
 function showResult(record, isError) {
   goTo(4);
   const elapsed = record.elapsedMs != null
@@ -315,13 +315,13 @@ function showResult(record, isError) {
 
   const files = [];
   if (outputs.extracted?.relativePath) {
-    files.push({ label: "Texto extraÃ­do", path: outputs.extracted.relativePath, type: "txt" });
+    files.push({ label: "Texto extraído", path: outputs.extracted.relativePath, type: "txt" });
   }
   if (outputs.anonymized?.relativePath) {
     files.push({ label: "Texto anonimizado", path: outputs.anonymized.relativePath, type: "txt" });
   }
   if (outputs.artifact?.relativePath) {
-    files.push({ label: "Artefato pedagÃ³gico", path: outputs.artifact.relativePath, type: "json" });
+    files.push({ label: "Artefato pedagógico", path: outputs.artifact.relativePath, type: "json" });
   }
 
   const artifact = outputs.artifact?.relativePath;
@@ -329,11 +329,11 @@ function showResult(record, isError) {
   document.getElementById("resultBlock").innerHTML = `
     <div class="result-block${isError ? " error-result" : ""}">
       <div class="result-title ${isError ? "err" : "ok"}">
-        ${isDry ? "âœ“ Dry-run concluÃ­do" : isError ? "âœ— ExecuÃ§Ã£o com erro" : "âœ“ ExecuÃ§Ã£o concluÃ­da"}
+        ${isDry ? "✓ Dry-run concluído" : isError ? "✗ Execução com erro" : "✓ Execução concluída"}
       </div>
       <div style="color:var(--muted);font-size:13px;margin-bottom:10px">
-        ${esc(record.workflowName ?? record.workflowId)} Â· ${elapsed}
-        ${isDry ? ' Â· <span class="badge warn">dry-run</span>' : ""}
+        ${esc(record.workflowName ?? record.workflowId)} · ${elapsed}
+        ${isDry ? ' · <span class="badge warn">dry-run</span>' : ""}
       </div>
       ${files.length ? `
         <div class="result-files">
@@ -347,14 +347,14 @@ function showResult(record, isError) {
       ${artifact && !isDry ? `
         <div style="margin-top:14px">
           <a href="/index.html" class="btn primary" style="font-size:13px">
-            Ver artefato no Visualizador â†’
+            Ver artefato no Visualizador →
           </a>
         </div>` : ""}
       ${record.error ? `<div class="error-msg" style="margin-top:10px">${esc(record.error.message)}</div>` : ""}
     </div>`;
 }
 
-/* â”€â”€ Eventos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Eventos ────────────────────────────── */
 document.getElementById("fileSearch").addEventListener("input", renderFiles);
 document.getElementById("reloadFilesBtn").addEventListener("click", loadFiles);
 document.getElementById("changeFileBtn").addEventListener("click", () => goTo(0));
@@ -376,7 +376,7 @@ document.getElementById("newRunBtn").addEventListener("click", () => {
   goTo(0);
 });
 
-/* â”€â”€ Init â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Init ───────────────────────────────── */
 loadFiles();
 
 

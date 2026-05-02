@@ -1,15 +1,15 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>APDA â€” Executar</title>
+  <title>APDA — Executar</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="/shared.css">
   <style>
     main { display: flex; flex-direction: column; gap: 14px; }
 
-    /* â”€â”€ Wizard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    /* ── Wizard ──────────────────────────────── */
     .wizard-steps {
       display: flex;
       gap: 0;
@@ -34,7 +34,7 @@
     .wstep.active  { background: var(--primary-weak); color: var(--primary); }
     .wstep.done    { background: #f0fbf5; color: var(--ok); }
 
-    /* â”€â”€ SeleÃ§Ã£o de arquivo â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    /* ── Seleção de arquivo ──────────────────── */
     .file-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -75,7 +75,7 @@
 
     .file-name { font-weight: 700; font-size: 13px; overflow-wrap: anywhere; }
 
-    /* â”€â”€ Workflow cards â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    /* ── Workflow cards ──────────────────────── */
     .workflow-list { display: flex; flex-direction: column; gap: 8px; }
 
     .workflow-card {
@@ -99,7 +99,7 @@
     .workflow-arrow { color: var(--muted); font-size: 18px; }
     .workflow-card.selected .workflow-arrow { color: var(--primary); }
 
-    /* â”€â”€ Config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    /* ── Config ─────────────────────────────── */
     .config-row {
       display: flex;
       align-items: center;
@@ -123,7 +123,7 @@
     .server-dot.ok   { background: var(--ok); }
     .server-dot.warn { background: var(--warn); }
 
-    /* â”€â”€ ExecuÃ§Ã£o / progresso â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    /* ── Execução / progresso ────────────────── */
     .exec-steps  { display: flex; flex-direction: column; gap: 8px; }
 
     .exec-step {
@@ -157,7 +157,7 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* â”€â”€ Resultado â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    /* ── Resultado ───────────────────────────── */
     .result-block {
       border: 2px solid var(--ok);
       border-radius: 10px;
@@ -197,8 +197,8 @@
   <header>
     <div class="topbar">
       <div class="topbar-left">
-        <h1>APDA â€” Executar Workflow</h1>
-        <div class="subtitle">Selecione um arquivo, escolha o workflow e acompanhe a execuÃ§Ã£o.</div>
+        <h1>APDA — Executar Workflow</h1>
+        <div class="subtitle">Selecione um arquivo, escolha o workflow e acompanhe a execução.</div>
       </div>
     </div>
   </header>
@@ -209,11 +209,11 @@
       <div class="wstep active" data-step="0">1. Arquivo</div>
       <div class="wstep"       data-step="1">2. Workflow</div>
       <div class="wstep"       data-step="2">3. Config</div>
-      <div class="wstep"       data-step="3">4. ExecuÃ§Ã£o</div>
+      <div class="wstep"       data-step="3">4. Execução</div>
       <div class="wstep"       data-step="4">5. Resultado</div>
     </div>
 
-    <!-- Passo 1: SeleÃ§Ã£o de arquivo -->
+    <!-- Passo 1: Seleção de arquivo -->
     <div class="panel section visible" id="step0">
       <div class="panel-head">
         <h2>Selecione o arquivo de entrada</h2>
@@ -227,7 +227,7 @@
       </div>
     </div>
 
-    <!-- Passo 2: SeleÃ§Ã£o de workflow -->
+    <!-- Passo 2: Seleção de workflow -->
     <div class="panel section" id="step1">
       <div class="panel-head">
         <h2>Selecione o workflow</h2>
@@ -237,14 +237,14 @@
         </div>
       </div>
       <div id="workflowList" class="workflow-list">
-        <div class="empty">Nenhum workflow disponÃ­vel.</div>
+        <div class="empty">Nenhum workflow disponível.</div>
       </div>
     </div>
 
-    <!-- Passo 3: ConfiguraÃ§Ã£o -->
+    <!-- Passo 3: Configuração -->
     <div class="panel section" id="step2">
       <div class="panel-head">
-        <h2>ConfiguraÃ§Ã£o</h2>
+        <h2>Configuração</h2>
         <button id="changeWorkflowBtn" type="button" style="font-size:12px">Trocar workflow</button>
       </div>
       <div style="display:flex;flex-direction:column;gap:14px">
@@ -262,22 +262,22 @@
         </div>
 
         <div class="field">
-          <div class="field-label" style="margin-bottom:6px">OpÃ§Ãµes</div>
+          <div class="field-label" style="margin-bottom:6px">Opções</div>
           <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer">
             <input id="dryRunCheck" type="checkbox">
-            Modo dry-run â€” mostrar comandos sem executar
+            Modo dry-run — mostrar comandos sem executar
           </label>
         </div>
 
         <div>
           <button id="executeBtn" class="primary" type="button" style="font-size:14px;padding:10px 20px">
-            Executar workflow â†’
+            Executar workflow →
           </button>
         </div>
       </div>
     </div>
 
-    <!-- Passo 4: ExecuÃ§Ã£o -->
+    <!-- Passo 4: Execução -->
     <div class="panel section" id="step3">
       <div class="panel-head">
         <h2>Executando</h2>

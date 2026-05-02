@@ -1,4 +1,4 @@
-﻿import { getJSON, postJSON } from "../lib/api.js";
+import { getJSON, postJSON } from "../lib/api.js";
 import { esc } from "../lib/dom.js";
 
 let currentStatus = null;
@@ -26,7 +26,7 @@ const els = {
   refreshLogBtn: document.getElementById("refreshLogBtn"),
 };
 
-/* â”€â”€ Estado do bloco principal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Estado do bloco principal ─────────────── */
 function setBlock(kind, title, sub, btns = "") {
   els.block.className = `server-status-block ${kind}`;
   els.dot.className   = `status-dot ${kind}`;
@@ -49,7 +49,7 @@ function wireButtons(container) {
   container.querySelector("#stopBtn")?.addEventListener("click", confirmStop);
 }
 
-/* â”€â”€ Renderiza status â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Renderiza status ──────────────────────── */
 function renderStatus(s) {
   currentStatus = s;
   hideError();
@@ -63,26 +63,26 @@ function renderStatus(s) {
 
   if (managed) {
     setBlock("active",
-      "Servidor ativo â€” gerenciado pela APDA",
-      `${esc(ep.baseUrl)} Â· pid ${m.pid} Â· iniciado Ã s ${new Date(m.startedAt).toLocaleTimeString("pt-BR")}`,
+      "Servidor ativo — gerenciado pela APDA",
+      `${esc(ep.baseUrl)} · pid ${m.pid} · iniciado às ${new Date(m.startedAt).toLocaleTimeString("pt-BR")}`,
       `<button id="stopBtn" class="danger" type="button">Encerrar servidor</button>`
     );
   } else if (external) {
     setBlock("external",
-      "Servidor ativo â€” externo",
-      `${esc(ep.baseUrl)} Â· nÃ£o iniciado pela CLI`,
+      "Servidor ativo — externo",
+      `${esc(ep.baseUrl)} · não iniciado pela CLI`,
       ``
     );
   } else if (occupied) {
     setBlock("busy",
-      "Porta ocupada (nÃ£o Ã© llama-server)",
-      `${esc(ep.baseUrl)} Â· porta ${ep.port} em uso por outro processo`,
+      "Porta ocupada (não é llama-server)",
+      `${esc(ep.baseUrl)} · porta ${ep.port} em uso por outro processo`,
       ``
     );
   } else {
     setBlock("inactive",
       "Servidor inativo",
-      `${esc(ep.baseUrl)} Â· porta ${ep.port} livre`,
+      `${esc(ep.baseUrl)} · porta ${ep.port} livre`,
       `<button id="startBtn" class="primary" type="button">Iniciar servidor</button>`
     );
   }
@@ -100,22 +100,22 @@ function renderDetails(s) {
   const m  = s.managed;
   const ep = s.endpoint;
 
-  /* painel esquerdo: informaÃ§Ãµes */
+  /* painel esquerdo: informações */
   els.infoPanel.innerHTML = `
-    <h2>InformaÃ§Ãµes</h2>
+    <h2>Informações</h2>
     <div class="field"><div class="field-label">Endpoint</div>
       <div class="field-value"><code>${esc(ep.baseUrl)}</code></div></div>
     <div class="field"><div class="field-label">Status da porta</div>
       <div class="field-value">
         <span class="badge ${ep.status === "openai-compatible" ? "ok" : ep.status === "occupied" ? "warn" : ""}">
-          ${{ "openai-compatible": "API compatÃ­vel ativa", "occupied": "ocupada (outro processo)", "free": "livre" }[ep.status] ?? ep.status}
+          ${{ "openai-compatible": "API compatível ativa", "occupied": "ocupada (outro processo)", "free": "livre" }[ep.status] ?? ep.status}
         </span>
       </div></div>
     ${m ? `
       <div class="field"><div class="field-label">Processo</div>
-        <div class="field-value">pid ${m.pid} Â· ${m.alive ? '<span class="badge ok">ativo</span>' : '<span class="badge risk">encerrado</span>'}</div></div>
+        <div class="field-value">pid ${m.pid} · ${m.alive ? '<span class="badge ok">ativo</span>' : '<span class="badge risk">encerrado</span>'}</div></div>
       <div class="field"><div class="field-label">Modelo em uso</div>
-        <div class="field-value" style="font-size:12px">${esc(m.modelPath?.split("/").pop() ?? "â€”")}</div></div>
+        <div class="field-value" style="font-size:12px">${esc(m.modelPath?.split("/").pop() ?? "—")}</div></div>
       <div class="field"><div class="field-label">Log</div>
         <div class="field-value" style="font-size:12px">${esc(m.logPath)}</div></div>` : ""}
   `;
@@ -124,7 +124,7 @@ function renderDetails(s) {
   els.cmdPanel.innerHTML = `
     <h2>Comando de subida</h2>
     <div style="font-size:12px;color:var(--muted);margin-bottom:8px">
-      Comando resolvido com o modelo e configuraÃ§Ãµes atuais.
+      Comando resolvido com o modelo e configurações atuais.
     </div>
     <div id="cmdContent"><div style="color:var(--muted);font-size:13px">Carregando...</div></div>
   `;
@@ -134,7 +134,7 @@ function renderDetails(s) {
 async function loadCommand() {
   try {
     const d = await getJSON("/api/server/command");
-    const model = d.modelPath?.split("/").pop() ?? "â€”";
+    const model = d.modelPath?.split("/").pop() ?? "—";
     document.getElementById("cmdContent").innerHTML = `
       <div class="field"><div class="field-label">Modelo</div>
         <div class="field-value" style="font-size:12px">${esc(model)}</div></div>
@@ -142,16 +142,16 @@ async function loadCommand() {
     `;
   } catch (err) {
     document.getElementById("cmdContent").innerHTML =
-      `<div class="notice">${esc(err.message ?? "NÃ£o foi possÃ­vel resolver o comando.")}</div>`;
+      `<div class="notice">${esc(err.message ?? "Não foi possível resolver o comando.")}</div>`;
   }
 }
 
-/* â”€â”€ Log â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Log ───────────────────────────────────── */
 async function loadLog() {
   try {
     const d = await getJSON("/api/server/log");
     if (!d.lines?.length) {
-      els.logContent.innerHTML = `<div style="color:var(--muted)">Nenhuma linha de log disponÃ­vel.</div>`;
+      els.logContent.innerHTML = `<div style="color:var(--muted)">Nenhuma linha de log disponível.</div>`;
       return;
     }
     const keywords = ["model loaded", "server is listening", "error", "GGML", "VRAM", "KV buffer", "compute buffer"];
@@ -163,10 +163,10 @@ async function loadLog() {
   } catch { /* ignora */ }
 }
 
-/* â”€â”€ Start â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Start ─────────────────────────────────── */
 async function startServer() {
   hideError();
-  setBlock("inactive", "Iniciando servidor...", "Aguardando endpoint ficar pronto â€” pode levar atÃ© 90s");
+  setBlock("inactive", "Iniciando servidor...", "Aguardando endpoint ficar pronto — pode levar até 90s");
   els.block.querySelector(".btn-row")?.remove();
 
   els.progressRow.style.display = "";
@@ -196,9 +196,9 @@ async function startServer() {
   }
 }
 
-/* â”€â”€ Stop â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Stop ──────────────────────────────────── */
 async function confirmStop() {
-  if (!confirm("Encerrar o llama-server?\nA VRAM serÃ¡ liberada.")) return;
+  if (!confirm("Encerrar o llama-server?\nA VRAM será liberada.")) return;
   hideError();
   try {
     const d = await postJSON("/api/server/stop", {});
@@ -209,7 +209,7 @@ async function confirmStop() {
   }
 }
 
-/* â”€â”€ Polling â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Polling ───────────────────────────────── */
 async function loadStatus() {
   try {
     renderStatus(await getJSON("/api/server/status"));
@@ -238,7 +238,7 @@ function hideError() {
   els.errorMsg.style.display = "none";
 }
 
-/* â”€â”€ Eventos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Eventos ───────────────────────────────── */
 els.reloadBtn.addEventListener("click", loadStatus);
 
 els.toggleLogBtn.addEventListener("click", () => {
@@ -249,7 +249,7 @@ els.toggleLogBtn.addEventListener("click", () => {
 
 els.refreshLogBtn.addEventListener("click", loadLog);
 
-/* â”€â”€ Init â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Init ──────────────────────────────────── */
 loadStatus().then(startPolling);
 
 window.addEventListener("beforeunload", stopPolling);

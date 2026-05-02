@@ -1,9 +1,9 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>APDA â€” Benchmarks</title>
+  <title>APDA — Benchmarks</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="/shared.css">
   <style>
@@ -15,7 +15,7 @@
   <header>
     <div class="topbar">
       <div class="topbar-left">
-        <h1>APDA â€” Benchmark de Modelos</h1>
+        <h1>APDA — Benchmark de Modelos</h1>
         <div class="subtitle">VRAM, tempo, tokens/s e achados de qualidade por modelo e contexto.</div>
       </div>
     </div>
@@ -34,7 +34,7 @@
           <select id="modelFilter"><option value="">Todos os modelos</option></select>
           <select id="categoryFilter">
             <option value="">Todas as categorias</option>
-            <option value="json_generation">GeraÃ§Ã£o JSON</option>
+            <option value="json_generation">Geração JSON</option>
             <option value="raw_benchmark">Benchmark bruto</option>
           </select>
           <button id="reload" type="button">Recarregar</button>
@@ -45,8 +45,8 @@
           <thead>
             <tr>
               <th>Teste</th><th>Modelo</th><th>ctx</th><th>Est.</th>
-              <th>VRAM</th><th>Tempo</th><th>Prompt</th><th>GeraÃ§Ã£o</th>
-              <th>JSON</th><th>Privacidade</th><th>SeparaÃ§Ã£o</th><th>Retry</th><th>Qualidade</th>
+              <th>VRAM</th><th>Tempo</th><th>Prompt</th><th>Geração</th>
+              <th>JSON</th><th>Privacidade</th><th>Separação</th><th>Retry</th><th>Qualidade</th>
             </tr>
           </thead>
           <tbody id="rows"></tbody>
@@ -57,15 +57,15 @@
     <section class="panel">
       <div class="panel-head">
         <h2>Consumo de VRAM</h2>
-        <div class="panel-notes">Testes com mediÃ§Ã£o de memÃ³ria disponÃ­vel.</div>
+        <div class="panel-notes">Testes com medição de memória disponível.</div>
       </div>
       <div class="bars" id="vramBars"></div>
     </section>
 
     <section class="panel">
       <div class="panel-head">
-        <h2>Velocidade de GeraÃ§Ã£o</h2>
-        <div class="panel-notes">Tokens por segundo na etapa de geraÃ§Ã£o.</div>
+        <h2>Velocidade de Geração</h2>
+        <div class="panel-notes">Tokens por segundo na etapa de geração.</div>
       </div>
       <div class="bars" id="speedBars"></div>
     </section>
