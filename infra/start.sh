@@ -18,6 +18,15 @@ CONFIG_FILE="$PROJECT_ROOT/.apda/config.json"
 
 mkdir -p "$LOG_DIR" "$PID_DIR"
 
+# ── Carregar .env se existir ──────────────────────────────────────────────────
+ENV_FILE="$PROJECT_ROOT/.env"
+if [ -f "$ENV_FILE" ]; then
+    set -a
+    # shellcheck disable=SC1090
+    source "$ENV_FILE"
+    set +a
+fi
+
 log()  { echo -e "${BOLD}[APDA]${NC} $*"; }
 ok()   { echo -e "${GREEN}[OK]${NC} $*"; }
 warn() { echo -e "${YELLOW}[WARN]${NC} $*"; }
@@ -68,6 +77,7 @@ GRAFANA_PORT="${GRAFANA_PORT:-3001}"
 LLAMA_PORT_3B="${LLAMA_PORT_3B:-8091}"
 LLAMA_PORT_1B="${LLAMA_PORT_1B:-8092}"
 LITELLM_MASTER_KEY="${LITELLM_MASTER_KEY:-apda-master-key}"
+GRAFANA_ADMIN_PASSWORD="${GRAFANA_ADMIN_PASSWORD:-mude-esta-senha}"
 
 if [ -f "$CONFIG_FILE" ] && command -v jq &>/dev/null; then
     _val=$(jq -r '.llama_binary // .llamaBinary // empty' "$CONFIG_FILE" 2>/dev/null)
@@ -293,11 +303,11 @@ ${BOLD}Endpoints:${NC}
   LiteLLM UI      ->  http://localhost:${LITELLM_PORT}/ui
   Prometheus      ->  http://localhost:${PROMETHEUS_PORT}
   Grafana         ->  http://localhost:${GRAFANA_PORT}
-                     usuario: admin / senha: apda2025
+                     usuario: admin / senha: (ver GRAFANA_ADMIN_PASSWORD no .env)
   Metricas APDA   ->  http://localhost:8000/metrics
 
 ${BOLD}Autenticacao LiteLLM:${NC}
-  Bearer: ${LITELLM_MASTER_KEY}
+  Bearer: (ver LITELLM_MASTER_KEY no .env)
 
 ${BOLD}Para encerrar:${NC}
   node src/cli.js stack stop

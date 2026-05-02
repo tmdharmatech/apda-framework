@@ -122,7 +122,7 @@
 
     {
       "type": "timeseries",
-      "title": "Artefatos por Workflow (últimas 6h)",
+      "title": "Pipelines por Workflow (últimas 6h)",
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
       "fieldConfig": {
         "defaults": { "unit": "short", "custom": { "lineWidth": 2, "fillOpacity": 10 } }
@@ -130,7 +130,7 @@
       "options": { "legend": { "displayMode": "table", "placement": "bottom" } },
       "targets": [
         {
-          "expr": "sum by (workflow) (rate(apda_artefatos_processados_total[5m]))",
+          "expr": "sum by (workflow) (rate(apda_pipeline_execucoes_total{status=\"ok\"}[5m]))",
           "legendFormat": "{{ workflow }}"
         }
       ]
@@ -158,22 +158,22 @@
 
     {
       "type": "timeseries",
-      "title": "Latência por Percentil (p50 / p95 / p99)",
+      "title": "Latência do Pipeline (p50 / p95 / p99)",
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
       "fieldConfig": {
         "defaults": { "unit": "s", "custom": { "lineWidth": 2 } }
       },
       "targets": [
         {
-          "expr": "histogram_quantile(0.50, sum(rate(apda_tempo_processamento_segundos_bucket[5m])) by (le))",
+          "expr": "histogram_quantile(0.50, sum(rate(apda_pipeline_tempo_segundos_bucket{status=\"ok\"}[5m])) by (le))",
           "legendFormat": "p50"
         },
         {
-          "expr": "histogram_quantile(0.95, sum(rate(apda_tempo_processamento_segundos_bucket[5m])) by (le))",
+          "expr": "histogram_quantile(0.95, sum(rate(apda_pipeline_tempo_segundos_bucket{status=\"ok\"}[5m])) by (le))",
           "legendFormat": "p95"
         },
         {
-          "expr": "histogram_quantile(0.99, sum(rate(apda_tempo_processamento_segundos_bucket[5m])) by (le))",
+          "expr": "histogram_quantile(0.99, sum(rate(apda_pipeline_tempo_segundos_bucket{status=\"ok\"}[5m])) by (le))",
           "legendFormat": "p99"
         }
       ]
@@ -286,6 +286,37 @@
         {
           "expr": "sum(rate(apda_json_valido_total{modelo=~\".*finetuned.*\"}[5m])) / sum(rate(apda_artefatos_processados_total{modelo=~\".*finetuned.*\"}[5m]))",
           "legendFormat": "Fine-tuned"
+        }
+      ]
+    },
+
+    {
+      "type": "timeseries",
+      "title": "Tempo por Step (p95)",
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 32 },
+      "fieldConfig": {
+        "defaults": { "unit": "s", "custom": { "lineWidth": 2 } }
+      },
+      "options": { "legend": { "displayMode": "table", "placement": "bottom" } },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le, step) (rate(apda_step_tempo_segundos_bucket{status=\"ok\"}[5m])))",
+          "legendFormat": "{{ step }}"
+        }
+      ]
+    },
+
+    {
+      "type": "barchart",
+      "title": "I/O por Step (última hora)",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 32 },
+      "fieldConfig": {
+        "defaults": { "unit": "bytes", "color": { "mode": "palette-classic" } }
+      },
+      "targets": [
+        {
+          "expr": "sum by (step, direction) (increase(apda_step_io_bytes_sum[1h]))",
+          "legendFormat": "{{ step }} {{ direction }}"
         }
       ]
     }

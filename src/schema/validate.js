@@ -3,23 +3,26 @@ import path from "node:path";
 import Ajv2020 from "ajv/dist/2020.js";
 import { toAbsolute } from "../lib/paths.js";
 
-let compiledValidator = null;
+const validatorCache = new Map();
 
-async function loadSchema(root) {
-  const schemaPath = path.join(root, "schemas", "artefato_pedagogico.schema.json");
+async function loadSchema(root, schemaName) {
+  const schemaPath = path.join(root, "schemas", schemaName);
   return JSON.parse(await readFile(schemaPath, "utf8"));
 }
 
-async function getValidator(root) {
-  if (compiledValidator) return compiledValidator;
-  const schema = await loadSchema(root);
+async function getValidator(root, schemaName) {
+  const cacheKey = `${root}::${schemaName}`;
+  if (validatorCache.has(cacheKey)) return validatorCache.get(cacheKey);
+
+  const schema = await loadSchema(root, schemaName);
   const ajv = new Ajv2020({
     allErrors: true,
     strict: false,
     verbose: true,
   });
-  compiledValidator = ajv.compile(schema);
-  return compiledValidator;
+  const compiled = ajv.compile(schema);
+  validatorCache.set(cacheKey, compiled);
+  return compiled;
 }
 
 function formatPath(error) {
@@ -69,9 +72,9 @@ function normalizeAjvError(error) {
   };
 }
 
-export async function validateArtifact(root, artifact) {
-  const validate = await getValidator(root);
-  const ok = validate(artifact);
+async function validateAgainstSchema(root, data, schemaName) {
+  const validate = await getValidator(root, schemaName);
+  const ok = validate(data);
   const details = ok ? [] : (validate.errors ?? []).map(normalizeAjvError);
   return {
     ok: Boolean(ok),
@@ -80,11 +83,11 @@ export async function validateArtifact(root, artifact) {
   };
 }
 
-export async function validateArtifactFile(root, filePath) {
+async function validateFileAgainstSchema(root, filePath, schemaName) {
   const absolute = toAbsolute(root, filePath);
   try {
-    const artifact = JSON.parse(await readFile(absolute, "utf8"));
-    const result = await validateArtifact(root, artifact);
+    const data = JSON.parse(await readFile(absolute, "utf8"));
+    const result = await validateAgainstSchema(root, data, schemaName);
     return { ...result, file: absolute };
   } catch (error) {
     const detail = {
@@ -101,4 +104,20 @@ export async function validateArtifactFile(root, filePath) {
       details: [detail],
     };
   }
+}
+
+export async function validateArtifact(root, artifact) {
+  return validateAgainstSchema(root, artifact, "artefato_pedagogico.schema.json");
+}
+
+export async function validateArtifactFile(root, filePath) {
+  return validateFileAgainstSchema(root, filePath, "artefato_pedagogico.schema.json");
+}
+
+export async function validateManifest(root, manifest) {
+  return validateAgainstSchema(root, manifest, "manifesto_segmentos.schema.json");
+}
+
+export async function validateManifestFile(root, filePath) {
+  return validateFileAgainstSchema(root, filePath, "manifesto_segmentos.schema.json");
 }

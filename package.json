@@ -12,7 +12,9 @@
     "list-inputs": "node src/cli.js list-inputs",
     "list-models": "node src/cli.js list-models",
     "list-gpus": "node src/cli.js list-gpus",
-    "test": "node --test"
+    "test": "node --test",
+    "test:python": "python -m pytest scripts/tests/ -v",
+    "test:all": "node --test && python -m pytest scripts/tests/ -v"
   },
   "engines": {
     "node": ">=20"

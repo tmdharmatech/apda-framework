@@ -9,7 +9,9 @@ O objetivo operacional é permitir que documentos em `entrada/` sejam transforma
 ```bash
 npm install
 python -m venv .venv
-.venv/bin/pip install -r requirements.txt
+pip install -r requirements.txt
+# Para workflows com Privacy Filter neural (opcional, ~2GB):
+# pip install -r requirements-neural.txt
 node src/cli.js doctor
 node src/cli.js onboard
 ```
@@ -70,6 +72,25 @@ Crie o ambiente Python e instale os módulos necessários:
 python -m venv .venv
 .venv/bin/pip install -r requirements.txt
 ```
+
+### Dependências neurais (opcional)
+
+Os workflows com **Privacy Filter neural** (`privacy-filter`, `neural`) requerem `torch` e `transformers`, que somam ~2GB de download e dependem de GPU (CPU como fallback lento).
+
+Instale apenas se for usar anonimização neural:
+
+```bash
+pip install -r requirements-neural.txt
+```
+
+Workflows sem GPU funcionam perfeitamente com apenas `requirements.txt`:
+
+| Workflow | `requirements.txt` | `requirements-neural.txt` |
+|---|---|---|
+| fast, regex-anon | ✅ suficiente | não necessário |
+| privacy-filter (neural) | ✅ + | ✅ obrigatório |
+
+O comando `doctor` detecta automaticamente quais módulos estão instalados e avisa quando `requirements-neural.txt` é necessário para um workflow.
 
 Verifique o ambiente:
 
@@ -262,10 +283,11 @@ O proxy faz fallback automático: se o 3B não estiver disponível, usa o 1B.
 
 O dashboard Grafana é provisionado automaticamente e inclui:
 
-- Total de artefatos processados
+- Total de pipelines concluídos e artefatos processados
 - Taxa de JSON válido por modelo
 - Alertas de PII detectados na saída
-- Latência por percentil (p50 / p95 / p99)
+- Latência do pipeline por percentil (p50 / p95 / p99)
+- Tempo e volume de entrada/saída por step
 - Campos inventados por tipo de artefato (alucinação)
 - Revisões humanas pendentes e taxa de aprovação
 - Custo acumulado por modelo (Sabiá API)

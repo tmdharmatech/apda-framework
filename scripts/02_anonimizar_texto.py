@@ -3,9 +3,7 @@ import re
 import json
 from datetime import datetime
 
-BASE = Path(__file__).resolve().parents[1]
-SAIDA = BASE / "saida"
-LOGS = BASE / "logs"
+from lib.paths import SAIDA, LOGS
 
 
 PADROES = {

@@ -7,10 +7,7 @@ import docx
 import pandas as pd
 from datetime import datetime
 
-BASE = Path(__file__).resolve().parents[1]
-ENTRADA = BASE / "entrada"
-SAIDA = BASE / "saida"
-LOGS = BASE / "logs"
+from lib.paths import ENTRADA, SAIDA, LOGS
 
 SAIDA.mkdir(exist_ok=True)
 LOGS.mkdir(exist_ok=True)

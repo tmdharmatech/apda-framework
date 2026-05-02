@@ -92,15 +92,23 @@ function SectionPython({ python }) {
     ),
     e(
       Box,
-      { flexDirection: "row", key: "mods" },
-      e(Text, null, "  Módulos Python: "),
-      e(StatusBadge, { ok: python.modulesOk }),
+      { flexDirection: "row", key: "mods-core" },
+      e(Text, null, "  Módulos core: "),
+      e(StatusBadge, { ok: python.coreModulesOk ?? python.modulesOk }),
+    ),
+    e(
+      Box,
+      { flexDirection: "row", key: "mods-neural" },
+      e(Text, null, "  Módulos neural: "),
+      python.neuralModulesOk
+        ? e(Text, { color: "green", dimColor: true }, "ok")
+        : e(Text, { color: "yellow" }, "ausentes (opcional — workflows neural)"),
     ),
   ];
 
-  // Módulos ausentes
-  const missing = python.modules.filter((m) => !m.ok);
-  for (const mod of missing) {
+  // Módulos core ausentes → vermelho (bloqueante)
+  const missingCore = (python.coreModules ?? []).filter((m) => !m.ok);
+  for (const mod of missingCore) {
     children.push(
       e(
         Box,
@@ -110,6 +118,20 @@ function SectionPython({ python }) {
       ),
     );
   }
+
+  // Módulos neural ausentes → amarelo (aviso)
+  const missingNeural = (python.neuralModules ?? []).filter((m) => !m.ok);
+  for (const mod of missingNeural) {
+    children.push(
+      e(
+        Box,
+        { flexDirection: "row", key: `mod-neural-${mod.module}` },
+        e(Text, { color: "yellow" }, `    ⚠ ${mod.packageName} `),
+        e(Text, { dimColor: true }, `(pip install -r requirements-neural.txt)`),
+      ),
+    );
+  }
+
   // Módulos presentes (dim)
   const present = python.modules.filter((m) => m.ok);
   for (const mod of present) {
@@ -122,7 +144,7 @@ function SectionPython({ python }) {
     );
   }
 
-  const borderColor = python.ok && python.modulesOk ? "green" : "red";
+  const borderColor = python.ok && (python.coreModulesOk ?? python.modulesOk) ? "green" : "red";
   return e(Section, { title: "🐍  Python", borderColor }, ...children);
 }
 

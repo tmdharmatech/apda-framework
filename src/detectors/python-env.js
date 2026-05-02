@@ -9,26 +9,36 @@ const REQUIRED_SCRIPTS = [
   "scripts/05_gerar_artefato_3b.py",
 ];
 
-const REQUIRED_MODULES = [
+/** Módulos exigidos por todos os workflows (fast, regex-anon, generate). */
+const CORE_MODULES = [
   { module: "docx", packageName: "python-docx" },
   { module: "fitz", packageName: "PyMuPDF" },
   { module: "pandas", packageName: "pandas" },
+];
+
+/**
+ * Módulos exigidos apenas pelo workflow privacy-filter.
+ * Instalados via requirements-neural.txt (~2GB com GPU).
+ */
+const NEURAL_MODULES = [
   { module: "torch", packageName: "torch" },
   { module: "transformers", packageName: "transformers" },
 ];
 
+const ALL_MODULES = [...CORE_MODULES, ...NEURAL_MODULES];
+
 async function checkPythonModules(command) {
   const script = `
 import importlib.util, json
-mods = ${JSON.stringify(REQUIRED_MODULES.map((item) => item.module))}
+mods = ${JSON.stringify(ALL_MODULES.map((item) => item.module))}
 print(json.dumps({m: importlib.util.find_spec(m) is not None for m in mods}))
 `;
   const result = await runCommand(command, ["-c", script]);
   if (!result.ok) {
-    return REQUIRED_MODULES.map((item) => ({ ...item, ok: false }));
+    return ALL_MODULES.map((item) => ({ ...item, ok: false }));
   }
   const found = JSON.parse(result.stdout);
-  return REQUIRED_MODULES.map((item) => ({ ...item, ok: Boolean(found[item.module]) }));
+  return ALL_MODULES.map((item) => ({ ...item, ok: Boolean(found[item.module]) }));
 }
 
 export async function detectPython(root) {
@@ -38,6 +48,8 @@ export async function detectPython(root) {
     const result = await runCommand(command, ["--version"]);
     if (result.ok) {
       const modules = await checkPythonModules(command);
+      const coreModules  = modules.filter((m) => CORE_MODULES.some((c) => c.module === m.module));
+      const neuralModules = modules.filter((m) => NEURAL_MODULES.some((n) => n.module === m.module));
       return {
         ok: true,
         command,
@@ -48,7 +60,11 @@ export async function detectPython(root) {
           ok: existsSync(path.join(root, script)),
         })),
         modules,
-        modulesOk: modules.every((item) => item.ok),
+        modulesOk: coreModules.every((item) => item.ok),
+        coreModules,
+        coreModulesOk: coreModules.every((item) => item.ok),
+        neuralModules,
+        neuralModulesOk: neuralModules.every((item) => item.ok),
       };
     }
   }
@@ -56,13 +72,18 @@ export async function detectPython(root) {
     path: script,
     ok: existsSync(path.join(root, script)),
   }));
+  const modules = ALL_MODULES.map((item) => ({ ...item, ok: false }));
   return {
     ok: false,
     command: null,
     version: null,
     scriptsOk: scripts.every((script) => script.ok),
     scripts,
-    modules: REQUIRED_MODULES.map((item) => ({ ...item, ok: false })),
+    modules,
     modulesOk: false,
+    coreModules: CORE_MODULES.map((item) => ({ ...item, ok: false })),
+    coreModulesOk: false,
+    neuralModules: NEURAL_MODULES.map((item) => ({ ...item, ok: false })),
+    neuralModulesOk: false,
   };
 }

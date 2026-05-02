@@ -32,14 +32,14 @@ import argparse
 import json
 import re
 import time
-import urllib.request
 from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
 
-BASE = Path(__file__).resolve().parents[1]
-SAIDA = BASE / "saida"
+from lib.llm_client import extract_json, post_json
+from lib.paths import SAIDA
+from lib.config import resolve_base_url
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Prompts
@@ -128,14 +128,13 @@ def _linhas_nao_vazias(df: pd.DataFrame) -> list[str]:
 
 
 def serializar_xlsx(caminho: Path, aba_amostra: str | None) -> tuple[str, list[str]]:
-    """
-    Serializa o XLSX em texto estruturado para envio ao LLM.
+    """Serializa o XLSX em texto estruturado para envio ao LLM.
+
     Retorna (texto_serializado, lista_de_abas_de_aluno).
     """
     xl = pd.ExcelFile(caminho)
     abas = xl.sheet_names
 
-    # Detecta abas de aluno (qualquer aba que contenha "aluno" no nome, case-insensitive)
     abas_aluno = [a for a in abas if re.search(r"aluno", a, re.IGNORECASE)]
 
     partes = []
@@ -144,109 +143,31 @@ def serializar_xlsx(caminho: Path, aba_amostra: str | None) -> tuple[str, list[s
     partes.append(f"Abas de aluno detectadas: {len(abas_aluno)}")
     partes.append(f"Lista de abas: {', '.join(abas)}\n")
 
-    # Abas de metadados
     for aba in abas:
         if re.search(r"aluno", aba, re.IGNORECASE):
-            continue  # processa alunos separadamente
+            continue
         df = xl.parse(aba, header=None).dropna(how="all")
         linhas = _linhas_nao_vazias(df)
         if not linhas:
             continue
         partes.append(f"\n--- ABA: {aba} ---")
-        # Relação nominal: só as 15 primeiras para indicar o padrão, sem sobrecarregar
         limite = 15 if re.search(r"relação|nominal", aba, re.IGNORECASE) else 40
         partes.extend(linhas[:limite])
         if len(linhas) > limite:
-            partes.append(
-                f"... ({len(linhas) - limite} linhas adicionais não exibidas)"
-            )
+            partes.append(f"... ({len(linhas) - limite} linhas adicionais não exibidas)")
 
-    # Aba de amostra (primeira aba de aluno, ou a especificada)
     aba_para_amostra = aba_amostra or (abas_aluno[0] if abas_aluno else None)
     if aba_para_amostra and aba_para_amostra in abas:
         df_a = xl.parse(aba_para_amostra, header=None).dropna(how="all")
         linhas_a = _linhas_nao_vazias(df_a)
-        partes.append(
-            f"\n--- ABA DE AMOSTRA: {aba_para_amostra} (padrão estrutural) ---"
-        )
-        partes.extend(linhas_a)  # aba completa para o modelo entender o padrão
+        partes.append(f"\n--- ABA DE AMOSTRA: {aba_para_amostra} (padrão estrutural) ---")
+        partes.extend(linhas_a)
 
     partes.append(f"\n--- ÍNDICE DE ABAS DE ALUNO ---")
     for i, aba in enumerate(abas_aluno, 1):
         partes.append(f"{i}. {aba}")
 
     return "\n".join(partes), abas_aluno
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# HTTP
-# ─────────────────────────────────────────────────────────────────────────────
-
-
-def post_json(url: str, payload: dict, timeout: int = 300) -> dict:
-    data = json.dumps(payload).encode("utf-8")
-    req = urllib.request.Request(
-        url,
-        data=data,
-        headers={"Content-Type": "application/json"},
-        method="POST",
-    )
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return json.loads(resp.read().decode("utf-8"))
-
-
-def extract_json(text: str) -> str:
-    clean = text.strip()
-    if clean.startswith("```"):
-        clean = re.sub(r"^```(?:json)?", "", clean).strip()
-        clean = re.sub(r"```$", "", clean).strip()
-    start = clean.find("{")
-    if start == -1:
-        raise ValueError("A resposta não contém um objeto JSON.")
-    # Tenta o JSON como está
-    candidate = clean[start:]
-    end = candidate.rfind("}")
-    if end != -1:
-        try:
-            json.loads(candidate[: end + 1])
-            return candidate[: end + 1]
-        except json.JSONDecodeError:
-            pass
-    # JSON truncado — tenta reparar fechando arrays e objetos abertos
-    return _repair_truncated_json(candidate)
-
-
-def _repair_truncated_json(text: str) -> str:
-    """
-    Tenta recuperar um JSON truncado pelo modelo.
-    Estratégia: remove linhas do final até encontrar um ponto
-    onde o JSON pode ser fechado de forma válida.
-    """
-    lines = text.rstrip().splitlines()
-    for attempt in range(min(30, len(lines))):
-        chunk = lines[: len(lines) - attempt]
-        if not chunk:
-            break
-        last = chunk[-1].rstrip()
-        if last.endswith(","):
-            chunk[-1] = last[:-1]
-        working = "\n".join(chunk)
-        depth_curly = working.count("{") - working.count("}")
-        depth_square = working.count("[") - working.count("]")
-        if depth_curly < 0 or depth_square < 0:
-            continue
-        closing = ""
-        if depth_square > 0:
-            closing += "]" * depth_square
-        if depth_curly > 0:
-            closing += "}" * depth_curly
-        candidate = working + closing
-        try:
-            json.loads(candidate)
-            return candidate
-        except json.JSONDecodeError:
-            continue
-    raise ValueError("Não foi possível reparar o JSON truncado.")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -265,18 +186,18 @@ def main() -> None:
         default=None,
         help="Nome da aba de aluno a usar como amostra (ex: 'Aluno 2').",
     )
-    parser.add_argument("--base-url", default="http://127.0.0.1:8091")
+    parser.add_argument("--base-url", default=None, help="URL base do llama-server (padrão: APDA_LLAMA_BASE_URL ou http://127.0.0.1:8091)")
     parser.add_argument("--max-chars", type=int, default=20000)
     parser.add_argument("--max-tokens", type=int, default=3000)
     parser.add_argument("--temperature", type=float, default=0.1)
     args = parser.parse_args()
 
+    base_url = resolve_base_url(args.base_url)
     input_path = Path(args.input).resolve()
     if not input_path.exists():
         raise SystemExit(f"Arquivo não encontrado: {input_path}")
 
     stem = input_path.stem
-    # Remove sufixos compostos
     for suf in (".texto_extraido", ".opf_anonimizado"):
         stem = stem.replace(suf, "")
 
@@ -287,7 +208,6 @@ def main() -> None:
         else SAIDA / f"{stem}.manifesto_xlsx.json"
     )
 
-    # Serializa o XLSX
     print(f"[INFO] Lendo {input_path.name}...")
     conteudo, abas_aluno = serializar_xlsx(input_path, args.aluno_amostra)
     conteudo_truncado = conteudo[: args.max_chars]
@@ -307,14 +227,13 @@ def main() -> None:
         "response_format": {"type": "json_object"},
     }
 
-    print(f"[INFO] Chamando LLM ({args.base_url})...")
+    print(f"[INFO] Chamando LLM ({base_url})...")
     t0 = time.perf_counter()
-    response = post_json(f"{args.base_url}/v1/chat/completions", payload)
+    response = post_json(f"{base_url}/v1/chat/completions", payload)
     elapsed = round(time.perf_counter() - t0, 3)
 
     raw_content = response["choices"][0]["message"]["content"]
 
-    # Salva raw sempre
     raw_path = output_path.with_suffix(".json.raw.txt")
     raw_path.write_text(raw_content, encoding="utf-8")
 
@@ -341,7 +260,6 @@ def main() -> None:
             f"[ERRO] Falha ao parsear JSON do manifesto: {exc}\nRaw salvo em: {raw_path}"
         )
 
-    # Enriquece manifesto com metadados de execução
     manifesto["_meta"] = {
         "pipeline_versao": "apda-local-0.3-xlsx-scan",
         "data_processamento": datetime.now().isoformat(),
@@ -362,7 +280,6 @@ def main() -> None:
     print(f"[OK] manifesto gerado: {output_path}")
     print(f"[OK] {n_alunos} alunos | {n_tipos} tipos de artefato | {elapsed}s")
 
-    # Salva metadata
     metadata_path = output_path.with_suffix(".json.metadata.json")
     metadata_path.write_text(
         json.dumps(

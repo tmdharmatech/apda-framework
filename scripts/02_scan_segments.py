@@ -2,14 +2,13 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import time
-import urllib.request
 from datetime import datetime
 from pathlib import Path
 
-BASE = Path(__file__).resolve().parents[1]
-SAIDA = BASE / "saida"
+from lib.llm_client import extract_json, post_json
+from lib.paths import SAIDA
+from lib.config import resolve_base_url
 
 
 SYSTEM_PROMPT = """Você é um analisador de documentos pedagógicos. Sua tarefa é identificar e segmentar unidades semânticas independentes dentro de um documento extraído.
@@ -59,74 +58,6 @@ Texto do documento:
 """
 
 
-def post_json(url: str, payload: dict, timeout: int = 300) -> dict:
-    data = json.dumps(payload).encode("utf-8")
-    req = urllib.request.Request(
-        url,
-        data=data,
-        headers={"Content-Type": "application/json"},
-        method="POST",
-    )
-    with urllib.request.urlopen(req, timeout=timeout) as response:
-        return json.loads(response.read().decode("utf-8"))
-
-
-def _repair_truncated_json(text: str) -> str:
-    """
-    Tenta recuperar um JSON truncado pelo modelo.
-    Estratégia: remove linhas do final até encontrar um ponto onde
-    o JSON pode ser fechado de forma válida.
-    """
-    lines = text.rstrip().splitlines()
-
-    # Tenta fechar progressivamente removendo linhas do final
-    for attempt in range(min(30, len(lines))):
-        chunk = lines[: len(lines) - attempt]
-        if not chunk:
-            break
-        # Remove vírgula pendente na última linha
-        last = chunk[-1].rstrip()
-        if last.endswith(","):
-            chunk[-1] = last[:-1]
-        working = "\n".join(chunk)
-        depth_curly = working.count("{") - working.count("}")
-        depth_square = working.count("[") - working.count("]")
-        if depth_curly < 0 or depth_square < 0:
-            continue
-        closing = ""
-        if depth_square > 0:
-            closing += "]" * depth_square
-        if depth_curly > 0:
-            closing += "}" * depth_curly
-        candidate = working + closing
-        try:
-            json.loads(candidate)
-            return candidate
-        except json.JSONDecodeError:
-            continue
-
-    raise ValueError("Não foi possível reparar o JSON truncado.")
-
-
-def extract_json(text: str) -> str:
-    clean = text.strip()
-    if clean.startswith("```"):
-        clean = re.sub(r"^```(?:json)?", "", clean).strip()
-        clean = re.sub(r"```$", "", clean).strip()
-    start = clean.find("{")
-    if start == -1:
-        raise ValueError("A resposta não contém um objeto JSON.")
-    candidate = clean[start:]
-    end = candidate.rfind("}")
-    if end != -1:
-        try:
-            json.loads(candidate[: end + 1])
-            return candidate[: end + 1]
-        except json.JSONDecodeError:
-            pass
-    return _repair_truncated_json(candidate)
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Fase 1 de segmentação: identifica unidades semânticas no documento e gera manifesto de segmentos."
@@ -141,19 +72,19 @@ def main() -> None:
         default=None,
         help="Arquivo JSON de saída (default: saida/<stem>.segmentos.json).",
     )
-    parser.add_argument("--base-url", default="http://127.0.0.1:8091")
+    parser.add_argument("--base-url", default=None, help="URL base do llama-server (padrão: APDA_LLAMA_BASE_URL ou http://127.0.0.1:8091)")
     parser.add_argument("--max-chars", type=int, default=24000)
     parser.add_argument("--max-tokens", type=int, default=2000)
     parser.add_argument("--temperature", type=float, default=0.1)
     args = parser.parse_args()
 
+    base_url = resolve_base_url(args.base_url)
     input_path = Path(args.input).resolve()
 
     if args.output is not None:
         output_path = Path(args.output).resolve()
     else:
         stem = input_path.name
-        # Remove extensões compostas como ".texto_extraido.txt" para obter o stem limpo
         for suffix in (".texto_extraido.txt", ".texto_extraido", ".txt"):
             if stem.endswith(suffix):
                 stem = stem[: -len(suffix)]
@@ -175,7 +106,7 @@ def main() -> None:
     }
 
     started = time.perf_counter()
-    response = post_json(f"{args.base_url}/v1/chat/completions", payload)
+    response = post_json(f"{base_url}/v1/chat/completions", payload)
     elapsed = round(time.perf_counter() - started, 3)
     content = response["choices"][0]["message"]["content"]
 
@@ -192,7 +123,7 @@ def main() -> None:
                 {
                     "data": datetime.now().isoformat(),
                     "modelo": response.get("model", "desconhecido"),
-                    "servidor": args.base_url,
+                    "servidor": base_url,
                     "entrada": str(input_path),
                     "saida": str(output_path),
                     "raw_saida": str(raw_path),
@@ -220,7 +151,7 @@ def main() -> None:
             {
                 "data": datetime.now().isoformat(),
                 "modelo": response.get("model", "desconhecido"),
-                "servidor": args.base_url,
+                "servidor": base_url,
                 "entrada": str(input_path),
                 "saida": str(output_path),
                 "elapsed_seconds": elapsed,

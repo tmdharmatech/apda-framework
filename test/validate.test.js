@@ -19,6 +19,11 @@ test("validateArtifact accepts a minimal APDA artifact matching the JSON Schema"
       recursos_acessibilidade: [],
       observacoes_relevantes: null,
     },
+    anonimizacao: {
+      aplicada: true,
+      itens_mascarados: ["private_person"],
+      risco_reidentificacao: "nao_avaliado",
+    },
     metadados_processamento: {
       pipeline_versao: "test",
       data_processamento: "2026-04-29T00:00:00.000Z",

@@ -1,6 +1,57 @@
 import path from "node:path";
 
-const workflows = [
+// ── Eixo de formato ───────────────────────────────────────────────────────────
+// Ao adicionar um novo formato (ex: .odt), basta inserir uma entrada aqui.
+const FORMATS = [
+  { id: "txt",  label: "TXT",      extensions: [".txt"],          steps: [] },
+  { id: "docx", label: "DOCX",     extensions: [".docx"],         steps: ["extract-text"] },
+  { id: "xlsx", label: "XLSX/XLS", extensions: [".xlsx", ".xls"], steps: ["extract-text"] },
+  { id: "pdf",  label: "PDF",      extensions: [".pdf"],          steps: ["extract-text"] },
+];
+
+// ── Eixo de anonimização ──────────────────────────────────────────────────────
+const ANON_MODES = [
+  { id: "fast",   label: null,             steps: [] },
+  { id: "regex",  label: "regex-anon",     steps: ["regex-anon"] },
+  { id: "neural", label: "Privacy Filter", steps: ["privacy-filter"] },
+];
+
+// ── Eixo de pipeline ──────────────────────────────────────────────────────────
+const PIPELINE_MODES = [
+  {
+    id: "single",
+    label: "JSON APDA → validação",
+    steps: ["generate-artifact", "validate-schema"],
+  },
+  {
+    id: "segment",
+    label: "varredura → APDA por segmento → validação",
+    steps: ["scan-segments", "validate-manifest", "generate-from-manifest", "validate-schema"],
+  },
+];
+
+// ── Geração automática de workflows ──────────────────────────────────────────
+function buildName(fmt, anon, pipeline) {
+  const parts = [fmt.label];
+  if (anon.label) parts.push(anon.label);
+  parts.push(pipeline.label);
+  return parts.join(" → ");
+}
+
+const generatedWorkflows = FORMATS.flatMap((fmt) =>
+  ANON_MODES.flatMap((anon) =>
+    PIPELINE_MODES.map((pipeline) => ({
+      id: `${fmt.id}-${anon.id}-${pipeline.id}`,
+      name: buildName(fmt, anon, pipeline),
+      inputExtensions: fmt.extensions,
+      steps: [...fmt.steps, ...anon.steps, ...pipeline.steps],
+    })),
+  ),
+);
+
+// ── Workflows utilitários (não se encaixam no modelo 3-eixos) ─────────────────
+// Mantidos explicitamente: pipelines parciais, validação avulsa e extração pura.
+const specialWorkflows = [
   {
     id: "extract-only",
     name: "Extrair texto",
@@ -9,31 +60,31 @@ const workflows = [
   },
   {
     id: "docx-to-text",
-    name: "DOCX -> texto extraido",
+    name: "DOCX → texto extraído",
     inputExtensions: [".docx"],
     steps: ["extract-text"],
   },
   {
     id: "xlsx-to-text",
-    name: "XLSX/XLS -> texto extraido",
+    name: "XLSX/XLS → texto extraído",
     inputExtensions: [".xlsx", ".xls"],
     steps: ["extract-text"],
   },
   {
     id: "pdf-to-text",
-    name: "PDF -> texto extraido",
+    name: "PDF → texto extraído",
     inputExtensions: [".pdf"],
     steps: ["extract-text"],
   },
   {
     id: "anonymize-privacy-filter",
-    name: "TXT -> Privacy Filter",
+    name: "TXT → Privacy Filter",
     inputExtensions: [".txt"],
     steps: ["privacy-filter"],
   },
   {
     id: "generate-apda-json",
-    name: "TXT anonimizado -> JSON APDA",
+    name: "TXT anonimizado → JSON APDA",
     inputExtensions: [".txt"],
     steps: ["generate-artifact"],
   },
@@ -43,187 +94,57 @@ const workflows = [
     inputExtensions: [".json"],
     steps: ["validate-schema"],
   },
-  {
-    id: "txt-to-apda-json",
-    name: "TXT -> Privacy Filter -> JSON APDA -> validacao",
-    inputExtensions: [".txt"],
-    steps: ["privacy-filter", "generate-artifact", "validate-schema"],
-  },
-  {
-    id: "docx-to-apda-json",
-    name: "DOCX -> texto -> Privacy Filter -> JSON APDA -> validacao",
-    inputExtensions: [".docx"],
-    steps: [
-      "extract-text",
-      "privacy-filter",
-      "generate-artifact",
-      "validate-schema",
-    ],
-  },
-  {
-    id: "xlsx-to-apda-json",
-    name: "XLSX/XLS -> texto -> Privacy Filter -> JSON APDA -> validacao",
-    inputExtensions: [".xlsx", ".xls"],
-    steps: [
-      "extract-text",
-      "privacy-filter",
-      "generate-artifact",
-      "validate-schema",
-    ],
-  },
-  {
-    id: "pdf-to-apda-json",
-    name: "PDF -> texto -> Privacy Filter -> JSON APDA -> validacao",
-    inputExtensions: [".pdf"],
-    steps: [
-      "extract-text",
-      "privacy-filter",
-      "generate-artifact",
-      "validate-schema",
-    ],
-  },
-  {
-    id: "xlsx-scan-and-segment",
-    name: "XLSX → varredura → segmentos → APDA por segmento",
-    inputExtensions: [".xlsx", ".xls"],
-    steps: [
-      "extract-text",
-      "privacy-filter",
-      "scan-segments",
-      "generate-from-manifest",
-      "validate-schema",
-    ],
-  },
-  {
-    id: "txt-scan-and-segment",
-    name: "TXT anonimizado → varredura → APDA por segmento",
-    inputExtensions: [".txt"],
-    steps: ["scan-segments", "generate-from-manifest", "validate-schema"],
-  },
-  {
-    id: "docx-scan-and-segment",
-    name: "DOCX → varredura → segmentos → APDA por segmento",
-    inputExtensions: [".docx"],
-    steps: [
-      "extract-text",
-      "privacy-filter",
-      "scan-segments",
-      "generate-from-manifest",
-      "validate-schema",
-    ],
-  },
-
-  // ── Eixo 1: Produção rápida (sem anonimização — dados fictícios ou pré-anonimizados)
-
-  {
-    id: "txt-fast",
-    name: "TXT → JSON APDA (sem anonimização)",
-    inputExtensions: [".txt"],
-    steps: ["generate-artifact", "validate-schema"],
-  },
-  {
-    id: "docx-fast",
-    name: "DOCX → texto → JSON APDA (sem anonimização)",
-    inputExtensions: [".docx"],
-    steps: ["extract-text", "generate-artifact", "validate-schema"],
-  },
-  {
-    id: "xlsx-fast",
-    name: "XLSX → texto → JSON APDA (sem anonimização)",
-    inputExtensions: [".xlsx", ".xls"],
-    steps: ["extract-text", "generate-artifact", "validate-schema"],
-  },
-  {
-    id: "pdf-fast",
-    name: "PDF → texto → JSON APDA (sem anonimização)",
-    inputExtensions: [".pdf"],
-    steps: ["extract-text", "generate-artifact", "validate-schema"],
-  },
-
-  // ── Eixo 2: Anonimização leve (regex — sem GPU)
-
-  {
-    id: "txt-regex-anon",
-    name: "TXT → regex-anon → JSON APDA",
-    inputExtensions: [".txt"],
-    steps: ["regex-anon", "generate-artifact", "validate-schema"],
-  },
-  {
-    id: "docx-regex-anon",
-    name: "DOCX → texto → regex-anon → JSON APDA",
-    inputExtensions: [".docx"],
-    steps: ["extract-text", "regex-anon", "generate-artifact", "validate-schema"],
-  },
-  {
-    id: "xlsx-regex-anon",
-    name: "XLSX → texto → regex-anon → JSON APDA",
-    inputExtensions: [".xlsx", ".xls"],
-    steps: ["extract-text", "regex-anon", "generate-artifact", "validate-schema"],
-  },
-  {
-    id: "pdf-regex-anon",
-    name: "PDF → texto → regex-anon → JSON APDA",
-    inputExtensions: [".pdf"],
-    steps: ["extract-text", "regex-anon", "generate-artifact", "validate-schema"],
-  },
-
-  // ── Eixo 3: Segmentação multi-artefato (sem Privacy Filter neural)
-
-  {
-    id: "txt-scan-fast",
-    name: "TXT → varredura → APDA por segmento (sem anonimização)",
-    inputExtensions: [".txt"],
-    steps: ["scan-segments", "generate-from-manifest", "validate-schema"],
-  },
-  {
-    id: "xlsx-scan-fast",
-    name: "XLSX → texto → varredura → APDA por segmento (sem anonimização)",
-    inputExtensions: [".xlsx", ".xls"],
-    steps: ["extract-text", "scan-segments", "generate-from-manifest", "validate-schema"],
-  },
-  {
-    id: "docx-scan-fast",
-    name: "DOCX → texto → varredura → APDA por segmento (sem anonimização)",
-    inputExtensions: [".docx"],
-    steps: ["extract-text", "scan-segments", "generate-from-manifest", "validate-schema"],
-  },
-  {
-    id: "xlsx-scan-regex",
-    name: "XLSX → texto → regex-anon → varredura → APDA por segmento",
-    inputExtensions: [".xlsx", ".xls"],
-    steps: [
-      "extract-text",
-      "regex-anon",
-      "scan-segments",
-      "generate-from-manifest",
-      "validate-schema",
-    ],
-  },
-  {
-    id: "docx-scan-regex",
-    name: "DOCX → texto → regex-anon → varredura → APDA por segmento",
-    inputExtensions: [".docx"],
-    steps: [
-      "extract-text",
-      "regex-anon",
-      "scan-segments",
-      "generate-from-manifest",
-      "validate-schema",
-    ],
-  },
 ];
 
+// ── Registry completo ─────────────────────────────────────────────────────────
+const allWorkflows = [...specialWorkflows, ...generatedWorkflows];
+
+// ── Aliases de retrocompatibilidade ──────────────────────────────────────────
+// Mapeiam IDs legados para IDs canônicos gerados.
+// getWorkflow() resolve aliases transparentemente; listWorkflows() retorna apenas canônicos.
+const LEGACY_ALIASES = {
+  "txt-fast":           "txt-fast-single",
+  "txt-regex-anon":     "txt-regex-single",
+  "txt-to-apda-json":   "txt-neural-single",
+  "txt-scan-fast":      "txt-fast-segment",
+  "txt-scan-and-segment": "txt-fast-segment",
+
+  "docx-fast":          "docx-fast-single",
+  "docx-regex-anon":    "docx-regex-single",
+  "docx-to-apda-json":  "docx-neural-single",
+  "docx-scan-fast":     "docx-fast-segment",
+  "docx-scan-regex":    "docx-regex-segment",
+  "docx-scan-and-segment": "docx-neural-segment",
+
+  "xlsx-fast":          "xlsx-fast-single",
+  "xlsx-regex-anon":    "xlsx-regex-single",
+  "xlsx-to-apda-json":  "xlsx-neural-single",
+  "xlsx-scan-fast":     "xlsx-fast-segment",
+  "xlsx-scan-regex":    "xlsx-regex-segment",
+  "xlsx-scan-and-segment": "xlsx-neural-segment",
+
+  "pdf-fast":           "pdf-fast-single",
+  "pdf-regex-anon":     "pdf-regex-single",
+  "pdf-to-apda-json":   "pdf-neural-single",
+};
+
+// ── API pública ───────────────────────────────────────────────────────────────
+
 export function listWorkflows() {
-  return workflows;
+  return allWorkflows;
 }
 
 export function getWorkflow(id) {
-  return workflows.find((workflow) => workflow.id === id);
+  const direct = allWorkflows.find((w) => w.id === id);
+  if (direct) return direct;
+
+  const canonicalId = LEGACY_ALIASES[id];
+  if (canonicalId) return allWorkflows.find((w) => w.id === canonicalId);
+
+  return undefined;
 }
 
 export function getWorkflowsForFile(filePath) {
   const extension = path.extname(filePath).toLowerCase();
-  return workflows.filter((workflow) =>
-    workflow.inputExtensions.includes(extension),
-  );
+  return allWorkflows.filter((w) => w.inputExtensions.includes(extension));
 }

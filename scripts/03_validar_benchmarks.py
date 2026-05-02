@@ -4,7 +4,8 @@ import json
 from pathlib import Path
 
 
-BASE = Path(__file__).resolve().parents[1]
+from lib.paths import BASE
+
 BENCHMARKS = BASE / "benchmarks" / "benchmarks.json"
 
 

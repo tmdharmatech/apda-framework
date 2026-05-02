@@ -11,6 +11,7 @@ import { checkLlamaServer } from "./detectors/llama-server.js";
 import { findModels } from "./detectors/models.js";
 import { inspectEndpoint, pickDefaultModel } from "./doctor.js";
 import { readConfig } from "./lib/config.js";
+import { resolveBaseUrl } from "./lib/resolve-base-url.js";
 import {
   buildLlamaServerArgs,
   formatLlamaServerCommand,
@@ -76,11 +77,7 @@ async function resolveServerPlan(root, values = {}) {
   const config = await readConfig(root);
   const models = await findModels(root);
   const modelPath = values.model ?? pickDefaultModel(config, models)?.path;
-  const baseUrl =
-    values["base-url"] ??
-    process.env.APDA_LLAMA_BASE_URL ??
-    config.llamaBaseUrl ??
-    "http://127.0.0.1:8091";
+  const baseUrl = resolveBaseUrl(values["base-url"], config);
   const ngl = values.ngl ?? config.ngl ?? 99;
   const binary = await findLlamaServerBinary(config);
 
@@ -107,11 +104,7 @@ async function resolveServerPlan(root, values = {}) {
 
 async function serverStatus(root, options = {}) {
   const config = await readConfig(root);
-  const baseUrl =
-    options.baseUrl ??
-    process.env.APDA_LLAMA_BASE_URL ??
-    config.llamaBaseUrl ??
-    "http://127.0.0.1:8091";
+  const baseUrl = resolveBaseUrl(options.baseUrl, config);
   const [state, endpoint] = await Promise.all([
     readServerState(root),
     inspectEndpoint(baseUrl),

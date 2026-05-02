@@ -3,10 +3,12 @@
   "title": "Manifesto de Segmentos APDA",
   "description": "Resultado da varredura semântica de um documento pedagógico. Identifica unidades independentes antes da geração de APDAs.",
   "type": "object",
+  "additionalProperties": false,
   "required": ["documento", "segmentos"],
   "properties": {
     "documento": {
       "type": "object",
+      "additionalProperties": false,
       "required": ["tipo_documento_inferido", "total_segmentos"],
       "properties": {
         "tipo_documento_inferido": { "type": "string" },
@@ -19,6 +21,7 @@
       "minItems": 1,
       "items": {
         "type": "object",
+        "additionalProperties": false,
         "required": ["indice", "tipos_artefato", "confianca", "trecho_identificador"],
         "properties": {
           "indice": { "type": "integer", "minimum": 1 },
@@ -36,6 +39,7 @@
           "resumo_nao_identificavel": { "type": ["string", "null"] },
           "posicao_aproximada": {
             "type": ["object", "null"],
+            "additionalProperties": false,
             "properties": {
               "inicio_chars": { "type": ["integer", "null"] },
               "fim_chars": { "type": ["integer", "null"] }

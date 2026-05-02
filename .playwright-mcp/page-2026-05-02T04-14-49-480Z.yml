@@ -1,0 +1,43 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - heading "APDA â€” Gerenciamento do Servidor" [level=1] [ref=e5]
+        - generic [ref=e6]:
+          - text: Controle do
+          - code [ref=e7]: llama-server
+          - text: local â€” equivalente ao
+          - code [ref=e8]: apda server
+          - text: .
+      - navigation [ref=e9]:
+        - link "Executar" [ref=e10] [cursor=pointer]:
+          - /url: /run.html
+        - link "Diagnóstico" [ref=e11] [cursor=pointer]:
+          - /url: /doctor.html
+        - link "Servidor" [ref=e12] [cursor=pointer]:
+          - /url: /server.html
+        - link "Artefatos" [ref=e13] [cursor=pointer]:
+          - /url: /index.html
+        - link "Benchmarks" [ref=e14] [cursor=pointer]:
+          - /url: /benchmarks.html
+        - link "Histórico" [ref=e15] [cursor=pointer]:
+          - /url: /history.html
+  - main [ref=e16]:
+    - generic [ref=e17]:
+      - generic [ref=e19]:
+        - generic [ref=e20]: Servidor inativo
+        - generic [ref=e21]: http://127.0.0.1:8091 Â· porta 8091 livre
+      - button "Iniciar servidor" [ref=e23] [cursor=pointer]
+    - generic [ref=e24]:
+      - generic [ref=e25]:
+        - heading "InformaÃ§Ãµes" [level=2] [ref=e26]
+        - generic [ref=e27]:
+          - generic [ref=e28]: Endpoint
+          - code [ref=e30]: http://127.0.0.1:8091
+        - generic [ref=e31]:
+          - generic [ref=e32]: Status da porta
+          - generic [ref=e34]: livre
+      - generic [ref=e35]:
+        - heading "Comando de subida" [level=2] [ref=e36]
+        - generic [ref=e37]: Comando resolvido com o modelo e configuraÃ§Ãµes atuais.
+        - generic [ref=e39]: Binario llama-server nao encontrado.

@@ -2,10 +2,12 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Artefato Pedagógico Digital Aberto",
   "type": "object",
+  "additionalProperties": false,
   "required": [
     "tipo_artefato",
     "origem",
     "conteudo_pedagogico",
+    "anonimizacao",
     "metadados_processamento",
     "validacao_humana"
   ],
@@ -23,6 +25,7 @@
     },
     "origem": {
       "type": "object",
+      "additionalProperties": false,
       "required": ["nome_arquivo", "formato_original"],
       "properties": {
         "nome_arquivo": { "type": "string" },
@@ -34,6 +37,8 @@
     },
     "conteudo_pedagogico": {
       "type": "object",
+      "additionalProperties": false,
+      "required": ["objetivo_pedagogico"],
       "properties": {
         "objetivo_pedagogico": { "type": ["string", "null"] },
         "barreiras_identificadas": {
@@ -53,11 +58,31 @@
     },
     "anonimizacao": {
       "type": "object",
+      "additionalProperties": false,
+      "required": ["aplicada", "itens_mascarados", "risco_reidentificacao"],
       "properties": {
         "aplicada": { "type": "boolean" },
         "itens_mascarados": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string",
+            "enum": [
+              "private_person",
+              "private_address",
+              "private_email",
+              "private_phone",
+              "private_url",
+              "private_date",
+              "account_number",
+              "secret",
+              "email",
+              "cpf",
+              "telefone",
+              "data",
+              "cep",
+              "nome_estudante"
+            ]
+          }
         },
         "risco_reidentificacao": {
           "type": "string",
@@ -67,6 +92,7 @@
     },
     "metadados_processamento": {
       "type": "object",
+      "additionalProperties": false,
       "required": ["pipeline_versao", "data_processamento", "status"],
       "properties": {
         "pipeline_versao": { "type": "string" },
@@ -83,6 +109,7 @@
     },
     "validacao_humana": {
       "type": "object",
+      "additionalProperties": false,
       "required": ["necessaria", "status"],
       "properties": {
         "necessaria": { "type": "boolean" },

@@ -73,6 +73,46 @@ falhas_por_formato = Counter(
     ['formato_entrada', 'etapa', 'motivo']
 )
 
+pipeline_execucoes = Counter(
+    'apda_pipeline_execucoes_total',
+    'Total de execucoes de workflow orquestradas pelo runner',
+    ['workflow', 'status', 'formato_entrada', 'modelo']
+)
+
+pipeline_tempo = Histogram(
+    'apda_pipeline_tempo_segundos',
+    'Tempo total de execucao do workflow no runner',
+    ['workflow', 'status', 'formato_entrada', 'modelo'],
+    buckets=[1, 2, 5, 10, 20, 30, 60, 120, 300]
+)
+
+pipeline_steps_executados = Histogram(
+    'apda_pipeline_steps_executados',
+    'Quantidade de steps executados por workflow',
+    ['workflow', 'status'],
+    buckets=[1, 2, 3, 4, 5, 6, 8, 10, 20]
+)
+
+step_execucoes = Counter(
+    'apda_step_execucoes_total',
+    'Total de execucoes por step do pipeline',
+    ['workflow', 'step', 'status']
+)
+
+step_tempo = Histogram(
+    'apda_step_tempo_segundos',
+    'Tempo de execucao por step do pipeline',
+    ['workflow', 'step', 'status'],
+    buckets=[0.1, 0.25, 0.5, 1, 2, 5, 10, 20, 30, 60, 120]
+)
+
+step_io_bytes = Histogram(
+    'apda_step_io_bytes',
+    'Tamanho de entrada e saida observado por step',
+    ['workflow', 'step', 'direction'],
+    buckets=[0, 1_000, 10_000, 100_000, 1_000_000, 10_000_000, 100_000_000]
+)
+
 # --- 5.14.2 Métricas de Privacidade ---
 
 vazamento_pii = Counter(
@@ -312,6 +352,11 @@ class APDAMetrics:
 _metrics_instance = APDAMetrics()
 
 
+def _metric_label(value, default='unknown', max_len=80):
+    text = str(value or default)
+    return text[:max_len]
+
+
 def _handle_push(environ):
     """Aceita POST /push com JSON para registrar métricas de processos externos."""
     try:
@@ -334,6 +379,76 @@ def _handle_push(environ):
                 formato_entrada=data.get('formato', 'unknown'),
                 modelo=data.get('modelo', 'unknown'),
             ).observe(data.get('elapsed', 0))
+        elif action == 'step':
+            workflow = _metric_label(data.get('workflow'))
+            step = _metric_label(data.get('step'))
+            status = _metric_label(data.get('status'))
+            formato = _metric_label(data.get('formato'))
+            motivo = _metric_label(data.get('error'), default='erro')
+
+            step_execucoes.labels(
+                workflow=workflow,
+                step=step,
+                status=status,
+            ).inc()
+            step_tempo.labels(
+                workflow=workflow,
+                step=step,
+                status=status,
+            ).observe(float(data.get('elapsed') or 0))
+            step_io_bytes.labels(
+                workflow=workflow,
+                step=step,
+                direction='input',
+            ).observe(float(data.get('input_bytes') or 0))
+            step_io_bytes.labels(
+                workflow=workflow,
+                step=step,
+                direction='output',
+            ).observe(float(data.get('output_bytes') or 0))
+
+            if status == 'error':
+                falhas_por_formato.labels(
+                    formato_entrada=formato,
+                    etapa=step,
+                    motivo=motivo,
+                ).inc()
+        elif action == 'pipeline':
+            workflow = _metric_label(data.get('workflow'))
+            status = _metric_label(data.get('status'))
+            formato = _metric_label(data.get('formato'))
+            modelo = _metric_label(data.get('modelo'))
+            motivo = _metric_label(data.get('error'), default='erro')
+
+            pipeline_execucoes.labels(
+                workflow=workflow,
+                status=status,
+                formato_entrada=formato,
+                modelo=modelo,
+            ).inc()
+            pipeline_tempo.labels(
+                workflow=workflow,
+                status=status,
+                formato_entrada=formato,
+                modelo=modelo,
+            ).observe(float(data.get('elapsed') or 0))
+            pipeline_steps_executados.labels(
+                workflow=workflow,
+                status=status,
+            ).observe(float(data.get('steps_executed') or 0))
+
+            if status == 'error':
+                falhas_por_formato.labels(
+                    formato_entrada=formato,
+                    etapa='pipeline',
+                    motivo=motivo,
+                ).inc()
+            elif status == 'ok':
+                tempo_processamento.labels(
+                    workflow=workflow,
+                    formato_entrada=formato,
+                    modelo=modelo,
+                ).observe(float(data.get('elapsed') or 0))
 
         return b'{"ok":true}', '200 OK'
     except Exception as e:

@@ -9,8 +9,9 @@ import sys
 import time
 from pathlib import Path
 
-BASE = Path(__file__).resolve().parents[1]
-SAIDA = BASE / "saida"
+from lib.paths import BASE, SAIDA
+from lib.config import resolve_base_url, resolve_api_key, DEFAULT_LLAMA_URL, DEFAULT_LITELLM_URL
+
 SCRIPTS = BASE / "scripts"
 
 INPUT_XLSX = BASE / "entrada" / "Diario_de_Classe_AEE_2025_10_Estudantes_Ficticios_Escola_Professor_Ficticios.xlsx"
@@ -19,9 +20,9 @@ ANON_SCRIPT = SCRIPTS / "02_anonimizar_texto.py"
 GEN_SCRIPT = SCRIPTS / "05_gerar_artefato_3b.py"
 
 PYTHON = sys.executable
-LITELLM_URL = "http://localhost:4000"
-LOCAL_URL = "http://localhost:8091"
-API_KEY = "apda-master-key"
+LITELLM_URL = resolve_base_url() if resolve_base_url() != DEFAULT_LLAMA_URL else DEFAULT_LITELLM_URL
+LOCAL_URL = DEFAULT_LLAMA_URL
+API_KEY = resolve_api_key()
 
 STEM = "Diario_de_Classe_AEE_2025_10_Estudantes_Ficticios_Escola_Professor_Ficticios"
 
