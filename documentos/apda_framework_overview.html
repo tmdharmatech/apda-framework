@@ -1,0 +1,582 @@
+
+<h2 class="sr-only">Visão interativa do APDA Framework — Artefatos Pedagógicos Digitais Abertos, Anexo IV do Sandbox MEC</h2>
+
+<style>
+:root { --tab-active: var(--color-text-primary); }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); }
+.wrap { padding: 1.25rem 0 2rem; }
+.hero { margin-bottom: 1.5rem; }
+.hero-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; background: var(--color-background-info); color: var(--color-text-info); border: 0.5px solid var(--color-border-info); margin-bottom: 10px; letter-spacing: .04em; }
+.hero h1 { font-size: 20px; font-weight: 500; color: var(--color-text-primary); line-height: 1.3; }
+.hero p { font-size: 13px; color: var(--color-text-secondary); margin-top: 4px; line-height: 1.6; }
+
+.tabs { display: flex; gap: 2px; border-bottom: 0.5px solid var(--color-border-tertiary); margin-bottom: 1.5rem; overflow-x: auto; }
+.tab { font-size: 12px; font-weight: 500; padding: 7px 14px; cursor: pointer; border: none; background: none; color: var(--color-text-secondary); border-bottom: 2px solid transparent; white-space: nowrap; transition: color .15s; }
+.tab.active { color: var(--color-text-primary); border-bottom-color: var(--color-text-primary); }
+.tab:hover { color: var(--color-text-primary); }
+
+.section { display: none; }
+.section.active { display: block; }
+
+.card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; }
+.card-sm { padding: .75rem 1rem; }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+
+.label { font-size: 11px; font-weight: 500; letter-spacing: .05em; color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: 6px; }
+.h3 { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+.body { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; }
+
+.tag { display: inline-flex; align-items: center; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 12px; }
+.tag-blue { background: var(--color-background-info); color: var(--color-text-info); }
+.tag-green { background: var(--color-background-success); color: var(--color-text-success); }
+.tag-amber { background: var(--color-background-warning); color: var(--color-text-warning); }
+.tag-red { background: var(--color-background-danger); color: var(--color-text-danger); }
+.tag-gray { background: var(--color-background-secondary); color: var(--color-text-secondary); }
+
+.trl-bar { display: flex; gap: 4px; margin: 10px 0; }
+.trl-dot { flex: 1; height: 8px; border-radius: 4px; background: var(--color-border-tertiary); }
+.trl-dot.filled { background: var(--color-text-info); }
+.trl-dot.partial { background: var(--color-background-info); border: 1.5px solid var(--color-border-info); }
+
+.pipe { display: flex; flex-direction: column; gap: 2px; }
+.pipe-step { display: flex; align-items: stretch; gap: 12px; }
+.pipe-line { display: flex; flex-direction: column; align-items: center; }
+.pipe-dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; }
+.pipe-connector { width: 2px; flex: 1; min-height: 8px; background: var(--color-border-tertiary); margin: 2px 0; }
+.pipe-content { flex: 1; padding-bottom: 12px; }
+.pipe-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 2px; }
+.pipe-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; }
+
+.risk-item { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); overflow: hidden; margin-bottom: 8px; }
+.risk-header { display: flex; align-items: center; gap: 10px; padding: 10px 14px; cursor: pointer; background: var(--color-background-secondary); }
+.risk-header:hover { background: var(--color-background-primary); }
+.risk-body { padding: 12px 14px; display: none; border-top: 0.5px solid var(--color-border-tertiary); }
+.risk-body.open { display: block; }
+.risk-body ul { padding-left: 16px; }
+.risk-body li { font-size: 12px; color: var(--color-text-secondary); line-height: 1.8; }
+
+.metric-group { margin-bottom: 1rem; }
+.metric-group-title { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.metric-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 11px; padding: 4px 10px; border-radius: 12px; background: var(--color-background-secondary); color: var(--color-text-secondary); border: 0.5px solid var(--color-border-tertiary); }
+
+.benefit-num { font-size: 22px; font-weight: 500; color: var(--color-text-info); line-height: 1; margin-bottom: 6px; }
+
+.dim-num { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: var(--color-background-info); color: var(--color-text-info); font-size: 11px; font-weight: 500; flex-shrink: 0; }
+
+.areas-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+</style>
+
+<div class="wrap">
+
+<div class="hero">
+  <div class="hero-badge">Sandbox Regulatório MEC · Anexo IV</div>
+  <h1>APDA Framework</h1>
+  <p>Artefatos Pedagógicos Digitais Abertos — framework para transformação, anonimização e estruturação interoperável de documentos pedagógicos em datasets municipais padronizados.</p>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="show('visao')">Visão geral</button>
+  <button class="tab" onclick="show('arquitetura')">Arquitetura</button>
+  <button class="tab" onclick="show('sandbox')">Sandbox</button>
+  <button class="tab" onclick="show('beneficios')">Benefícios</button>
+  <button class="tab" onclick="show('riscos')">Riscos</button>
+  <button class="tab" onclick="show('metricas')">Métricas</button>
+</div>
+
+<!-- ===== VISÃO GERAL ===== -->
+<div id="visao" class="section active">
+
+  <div class="grid-2" style="margin-bottom:12px">
+    <div class="card">
+      <div class="label">TRL estimado</div>
+      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px">
+        <span style="font-size:28px;font-weight:500;color:var(--color-text-primary)">4–5</span>
+        <span class="tag tag-amber">Validação em laboratório</span>
+      </div>
+      <div class="trl-bar">
+        <div class="trl-dot filled" title="TRL 1"></div>
+        <div class="trl-dot filled" title="TRL 2"></div>
+        <div class="trl-dot filled" title="TRL 3"></div>
+        <div class="trl-dot filled" title="TRL 4"></div>
+        <div class="trl-dot partial" title="TRL 5 — em transição"></div>
+        <div class="trl-dot" title="TRL 6"></div>
+        <div class="trl-dot" title="TRL 7"></div>
+        <div class="trl-dot" title="TRL 8"></div>
+        <div class="trl-dot" title="TRL 9"></div>
+      </div>
+      <div class="body" style="font-size:12px">Pipeline arquitetado, benchmarks iniciais, schema JSON preliminar e protótipos em execução local.</div>
+    </div>
+    <div class="card">
+      <div class="label">Foco inicial</div>
+      <div class="h3" style="margin-bottom:8px">Educação Especial Inclusiva (AEE)</div>
+      <div class="body" style="font-size:12px;margin-bottom:10px">Estudos de caso, PAAEs, planos de atendimento, diários pedagógicos, relatórios e planilhas municipais.</div>
+      <div class="areas-grid">
+        <span class="tag tag-blue">Inclusão digital</span>
+        <span class="tag tag-blue">Gestão educacional</span>
+        <span class="tag tag-blue">Interoperabilidade</span>
+        <span class="tag tag-blue">EducaDados</span>
+        <span class="tag tag-blue">Redução de desigualdades</span>
+        <span class="tag tag-blue">Inovação pública</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:12px">
+    <div class="label">Já desenvolvido</div>
+    <div class="grid-3" style="margin-top:8px">
+      <div><span class="tag tag-green" style="margin-bottom:4px">Completo</span><br><span class="body" style="font-size:12px">Definição conceitual do framework</span></div>
+      <div><span class="tag tag-green" style="margin-bottom:4px">Completo</span><br><span class="body" style="font-size:12px">Arquitetura inicial do pipeline</span></div>
+      <div><span class="tag tag-green" style="margin-bottom:4px">Completo</span><br><span class="body" style="font-size:12px">Schema preliminar JSON de saída</span></div>
+      <div><span class="tag tag-green" style="margin-bottom:4px">Completo</span><br><span class="body" style="font-size:12px">Benchmark em hardware limitado</span></div>
+      <div><span class="tag tag-green" style="margin-bottom:4px">Completo</span><br><span class="body" style="font-size:12px">Testes locais com modelos GGUF</span></div>
+      <div><span class="tag tag-green" style="margin-bottom:4px">Completo</span><br><span class="body" style="font-size:12px">Plano de fine-tuning e destilação</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="label">A desenvolver no Sandbox</div>
+    <div class="grid-3" style="margin-top:8px">
+      <div><span class="tag tag-amber" style="margin-bottom:4px">Pendente</span><br><span class="body" style="font-size:12px">Dataset ouro validado</span></div>
+      <div><span class="tag tag-amber" style="margin-bottom:4px">Pendente</span><br><span class="body" style="font-size:12px">Avaliação pedagógica</span></div>
+      <div><span class="tag tag-amber" style="margin-bottom:4px">Pendente</span><br><span class="body" style="font-size:12px">Avaliação de Impacto Algorítmico</span></div>
+      <div><span class="tag tag-amber" style="margin-bottom:4px">Pendente</span><br><span class="body" style="font-size:12px">Validação em ambiente controlado</span></div>
+      <div><span class="tag tag-amber" style="margin-bottom:4px">Pendente</span><br><span class="body" style="font-size:12px">Métricas, riscos e salvaguardas</span></div>
+      <div><span class="tag tag-amber" style="margin-bottom:4px">Pendente</span><br><span class="body" style="font-size:12px">Ampliação do conjunto de testes</span></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== ARQUITETURA ===== -->
+<div id="arquitetura" class="section">
+  <div class="card" style="margin-bottom:12px">
+    <div class="label" style="margin-bottom:10px">Pipeline de processamento — 8 módulos</div>
+    <div class="pipe">
+
+      <div class="pipe-step">
+        <div class="pipe-line">
+          <div class="pipe-dot" style="background:var(--color-background-info);color:var(--color-text-info)">1</div>
+          <div class="pipe-connector"></div>
+        </div>
+        <div class="pipe-content">
+          <div class="pipe-title">Ingestão multiformato</div>
+          <div class="pipe-desc">Recebe .xlsx, .xls, .docx, PDF, imagens. Identifica o tipo de artefato e prepara para extração. Suporta combinações de formatos em um único documento.</div>
+        </div>
+      </div>
+
+      <div class="pipe-step">
+        <div class="pipe-line">
+          <div class="pipe-dot" style="background:var(--color-background-info);color:var(--color-text-info)">2</div>
+          <div class="pipe-connector"></div>
+        </div>
+        <div class="pipe-content">
+          <div class="pipe-title">Extração com preservação de contexto estrutural</div>
+          <div class="pipe-desc">Converte sinais visuais (cor de fundo, células mescladas, espaçamento) em representação textual estruturada. Diferencial central do APDA ante pipelines genéricos.</div>
+          <div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap">
+            <span class="chip">openpyxl</span><span class="chip">python-docx</span><span class="chip">PyMuPDF</span><span class="chip">Tesseract</span><span class="chip">PaddleOCR</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pipe-step">
+        <div class="pipe-line">
+          <div class="pipe-dot" style="background:var(--color-background-danger);color:var(--color-text-danger)">3</div>
+          <div class="pipe-connector"></div>
+        </div>
+        <div class="pipe-content">
+          <div class="pipe-title">Anonimização multicamadas <span class="tag tag-red" style="margin-left:6px;font-size:10px">precede tudo</span></div>
+          <div class="pipe-desc">Remove PII antes de qualquer LLM. Regras determinísticas + modelos neurais + memória local para propagação consistente + revisão humana obrigatória.</div>
+        </div>
+      </div>
+
+      <div class="pipe-step">
+        <div class="pipe-line">
+          <div class="pipe-dot" style="background:var(--color-background-info);color:var(--color-text-info)">4</div>
+          <div class="pipe-connector"></div>
+        </div>
+        <div class="pipe-content">
+          <div class="pipe-title">Inferência de estrutura implícita</div>
+          <div class="pipe-desc">Identifica quais artefatos estão presentes, onde começam e terminam, e mapeia campos ao schema APDA — independente do município de origem. Raciocínio encadeado explícito (chain-of-thought).</div>
+        </div>
+      </div>
+
+      <div class="pipe-step">
+        <div class="pipe-line">
+          <div class="pipe-dot" style="background:var(--color-background-success);color:var(--color-text-success)">5</div>
+          <div class="pipe-connector"></div>
+        </div>
+        <div class="pipe-content">
+          <div class="pipe-title">Destilação supervisionada por dados</div>
+          <div class="pipe-desc">Modelos professores (família Sabiá/Maritaca AI) geram anotações iniciais. Cada exemplo passa por validação por schema + revisão de especialista em educação inclusiva antes de integrar o dataset ouro.</div>
+        </div>
+      </div>
+
+      <div class="pipe-step">
+        <div class="pipe-line">
+          <div class="pipe-dot" style="background:var(--color-background-success);color:var(--color-text-success)">6</div>
+          <div class="pipe-connector"></div>
+        </div>
+        <div class="pipe-content">
+          <div class="pipe-title">Fine-tuning do modelo-aluno</div>
+          <div class="pipe-desc">LoRA/QLoRA sobre dataset ouro validado. Família de modelos: ultraleve (CPU básica) → intermediário (consórcio regional) → maior (API estadual). Exportação em GGUF via llama.cpp.</div>
+        </div>
+      </div>
+
+      <div class="pipe-step">
+        <div class="pipe-line">
+          <div class="pipe-dot" style="background:var(--color-background-warning);color:var(--color-text-warning)">7</div>
+          <div class="pipe-connector"></div>
+        </div>
+        <div class="pipe-content">
+          <div class="pipe-title">Validação e auditoria</div>
+          <div class="pipe-desc">Valida JSON contra schema APDA, verifica consistência semântica, detecta possível vazamento residual, gera trilha de auditoria por documento. Todas as saídas marcadas como pendentes de validação humana.</div>
+        </div>
+      </div>
+
+      <div class="pipe-step">
+        <div class="pipe-line">
+          <div class="pipe-dot" style="background:var(--color-background-secondary);color:var(--color-text-secondary)">8</div>
+        </div>
+        <div class="pipe-content" style="padding-bottom:0">
+          <div class="pipe-title">Interface CLI + WebUI de onboarding</div>
+          <div class="pipe-desc">Diagnóstico do ambiente, seleção guiada de workflow, execução monitorada e histórico de auditoria — para equipes técnicas municipais sem especialização em IA.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="card card-sm">
+    <div class="label">Campo de pesquisa</div>
+    <div class="body" style="margin-top:4px">O módulo de inferência de estrutura implícita corresponde ao campo <em>Heterogeneous Document Understanding</em>, com trabalhos recentes de Microsoft (SpreadsheetLLM, 2024) e Google — porém em domínio inédito: documentação pedagógica da educação especial em municípios brasileiros.</div>
+  </div>
+</div>
+
+<!-- ===== SANDBOX ===== -->
+<div id="sandbox" class="section">
+  <div class="body" style="margin-bottom:1rem">A participação no Sandbox Regulatório do MEC é estratégica em cinco dimensões que o desenvolvimento técnico isolado não pode substituir.</div>
+
+  <div style="display:flex;flex-direction:column;gap:10px">
+
+    <div class="card">
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <div class="dim-num">1</div>
+        <div>
+          <div class="h3">Validação do pipeline de anonimização como condição de uso público</div>
+          <div class="body" style="margin-top:4px;font-size:12px">Produz evidência reconhecida pelo regulador sobre adequação do framework à LGPD e ao ECA Digital no contexto da educação especial — valor que nenhum teste laboratorial isolado substitui.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <div class="dim-num">2</div>
+        <div>
+          <div class="h3">Produção de evidência sobre heterogeneidade real de formatos municipais</div>
+          <div class="body" style="margin-top:4px;font-size:12px">Não existem estudos publicados sobre variabilidade de formatos pedagógicos entre municípios brasileiros. Esse dado é contribuição científica inédita e base para diretrizes de padronização mínima compatíveis com a realidade operacional.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <div class="dim-num">3</div>
+        <div>
+          <div class="h3">Diálogo regulatório sobre o marco de interoperabilidade com a EducaDados</div>
+          <div class="body" style="margin-top:4px;font-size:12px">A Portaria 269/2026 delega ao MEC a definição dos conjuntos mínimos de dados. O APDA — como framework de entrada da infraestrutura — tem interesse legítimo nessa definição. O Sandbox cria canal formal de diálogo enquanto os padrões ainda estão sendo definidos.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <div class="dim-num">4</div>
+        <div>
+          <div class="h3">Construção de evidência para escalabilidade estadual e nacional</div>
+          <div class="body" style="margin-top:4px;font-size:12px">Valida que o framework funciona de forma confiável, auditável e segura em condições reais — produzindo o tipo de evidência que viabiliza conversas com governos estaduais, consórcios e organismos de financiamento público.</div>
+          <div style="margin-top:6px"><span class="tag tag-gray" style="font-size:10px">Sem Sandbox: solução técnica promissora</span> <span class="tag tag-blue" style="font-size:10px;margin-left:4px">Com Sandbox: política pública em teste</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <div class="dim-num">5</div>
+        <div>
+          <div class="h3">Alinhamento com o Plano Brasileiro de IA e o ecossistema de inovação pública</div>
+          <div class="body" style="margin-top:4px;font-size:12px">Uso ético, soberania tecnológica, redução de desigualdades e código aberto. Visibilidade institucional junto a secretarias estaduais, IFs, universidades públicas e organismos de fomento.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== BENEFÍCIOS ===== -->
+<div id="beneficios" class="section">
+  <div class="body" style="margin-bottom:1rem">O APDA é uma camada de tradução entre a inteligência informal dos profissionais de AEE e a infraestrutura formal do Estado brasileiro.</div>
+  <div class="grid-2">
+
+    <div class="card">
+      <div class="benefit-num">01</div>
+      <div class="h3">Municípios visíveis para políticas públicas</div>
+      <div class="body" style="font-size:12px;margin-top:4px">Converte registros de planilhas locais em dados estruturados e interoperáveis — condição mínima para existir nas estatísticas que orientam políticas federais.</div>
+    </div>
+
+    <div class="card">
+      <div class="benefit-num">02</div>
+      <div class="h3">Crianças visíveis no sistema de proteção</div>
+      <div class="body" style="font-size:12px;margin-top:4px">Estudantes com deficiência em municípios sem documentação estruturada são invisíveis no INEP, nas metas do PNE e nas avaliações de política pública.</div>
+    </div>
+
+    <div class="card">
+      <div class="benefit-num">03</div>
+      <div class="h3">Acesso a recursos FUNDEB negados</div>
+      <div class="body" style="font-size:12px;margin-top:4px">O fator de ponderação para estudantes com deficiência exige documentação adequada. Municípios que não documentam perdem recursos constitucionais.</div>
+    </div>
+
+    <div class="card">
+      <div class="benefit-num">04</div>
+      <div class="h3">Conformidade regulatória sem alto custo</div>
+      <div class="body" style="font-size:12px;margin-top:4px">Decretos 12.686 e 12.773/2025 exigem documentação pedagógica estruturada. O APDA opera em hardware básico, sem conectividade contínua, sem licença e sem lock-in.</div>
+    </div>
+
+    <div class="card">
+      <div class="benefit-num">05</div>
+      <div class="h3">Transição gradual para a EducaDados</div>
+      <div class="body" style="font-size:12px;margin-top:4px">Professores continuam usando seus instrumentos familiares. O framework converte essas saídas em dados compatíveis com a Portaria 269/2026 sem ruptura operacional.</div>
+    </div>
+
+    <div class="card">
+      <div class="benefit-num">06</div>
+      <div class="h3">Primeiro dataset de AEE municipal brasileiro</div>
+      <div class="body" style="font-size:12px;margin-top:4px">Anonimizado, validado por especialistas, com trilha de auditoria completa. Bem público inédito para pesquisa, formação de professores e desenvolvimento de novas ferramentas.</div>
+    </div>
+
+    <div class="card">
+      <div class="benefit-num">07</div>
+      <div class="h3">Soberania tecnológica</div>
+      <div class="body" style="font-size:12px;margin-top:4px">100% open source, execução local, modelos abertos, prioridade a modelos brasileiros (família Sabiá). Saídas em GGUF portável. O conhecimento dos professores de AEE permanece patrimônio público.</div>
+    </div>
+
+    <div class="card">
+      <div class="benefit-num">08</div>
+      <div class="h3">Infraestrutura replicável para outras áreas</div>
+      <div class="body" style="font-size:12px;margin-top:4px">A metodologia de compreensão de esquemas implícitos em documentos heterogêneos é generalizável para saúde, assistência social e habitação municipais.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== RISCOS ===== -->
+<div id="riscos" class="section">
+  <div class="body" style="margin-bottom:1rem">Clique em cada risco para ver as medidas de mitigação.</div>
+
+  <div id="risk-list">
+
+    <div class="risk-item">
+      <div class="risk-header" onclick="toggleRisk(this)">
+        <span class="tag tag-red">Alto</span>
+        <span style="font-size:13px;font-weight:500;color:var(--color-text-primary);flex:1">Vazamento de dados pessoais ou sensíveis</span>
+        <span style="font-size:11px;color:var(--color-text-tertiary)">▾</span>
+      </div>
+      <div class="risk-body">
+        <div class="body" style="font-size:12px;margin-bottom:8px">Nomes, laudos, diagnósticos, endereços, documentos familiares e dados de saúde podem estar nos artefatos.</div>
+        <ul>
+          <li>Anonimização antes da estruturação (precede qualquer LLM)</li>
+          <li>Regras determinísticas para CPF, telefone, e-mail, CEP</li>
+          <li>Modelos neurais de detecção de PII em contexto narrativo</li>
+          <li>Dicionários locais de escolas, bairros e profissionais</li>
+          <li>Revisão humana obrigatória + classificação de risco por artefato</li>
+          <li>Logs de anonimização e descarte seguro de dados brutos</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="risk-item">
+      <div class="risk-header" onclick="toggleRisk(this)">
+        <span class="tag tag-red">Alto</span>
+        <span style="font-size:13px;font-weight:500;color:var(--color-text-primary);flex:1">Reidentificação indireta</span>
+        <span style="font-size:11px;color:var(--color-text-tertiary)">▾</span>
+      </div>
+      <div class="risk-body">
+        <div class="body" style="font-size:12px;margin-bottom:8px">Combinações como escola + turma + deficiência rara + município pequeno podem reidentificar mesmo sem nome.</div>
+        <ul>
+          <li>Generalização de campos sensíveis</li>
+          <li>Remoção de granularidade excessiva</li>
+          <li>Avaliação de risco por artefato</li>
+          <li>Bloqueio de publicação de exemplos com risco alto</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="risk-item">
+      <div class="risk-header" onclick="toggleRisk(this)">
+        <span class="tag tag-amber">Médio</span>
+        <span style="font-size:13px;font-weight:500;color:var(--color-text-primary);flex:1">Alucinação ou invenção de campos</span>
+        <span style="font-size:11px;color:var(--color-text-tertiary)">▾</span>
+      </div>
+      <div class="risk-body">
+        <div class="body" style="font-size:12px;margin-bottom:8px">Modelos de linguagem podem gerar dados não presentes no documento original.</div>
+        <ul>
+          <li>Instruções explícitas para não inventar (campos nulos quando ausentes)</li>
+          <li>Validação por schema + comparação com texto-fonte</li>
+          <li>Métricas de fidelidade ao documento</li>
+          <li>Revisão humana obrigatória</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="risk-item">
+      <div class="risk-header" onclick="toggleRisk(this)">
+        <span class="tag tag-amber">Médio</span>
+        <span style="font-size:13px;font-weight:500;color:var(--color-text-primary);flex:1">Mistura semântica entre estudantes ou artefatos</span>
+        <span style="font-size:11px;color:var(--color-text-tertiary)">▾</span>
+      </div>
+      <div class="risk-body">
+        <div class="body" style="font-size:12px;margin-bottom:8px">Em documentos com múltiplos estudantes, o modelo pode misturar informações entre registros.</div>
+        <ul>
+          <li>Segmentação prévia por estudante ou artefato</li>
+          <li>Processamento de uma unidade semântica por vez</li>
+          <li>Detecção de múltiplos sujeitos antes da estruturação</li>
+          <li>Rejeição de saídas ambíguas</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="risk-item">
+      <div class="risk-header" onclick="toggleRisk(this)">
+        <span class="tag tag-amber">Médio</span>
+        <span style="font-size:13px;font-weight:500;color:var(--color-text-primary);flex:1">Viés discriminatório</span>
+        <span style="font-size:11px;color:var(--color-text-tertiary)">▾</span>
+      </div>
+      <div class="risk-body">
+        <div class="body" style="font-size:12px;margin-bottom:8px">O modelo pode reproduzir termos ou categorias inadequadas sobre deficiência, aprendizagem ou vulnerabilidade.</div>
+        <ul>
+          <li>Curadoria pedagógica + revisão por especialistas em educação inclusiva</li>
+          <li>Diretrizes de linguagem não discriminatória</li>
+          <li>Restrição de inferências diagnósticas</li>
+          <li>Proibição de classificação automática de estudantes</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="risk-item">
+      <div class="risk-header" onclick="toggleRisk(this)">
+        <span class="tag tag-gray">Baixo</span>
+        <span style="font-size:13px;font-weight:500;color:var(--color-text-primary);flex:1">Uso indevido da solução</span>
+        <span style="font-size:11px;color:var(--color-text-tertiary)">▾</span>
+      </div>
+      <div class="risk-body">
+        <div class="body" style="font-size:12px;margin-bottom:8px">O framework pode ser utilizado para automatizar decisões educacionais sem supervisão humana.</div>
+        <ul>
+          <li>Saídas sempre marcadas como pendentes de validação humana</li>
+          <li>Ausência de módulo decisório no framework</li>
+          <li>Termos de uso explícitos + documentação dos limites</li>
+          <li>Comunicação clara de que não substitui profissionais da educação</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== MÉTRICAS ===== -->
+<div id="metricas" class="section">
+
+  <div class="grid-2" style="margin-bottom:12px">
+
+    <div class="card">
+      <div class="label">Métricas técnicas</div>
+      <div class="metric-chips" style="margin-top:8px">
+        <span class="chip">taxa de JSON válido</span>
+        <span class="chip">aderência ao schema</span>
+        <span class="chip">campos obrigatórios preenchidos</span>
+        <span class="chip">taxa de campos inventados</span>
+        <span class="chip">taxa de campos ausentes</span>
+        <span class="chip">tempo por artefato</span>
+        <span class="chip">tokens/s</span>
+        <span class="chip">uso de memória</span>
+        <span class="chip">CPU / Vulkan / GPU</span>
+        <span class="chip">falhas por tipo de arquivo</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="label">Métricas de privacidade</div>
+      <div class="metric-chips" style="margin-top:8px">
+        <span class="chip">vazamento de nomes</span>
+        <span class="chip">vazamento de CPF / telefone</span>
+        <span class="chip">risco de reidentificação</span>
+        <span class="chip">artefatos bloqueados por risco alto</span>
+        <span class="chip">acurácia da anonimização</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="label">Métricas pedagógicas</div>
+      <div class="metric-chips" style="margin-top:8px">
+        <span class="chip">fidelidade ao conteúdo original</span>
+        <span class="chip">pertinência das categorias</span>
+        <span class="chip">identificação de barreiras</span>
+        <span class="chip">identificação de estratégias</span>
+        <span class="chip">separação entre estudantes</span>
+        <span class="chip">necessidade média de correção humana</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="label">Métricas comparativas</div>
+      <div class="metric-chips" style="margin-top:8px">
+        <span class="chip">modelo base vs. fine-tuned</span>
+        <span class="chip">diferentes famílias de modelos</span>
+        <span class="chip">variação de tamanho de contexto</span>
+        <span class="chip">níveis de quantização</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="card card-sm">
+    <div class="label">Tratamento de dados — fluxo de 10 etapas</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center">
+      <span class="chip">1 Ingestão</span>
+      <span style="color:var(--color-text-tertiary);font-size:12px">→</span>
+      <span class="chip">2 Extração</span>
+      <span style="color:var(--color-text-tertiary);font-size:12px">→</span>
+      <span class="chip" style="border-color:var(--color-border-danger);color:var(--color-text-danger)">3 Anonimização</span>
+      <span style="color:var(--color-text-tertiary);font-size:12px">→</span>
+      <span class="chip">4 Checagem de risco</span>
+      <span style="color:var(--color-text-tertiary);font-size:12px">→</span>
+      <span class="chip">5 Estruturação JSON</span>
+      <span style="color:var(--color-text-tertiary);font-size:12px">→</span>
+      <span class="chip">6 Validação automática</span>
+      <span style="color:var(--color-text-tertiary);font-size:12px">→</span>
+      <span class="chip">7 Revisão humana</span>
+      <span style="color:var(--color-text-tertiary);font-size:12px">→</span>
+      <span class="chip">8 Armazenamento controlado</span>
+      <span style="color:var(--color-text-tertiary);font-size:12px">→</span>
+      <span class="chip">9 Descarte seguro</span>
+      <span style="color:var(--color-text-tertiary);font-size:12px">→</span>
+      <span class="chip">10 Logs e metadados</span>
+    </div>
+  </div>
+
+</div>
+
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+function toggleRisk(header) {
+  const body = header.nextElementSibling;
+  body.classList.toggle('open');
+}
+</script>

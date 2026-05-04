@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="APDA Framework: Artefatos Pedagogicos Digitais Abertos para transformacao, anonimizacao e estruturacao interoperavel de documentos pedagogicos.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23172026'/%3E%3Cpath d='M14 44 27 18h10l13 26h-9l-2-5H25l-2 5h-9Zm14-12h8l-4-9-4 9Z' fill='white'/%3E%3C/svg%3E">
+  <title>APDA Framework</title>
+  <style>
+    :root {
+      --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --color-text-primary: #172026;
+      --color-text-secondary: #4b5a64;
+      --color-text-tertiary: #7b8790;
+      --color-text-info: #075985;
+      --color-text-success: #166534;
+      --color-text-warning: #92400e;
+      --color-text-danger: #b91c1c;
+      --color-background-primary: #ffffff;
+      --color-background-secondary: #f6f8f9;
+      --color-background-info: #e0f2fe;
+      --color-background-success: #dcfce7;
+      --color-background-warning: #fef3c7;
+      --color-background-danger: #fee2e2;
+      --color-border-tertiary: #d8e0e5;
+      --color-border-info: #7dd3fc;
+      --color-border-danger: #fca5a5;
+      --border-radius-md: 8px;
+      --border-radius-lg: 8px;
+      background: #f3f6f8;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      background:
+        linear-gradient(180deg, rgba(224, 242, 254, 0.65), rgba(246, 248, 249, 0) 280px),
+        #f3f6f8;
+      color: var(--color-text-primary);
+      font-family: var(--font-sans);
+    }
+
+    .page-shell {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 36px 0 56px;
+    }
+
+    .repo-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .repo-mark {
+      color: var(--color-text-secondary);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: .02em;
+      text-decoration: none;
+    }
+
+    .repo-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .repo-link {
+      align-items: center;
+      background: #172026;
+      border: 1px solid #172026;
+      border-radius: 8px;
+      color: #fff;
+      display: inline-flex;
+      font-size: 12px;
+      font-weight: 600;
+      min-height: 34px;
+      padding: 0 12px;
+      text-decoration: none;
+    }
+
+    .repo-link.secondary {
+      background: #fff;
+      color: var(--color-text-primary);
+      border-color: var(--color-border-tertiary);
+    }
+
+    .overview-panel {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(216, 224, 229, 0.9);
+      border-radius: 8px;
+      box-shadow: 0 24px 70px rgba(23, 32, 38, 0.08);
+      padding: 0 24px 24px;
+    }
+
+    .loading-state,
+    .error-state {
+      color: var(--color-text-secondary);
+      font-size: 14px;
+      line-height: 1.6;
+      padding: 48px 0 24px;
+    }
+
+    .error-state a {
+      color: var(--color-text-info);
+      font-weight: 600;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 720px) {
+      .page-shell {
+        width: min(100% - 20px, 1120px);
+        padding-top: 18px;
+      }
+
+      .repo-nav {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .repo-actions {
+        justify-content: flex-start;
+        width: 100%;
+      }
+
+      .overview-panel {
+        padding: 0 12px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page-shell">
+    <nav class="repo-nav" aria-label="Links do repositorio">
+      <a class="repo-mark" href="https://github.com/tmdharmatech/apda-framework">tmdharmatech/apda-framework</a>
+      <div class="repo-actions">
+        <a class="repo-link secondary" href="README.md">README</a>
+        <a class="repo-link" href="https://github.com/tmdharmatech/apda-framework">GitHub</a>
+      </div>
+    </nav>
+
+    <section class="overview-panel" aria-label="Visao geral do APDA Framework">
+      <div id="overview-root" class="loading-state">Carregando visão geral do APDA Framework...</div>
+      <noscript>
+        <p class="error-state">
+          Esta página usa JavaScript para carregar a visão interativa. Abra
+          <a href="documentos/apda_framework_overview.html">o HTML original</a>.
+        </p>
+      </noscript>
+    </section>
+  </main>
+
+  <script>
+    window.show = function show(id) {
+      document.querySelectorAll('.section').forEach(function(section) {
+        section.classList.remove('active');
+      });
+      document.querySelectorAll('.tab').forEach(function(tab) {
+        tab.classList.remove('active');
+      });
+
+      var section = document.getElementById(id);
+      if (section) section.classList.add('active');
+      if (window.event && window.event.target) {
+        window.event.target.classList.add('active');
+      }
+    };
+
+    window.toggleRisk = function toggleRisk(header) {
+      var body = header.nextElementSibling;
+      if (body) body.classList.toggle('open');
+    };
+
+    fetch('documentos/apda_framework_overview.html')
+      .then(function(response) {
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        return response.text();
+      })
+      .then(function(html) {
+        document.getElementById('overview-root').outerHTML = html;
+      })
+      .catch(function(error) {
+        document.getElementById('overview-root').className = 'error-state';
+        document.getElementById('overview-root').innerHTML =
+          'Nao foi possivel carregar a visao interativa. Acesse o arquivo base em ' +
+          '<a href="documentos/apda_framework_overview.html">documentos/apda_framework_overview.html</a>.' +
+          '<br><small>' + error.message + '</small>';
+      });
+  </script>
+</body>
+</html>
