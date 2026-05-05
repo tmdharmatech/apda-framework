@@ -12,6 +12,11 @@
     "list-inputs": "node src/cli.js list-inputs",
     "list-models": "node src/cli.js list-models",
     "list-gpus": "node src/cli.js list-gpus",
+    "video:studio": "remotion studio remotion/index.jsx",
+    "video:still": "remotion still remotion/index.jsx ApdaProposal --frame=90 --scale=0.25",
+    "video:render": "remotion render remotion/index.jsx ApdaProposal renders/apda-proposal.mp4",
+    "video:still:annex5": "node scripts/render-annex5-stills.js",
+    "video:render:annex5": "node scripts/render-annex5-videos.js",
     "test": "node --test",
     "test:python": "python -m pytest scripts/tests/ -v",
     "test:all": "node --test && python -m pytest scripts/tests/ -v"
@@ -34,10 +39,13 @@
   "license": "UNLICENSED",
   "dependencies": {
     "@inquirer/prompts": "^8.4.2",
+    "@remotion/cli": "4.0.457",
     "ajv": "^8.20.0",
     "ink": "^4.4.1",
     "ink-spinner": "^5.0.0",
     "ink-task-list": "^2.0.0",
-    "react": "^18.3.1"
+    "react": "^18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.457"
   }
 }

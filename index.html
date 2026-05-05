@@ -153,6 +153,82 @@
       width: 100%;
     }
 
+    .annex-video-panel {
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(216, 224, 229, 0.9);
+      border-radius: 8px;
+      box-shadow: 0 24px 70px rgba(23, 32, 38, 0.08);
+      margin-bottom: 18px;
+      padding: 24px;
+    }
+
+    .annex-video-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .annex-video-header h2 {
+      color: var(--color-text-primary);
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 0;
+      line-height: 1.2;
+      margin: 0;
+    }
+
+    .annex-video-header p {
+      color: var(--color-text-secondary);
+      font-size: 14px;
+      line-height: 1.5;
+      margin: 6px 0 0;
+      max-width: 760px;
+    }
+
+    .annex-video-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .annex-video-card {
+      background: #fff;
+      border: 1px solid var(--color-border-tertiary);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .annex-video-card-copy {
+      padding: 16px 16px 14px;
+    }
+
+    .annex-video-card h3 {
+      color: var(--color-text-primary);
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 0;
+      line-height: 1.25;
+      margin: 0;
+    }
+
+    .annex-video-card p {
+      color: var(--color-text-secondary);
+      font-size: 13px;
+      line-height: 1.5;
+      margin: 6px 0 0;
+    }
+
+    .annex-video-card .video-download {
+      display: inline-flex;
+      margin-top: 10px;
+    }
+
+    .annex-video-card .video-frame {
+      border-top: 1px solid var(--color-border-tertiary);
+    }
+
     .loading-state,
     .error-state {
       color: var(--color-text-secondary);
@@ -207,6 +283,19 @@
       .video-copy h1 {
         font-size: 21px;
       }
+
+      .annex-video-panel {
+        padding: 16px;
+      }
+
+      .annex-video-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .annex-video-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -240,6 +329,124 @@
         >
           <a href="documentos/apda-proposal.mp4">Baixar o video APDA</a>
         </video>
+      </div>
+    </section>
+
+    <section class="annex-video-panel" aria-labelledby="annex-video-title">
+      <div class="annex-video-header">
+        <div>
+          <h2 id="annex-video-title">Videos do Anexo IV</h2>
+          <p>
+            Oito videos curtos, sem narracao, cobrindo os blocos principais da secao
+            5. Projeto de Solucao de IA do Anexo IV.
+          </p>
+        </div>
+      </div>
+
+      <div class="annex-video-grid">
+        <article class="annex-video-card">
+          <div class="annex-video-card-copy">
+            <h3>1. Identidade e area de aplicacao</h3>
+            <p>Nome da solucao, foco em AEE e areas do Anexo IV atendidas pelo APDA.</p>
+            <a class="video-download" href="documentos/videos/anexo-iv/01-identidade-area-aplicacao.mp4">Abrir MP4</a>
+          </div>
+          <div class="video-frame">
+            <video controls preload="metadata" poster="documentos/videos/anexo-iv/01-identidade-area-aplicacao.png" src="documentos/videos/anexo-iv/01-identidade-area-aplicacao.mp4">
+              <a href="documentos/videos/anexo-iv/01-identidade-area-aplicacao.mp4">Baixar video</a>
+            </video>
+          </div>
+        </article>
+
+        <article class="annex-video-card">
+          <div class="annex-video-card-copy">
+            <h3>2. Por que o Sandbox importa</h3>
+            <p>Validacao regulatoria, evidencia, EducaDados, escala e alinhamento com o PBIA.</p>
+            <a class="video-download" href="documentos/videos/anexo-iv/02-sandbox-regulatorio.mp4">Abrir MP4</a>
+          </div>
+          <div class="video-frame">
+            <video controls preload="metadata" poster="documentos/videos/anexo-iv/02-sandbox-regulatorio.png" src="documentos/videos/anexo-iv/02-sandbox-regulatorio.mp4">
+              <a href="documentos/videos/anexo-iv/02-sandbox-regulatorio.mp4">Baixar video</a>
+            </video>
+          </div>
+        </article>
+
+        <article class="annex-video-card">
+          <div class="annex-video-card-copy">
+            <h3>3. TRL e estagio de maturidade</h3>
+            <p>TRL 4-5, componentes ja desenvolvidos e validacoes previstas no Sandbox.</p>
+            <a class="video-download" href="documentos/videos/anexo-iv/03-trl-maturidade.mp4">Abrir MP4</a>
+          </div>
+          <div class="video-frame">
+            <video controls preload="metadata" poster="documentos/videos/anexo-iv/03-trl-maturidade.png" src="documentos/videos/anexo-iv/03-trl-maturidade.mp4">
+              <a href="documentos/videos/anexo-iv/03-trl-maturidade.mp4">Baixar video</a>
+            </video>
+          </div>
+        </article>
+
+        <article class="annex-video-card">
+          <div class="annex-video-card-copy">
+            <h3>4. Arquitetura APDA</h3>
+            <p>Pipeline modular para ingestao, extracao, anonimizacao, inferencia, validacao e onboarding.</p>
+            <a class="video-download" href="documentos/videos/anexo-iv/04-arquitetura-apda.mp4">Abrir MP4</a>
+          </div>
+          <div class="video-frame">
+            <video controls preload="metadata" poster="documentos/videos/anexo-iv/04-arquitetura-apda.png" src="documentos/videos/anexo-iv/04-arquitetura-apda.mp4">
+              <a href="documentos/videos/anexo-iv/04-arquitetura-apda.mp4">Baixar video</a>
+            </video>
+          </div>
+        </article>
+
+        <article class="annex-video-card">
+          <div class="annex-video-card-copy">
+            <h3>5. Objetivos e beneficios publicos</h3>
+            <p>Objetivos do framework e beneficios para municipios, estudantes, FUNDEB, EducaDados e soberania.</p>
+            <a class="video-download" href="documentos/videos/anexo-iv/05-objetivos-beneficios.mp4">Abrir MP4</a>
+          </div>
+          <div class="video-frame">
+            <video controls preload="metadata" poster="documentos/videos/anexo-iv/05-objetivos-beneficios.png" src="documentos/videos/anexo-iv/05-objetivos-beneficios.mp4">
+              <a href="documentos/videos/anexo-iv/05-objetivos-beneficios.mp4">Baixar video</a>
+            </video>
+          </div>
+        </article>
+
+        <article class="annex-video-card">
+          <div class="annex-video-card-copy">
+            <h3>6. Riscos e mitigacao</h3>
+            <p>Riscos de privacidade, alucinacao, mistura semantica, vies e uso indevido com salvaguardas.</p>
+            <a class="video-download" href="documentos/videos/anexo-iv/06-riscos-mitigacoes.mp4">Abrir MP4</a>
+          </div>
+          <div class="video-frame">
+            <video controls preload="metadata" poster="documentos/videos/anexo-iv/06-riscos-mitigacoes.png" src="documentos/videos/anexo-iv/06-riscos-mitigacoes.mp4">
+              <a href="documentos/videos/anexo-iv/06-riscos-mitigacoes.mp4">Baixar video</a>
+            </video>
+          </div>
+        </article>
+
+        <article class="annex-video-card">
+          <div class="annex-video-card-copy">
+            <h3>7. Dados, direitos e transparencia</h3>
+            <p>Coleta, tratamento, dados anonimizados, direitos fundamentais, informacao e explicabilidade.</p>
+            <a class="video-download" href="documentos/videos/anexo-iv/07-dados-direitos-transparencia.mp4">Abrir MP4</a>
+          </div>
+          <div class="video-frame">
+            <video controls preload="metadata" poster="documentos/videos/anexo-iv/07-dados-direitos-transparencia.png" src="documentos/videos/anexo-iv/07-dados-direitos-transparencia.mp4">
+              <a href="documentos/videos/anexo-iv/07-dados-direitos-transparencia.mp4">Baixar video</a>
+            </video>
+          </div>
+        </article>
+
+        <article class="annex-video-card">
+          <div class="annex-video-card-copy">
+            <h3>8. Metricas, vies e plano de testes</h3>
+            <p>Metricas tecnicas, privacidade, qualidade pedagogica, avaliacao de vies e fases de teste.</p>
+            <a class="video-download" href="documentos/videos/anexo-iv/08-metricas-vies-testes.mp4">Abrir MP4</a>
+          </div>
+          <div class="video-frame">
+            <video controls preload="metadata" poster="documentos/videos/anexo-iv/08-metricas-vies-testes.png" src="documentos/videos/anexo-iv/08-metricas-vies-testes.mp4">
+              <a href="documentos/videos/anexo-iv/08-metricas-vies-testes.mp4">Baixar video</a>
+            </video>
+          </div>
+        </article>
       </div>
     </section>
 
